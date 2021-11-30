@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -166,7 +165,7 @@ public final class MobileSaleRankActivity extends AbstractReportActivity {
                     object.put("see_type",2);
                 }
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/goods_sales_rank", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/goods_sales_rank", HttpRequest.generate_request_parma(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

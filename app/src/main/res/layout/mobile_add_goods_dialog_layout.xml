@@ -112,7 +112,47 @@
             android:selectAllOnFocus="true"
             android:textColor="@color/text_color" />
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/add_goods_item_h"
+        android:layout_marginTop="@dimen/margin_8"
+        android:orientation="horizontal">
 
+        <TextView
+            android:layout_width="@dimen/width_85"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/cur_price"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16" />
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/round_border_sub_gray"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/n"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:checked="true"
+                android:text="@string/no" />
+
+            <RadioButton
+                android:id="@+id/y"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:text="@string/yes" />
+
+        </RadioGroup>
+
+    </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/add_goods_item_h"

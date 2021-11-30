@@ -31,7 +31,7 @@ class OrderIdViewModel :ViewModelBase() {
             val parameterObj = JSONObject()
             parameterObj["appid"] = app.getAppId()
             parameterObj["prefix"] = prefix
-            val sz_param = HttpRequest.generate_request_parm(parameterObj, app.getAppSecret())
+            val sz_param = HttpRequest.generate_request_parma(parameterObj, app.getAppSecret())
             val retJson = HttpUtils.sendPost(app.getUrl() + "/api/codes/mk_code", sz_param, true)
 
             if (HttpUtils.checkRequestSuccess(retJson)) {

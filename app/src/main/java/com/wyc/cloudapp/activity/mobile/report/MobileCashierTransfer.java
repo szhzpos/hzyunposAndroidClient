@@ -117,7 +117,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
                 object.put("stores_id",mQueryConditionObj.getIntValue("stores_id"));
                 object.put("ti_code",ti_code);
 
-                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/transfer/get_transfer_detail",HttpRequest.generate_request_parm(object, getAppSecret()),true);
+                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/transfer/get_transfer_detail",HttpRequest.generate_request_parma(object, getAppSecret()),true);
                 switch (retJson.getIntValue("flag")) {
                     case 0:
                         loop.done(0);
@@ -289,7 +289,7 @@ public class MobileCashierTransfer extends AbstractReportActivity {
             try {
                 object.put("appid",getAppId());
 
-                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/transfer/get_transfer_list", HttpRequest.generate_request_parm(object, getAppSecret()),true);
+                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/transfer/get_transfer_list", HttpRequest.generate_request_parma(object, getAppSecret()),true);
                 int code = 0;
                 switch (retJson.getIntValue("flag")) {
                     case 0:

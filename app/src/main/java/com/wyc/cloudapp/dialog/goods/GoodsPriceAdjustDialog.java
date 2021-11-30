@@ -97,7 +97,7 @@ public final class GoodsPriceAdjustDialog extends AbstractDialogSaleActivity {
                 array.add(goods);
                 object.put("goods",array);
 
-                final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/goods_adjust_price",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
+                final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/goods_adjust_price",HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
                 switch (retJson.getIntValue("flag")){
                     case 0:
                         loop.done(0);

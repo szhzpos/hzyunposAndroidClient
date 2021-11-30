@@ -31,7 +31,7 @@ class SupplierViewModel:ViewModelBase() {
         val `object` = JSONObject()
         `object`["appid"] = app.appId
         `object`["stores_id"] = app.storeId
-        netRequestAsync(app.url + "/api/supplier_search/xlist", HttpRequest.generate_request_parm(`object`, app.appSecret), object : ArrayCallback<Supplier>(Supplier::class.java) {
+        netRequestAsync(app.url + "/api/supplier_search/xlist", HttpRequest.generate_request_parma(`object`, app.appSecret), object : ArrayCallback<Supplier>(Supplier::class.java) {
             override fun onSuccessForResult(d: MutableList<Supplier>?, hint: String?) {
                 netFinished()
                 currentModel!!.postValue(d)
@@ -51,7 +51,7 @@ class SupplierViewModel:ViewModelBase() {
             val `object` = JSONObject()
             `object`["appid"] = app.appId
             `object`["cs_xinzi"] = 1
-            netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parm(`object`, app.appSecret)).execute().use {
+            netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parma(`object`, app.appSecret)).execute().use {
                 val code: Int = it.code()
                 if (code == HttpURLConnection.HTTP_OK){
                     parseObject(String::class.java,it.body()?.string())?.let {

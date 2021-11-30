@@ -24,6 +24,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
@@ -56,7 +57,7 @@ import static android.database.Cursor.FIELD_TYPE_NULL;
 import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 14;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -185,6 +186,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleOrder` (`order_no` TEXT NOT NULL, `online_order_no` TEXT NOT NULL, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleId` TEXT NOT NULL, `cas_id` TEXT NOT NULL, `store_id` TEXT DEFAULT '-1', `time` INTEGER NOT NULL DEFAULT 0, `transfer_status` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleDetail` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `face_value` REAL NOT NULL, `gift_card_code` TEXT NOT NULL, `card_chip_no` TEXT NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
+        update_list.add("CREATE TABLE IF NOT EXISTS `goodsPractice` (`kw_id` INTEGER NOT NULL, `kw_code` TEXT NOT NULL, `kw_name` TEXT, `kw_price` REAL, `status` INTEGER, PRIMARY KEY(`kw_id`, `kw_code`))");
+        update_list.add("CREATE TABLE IF NOT EXISTS `practiceAssociated` (`id` INTEGER NOT NULL, `barcode_id` TEXT NOT NULL, `kw_id` INTEGER NOT NULL, `kw_code` TEXT NOT NULL, `kw_name` TEXT NOT NULL, `kw_price` REAL NOT NULL, `status` INTEGER NOT NULL, PRIMARY KEY(`id`))");
 
         if (oldVersion <= 10){
             update_list.add("delete from barcode_info;");
@@ -436,7 +439,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     jsonObject = jsonArray.getJSONObject(i);
                     for (String cl:cls){
                         value = jsonObject.getString(cl);
-                        if (null == value || "".equals(value)){
+                        if (null == value){
                             statement.bindNull(++columnN0);
                         }else {
                             statement.bindString(++columnN0,value);

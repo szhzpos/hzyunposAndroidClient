@@ -162,7 +162,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                         data_.put("cashier_id",mContext.getCashierId());
                         data_.put("order_money",sz_moeny);
 
-                        String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                        String sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                         Logger.i("生成充值订单参数:url:%s%s,param:%s",url ,"/api/member/mk_money_order" ,sz_param);
                         retJson = httpRequest.sendPost(url + "/api/member/mk_money_order",sz_param,true);
@@ -220,7 +220,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                             data_.put("pay_method",pay_method_id);
                                             data_.put("pay_code_str",mPayCode.getText().toString());
 
-                                            sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                                            sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                                             Logger.i("会员充值请求支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
                                             retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
@@ -257,7 +257,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                                                         if (res_code == 4){
                                                                             data_.put("pay_password","");
                                                                         }
-                                                                        sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                                                                        sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                                                                         Logger.i("会员充值支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
                                                                         retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
@@ -315,7 +315,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
 
                                         Logger.d_json(data_.toJSONString());
 
-                                        sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                                        sz_param = HttpRequest.generate_request_parma(data_,appSecret);
                                         retJson = httpRequest.sendPost(url + "/api/member/cl_money_order",sz_param,true);
 
                                         switch (retJson.getIntValue("flag")) {

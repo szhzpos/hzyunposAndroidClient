@@ -315,7 +315,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         param["card_json"] = getCards()
         param["sc_id"] = saleId
         param["cas_id"] = activity.cashierId
-        HttpUtils.sendAsyncPost(activity.url + InterfaceURL.GIFT_CARD_ORDER_UPLOAD, HttpRequest.generate_request_parm(param, activity.appSecret)) //生成订单
+        HttpUtils.sendAsyncPost(activity.url + InterfaceURL.GIFT_CARD_ORDER_UPLOAD, HttpRequest.generate_request_parma(param, activity.appSecret)) //生成订单
                 .enqueue(object : ObjectCallback<GiftCardSaleResult>(GiftCardSaleResult::class.java) {
                     override fun onError(msg: String) {
                         MyDialog.toastMessage(msg)
@@ -468,7 +468,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         param["cas_pay_money"] = amt
         param["pay_method"] = payInfo[0].pay_method_id
 
-        HttpUtils.sendAsyncPost(CustomApplication.self().url + "/api/api_shopping/pay", HttpRequest.generate_request_parm(param, CustomApplication.self().appSecret))
+        HttpUtils.sendAsyncPost(CustomApplication.self().url + "/api/api_shopping/pay", HttpRequest.generate_request_parma(param, CustomApplication.self().appSecret))
                 .enqueue(object : ObjectCallback<String>(String::class.java) {
 
                     override fun onSuccessForResult(d: String?, hint: String?) {

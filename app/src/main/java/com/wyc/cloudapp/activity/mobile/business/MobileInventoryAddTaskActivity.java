@@ -87,7 +87,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/create_task",sz_param,true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
@@ -133,7 +133,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/del_task",sz_param,true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
@@ -311,7 +311,7 @@ public class MobileInventoryAddTaskActivity extends AbstractDefinedTitleActivity
             final JSONObject parameterObj = new JSONObject();
             parameterObj.put("appid",getAppId());
             parameterObj.put("prefix","PC");
-            final String sz_param = HttpRequest.generate_request_parm(parameterObj,getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(parameterObj,getAppSecret());
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/codes/mk_code",sz_param,true);
 
             if (HttpUtils.checkRequestSuccess(retJson)){

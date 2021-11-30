@@ -34,7 +34,7 @@ class SyncGoods: AbstractSyncBase("barcode_info", SQLiteHelper.getGoodsCols(), "
                 if (!file.exists()) {
                     val load_img = httpRequest.getFile(file, img_url_info)
                     if (load_img.getIntValue("flag") == 0) {
-                        Logger.e("下载商品图片错误：" + load_img.getString("info"))
+                        Logger.e("下载商品图片错误：%s,url:%s",load_img.getString("info"),img_url_info)
                     }
                 }
             }

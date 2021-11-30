@@ -218,7 +218,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         object.put("appid",mContext.getAppId());
         object.put("openid",openid);
         object.put("origin",1);
-        ret_json = httpRequest.sendPost(mContext.getUrl() + "/api/member_recharge/member_recharge", HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
+        ret_json = httpRequest.sendPost(mContext.getUrl() + "/api/member_recharge/member_recharge", HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
         switch (ret_json.getIntValue("flag")){
             case 0:
                 throw new JSONException(ret_json.getString("info"));
@@ -625,7 +625,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                     data_.put("xnote","手机充值;" + mRemarkEt.getText().toString());
 
-                    String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                    String sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                     final String api = "/api/member/mk_money_order";
                     Logger.i("生成充值订单参数:url:%s%s,param:%s",url , api,sz_param);
@@ -684,7 +684,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                         data_.put("pay_method",pay_method_id);
                                         data_.put("pay_code_str",pay_code);
 
-                                        sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                                        sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                                         Logger.i("会员充值请求支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
                                         retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
@@ -721,7 +721,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                                                     if (res_code == 4){
                                                                         data_.put("pay_password","");
                                                                     }
-                                                                    sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                                                                    sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                                                                     Logger.i("会员充值支付查询参数:url:%s%s,param:%s",url,unified_pay_query,sz_param);
                                                                     retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
@@ -778,7 +778,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                                     Logger.d_json(data_.toJSONString());
 
-                                    sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                                    sz_param = HttpRequest.generate_request_parma(data_,appSecret);
                                     retJson = httpRequest.sendPost(url + "/api/member/cl_money_order",sz_param,true);
 
                                     switch (retJson.getIntValue("flag")) {
@@ -1058,7 +1058,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
         data_.put("xnote","会员手机充值退款;");
 
-        String sz_param = HttpRequest.generate_request_parm(data_,appSecret),api = "/api/member/mk_refund_money_order",prefix = "生成会员充值退款";
+        String sz_param = HttpRequest.generate_request_parma(data_,appSecret),api = "/api/member/mk_refund_money_order",prefix = "生成会员充值退款";
 
         Logger.i("%s订单参数:url:%s%s,param:%s",prefix,url ,api,sz_param);
         retJson = httpRequest.sendPost(url + api,sz_param,true);
@@ -1117,7 +1117,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         data_.put("order_code",refund_order_code);
 
 
-        final String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+        final String sz_param = HttpRequest.generate_request_parma(data_,appSecret);
         Logger.i("%s订单参数:url:%s%s,param:%s",prefix,url ,api,sz_param);
         final JSONObject retJson = httpRequest.sendPost(url + api,sz_param,true);
         Logger.i("%s订单返回:%s",prefix,retJson.toString());
@@ -1186,7 +1186,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         final JSONObject data = new JSONObject();
         data.put("appid",context.getAppId());
         data.put("order_code",object.getString("origin_order_code"));
-        final String sz_param = HttpRequest.generate_request_parm(data,context.getAppSecret());
+        final String sz_param = HttpRequest.generate_request_parma(data,context.getAppSecret());
         HttpRequest httpRequest = new HttpRequest();
         JSONObject retJson = httpRequest.sendPost(context.getUrl() + "/api/pay2_refund/refund",sz_param,true);
         switch (retJson.getIntValue("flag")){

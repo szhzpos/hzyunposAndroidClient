@@ -81,7 +81,7 @@ public class MobileStockQueryActivity extends AbstractReportActivity {
             try{
                 object.put("appid",mAppId);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/goods_set/get_bases", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/goods_set/get_bases", HttpRequest.generate_request_parma(object, mAppSecret),true);
                 switch (retJson.getIntValue("flag")){
                     case 0:
                         MyDialog.toastMessage(CustomApplication.self().getString(R.string.query_goods_hint, retJson.getString("info")));

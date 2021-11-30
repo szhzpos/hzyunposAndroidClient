@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,6 +37,8 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.normal.NVipManageActivity
+import com.wyc.cloudapp.activity.normal.NVipManageActivity.Companion.ListContent
+import com.wyc.cloudapp.activity.normal.NVipManageActivity.Companion.ListTitle
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.VipInfo
 import com.wyc.cloudapp.bean.VipStoreStuffInfo
@@ -49,13 +50,11 @@ import com.wyc.cloudapp.databinding.StoredNumEditBinding
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
-import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.util.*
 
 /**
  *
@@ -220,11 +219,26 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
 
             val progress = CustomProgressDialog.showProgress(requireActivity(), getString(R.string.upload_order_hints))
             launch {
-                val retJson = HttpUtils.sendPost(CustomApplication.self().url + InterfaceURL.O_OUT_IN_UPLOAD, HttpRequest.generate_request_parm(uploadObj,CustomApplication.self().appSecret), true)
+                var retJson = HttpUtils.sendPost(CustomApplication.self().url + InterfaceURL.O_OUT_IN_UPLOAD, HttpRequest.generate_request_parma(uploadObj,CustomApplication.self().appSecret), true)
                 if (HttpUtils.checkRequestSuccess(retJson)) {
-                    val info = JSON.parseObject(retJson.getString("info"))
+                    var info = JSON.parseObject(retJson.getString("info"))
                     if (HttpUtils.checkBusinessSuccess(info)) {
-                        mStuffList?.clear()
+
+                        uploadObj.clear()
+
+                        uploadObj["appid"] = CustomApplication.self().appId
+                        uploadObj["stores_id"] = CustomApplication.self().storeId
+                        uploadObj["pt_user_id"] = CustomApplication.self().ptUserId
+                        uploadObj["bgd_id"] = info.getString("bgd_id")
+
+                        retJson = HttpUtils.sendPost(CustomApplication.self().url + InterfaceURL.OUT_IN_SH, HttpRequest.generate_request_parma(uploadObj,CustomApplication.self().appSecret), true)
+                        if (HttpUtils.checkRequestSuccess(retJson)){
+                            info = JSON.parseObject(retJson.getString("info"))
+                            if (HttpUtils.checkBusinessSuccess(info)){
+                                mStuffList?.clear()
+                                MyDialog.toastMessage(getString(R.string.success))
+                            }else MyDialog.toastMessage(info.getString("info"))
+                        }
                     }else MyDialog.toastMessage(info.getString("info"))
                 }
                 progress.dismiss()
@@ -242,16 +256,15 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                     "  FROM barcode_info t1 where (barcode = '" + content +"' or only_coding = '"+ content +"') and barcode_status = 1"
             when(type){
                 0->{
-                    sql = "SELECT c.only_coding itemNo,b.barcode,b.buying_price,b.conversion,c.goods_title name,c.barcode_id,c.goods_id,c.unit_id,price,c.unit_name unit,xnum storeNum\n" +
-                            "  FROM retail_order a inner join retail_order_goods b \n" +
-                            "  on a.order_code = b.order_code and a.order_status = 2 inner join barcode_info c \n" +
-                            "  on b.barcode_id = c.barcode_id where a.card_code = '"+ content +"'  order by a.addtime asc "
+                    sql = "SELECT c.only_coding itemNo,b.barcode,b.buying_price,b.conversion,c.goods_title name,c.barcode_id,c.goods_id,c.unit_id,price,c.unit_name unit,b.xnum storeNum\n" +
+                            "  FROM retail_order_goods b inner join barcode_info c \n" +
+                            "  on b.barcode_id = c.barcode_id where b.order_code = (select order_code from retail_order where card_code ='"+ content +"' and order_status = 2 order by addtime asc )"
                 }
                 1->{
-                    sql = "SELECT c.only_coding itemNo,b.barcode,b.buying_price,b.conversion,c.goods_title name,c.barcode_id,c.goods_id,c.unit_id,price,xnum storeNum\n" +
+                    sql = "SELECT c.only_coding itemNo,b.barcode,b.buying_price,b.conversion,c.goods_title name,c.barcode_id,c.goods_id,c.unit_id,c.unit_name unit,price,xnum storeNum\n" +
                             "  FROM retail_order a inner join retail_order_goods b \n" +
                             "  on a.order_code = b.order_code and a.order_status = 2 inner join barcode_info c \n" +
-                            "  on b.barcode_id = c.barcode_id where a.order_code = '"+ content +"'"
+                            "  on b.barcode_id = c.barcode_id where a.order_code like '%"+ content +"'"
                 }
             }
             list?.let {
@@ -377,15 +390,6 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                 })
             }
         }
-    }
-    @Composable
-    private fun ListContent(content:String,modifier: Modifier){
-        Text(content,modifier.padding(start = 5.dp,top = 2.dp,bottom = 2.dp,end = 5.dp),color = colorResource(R.color.text_color),fontSize = 14.sp,textAlign = TextAlign.Center)
-    }
-
-    @Composable
-    private fun ListTitle(title:String,modifier: Modifier,c: Color = colorResource(R.color.white)){
-        Text(title,modifier.padding(5.dp),color = c,fontSize = 16.sp,textAlign = TextAlign.Center)
     }
 
     override fun getTitle(): String {

@@ -385,7 +385,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
         param.put("cards",getCards().toString());
         param.put("sales_id",getSaleman());
         param.put("cas_id",activity.getCashierId());
-        HttpUtils.sendAsyncPost(activity.getUrl() + InterfaceURL.ONCE_CARD_UPLOAD, HttpRequest.generate_request_parm(param,activity.getAppSecret()))//生成订单
+        HttpUtils.sendAsyncPost(activity.getUrl() + InterfaceURL.ONCE_CARD_UPLOAD, HttpRequest.generate_request_parma(param,activity.getAppSecret()))//生成订单
                 .enqueue(new ObjectCallback<TimeCardPayInfo>(TimeCardPayInfo.class) {
                     @Override
                     protected void onError(String msg) {
@@ -651,7 +651,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
             return;
         }
         pay.put("pay_method",payInfo.get(0).getPay_method_id());
-        HttpUtils.sendAsyncPost(CustomApplication.self().getUrl() + InterfaceURL.ONCE_CARD_PAY, HttpRequest.generate_request_parm(pay,CustomApplication.self().getAppSecret()))
+        HttpUtils.sendAsyncPost(CustomApplication.self().getUrl() + InterfaceURL.ONCE_CARD_PAY, HttpRequest.generate_request_parma(pay,CustomApplication.self().getAppSecret()))
                 .enqueue(new ObjectCallback<String>(String.class) {
                     @Override
                     protected void onError(String msg) {

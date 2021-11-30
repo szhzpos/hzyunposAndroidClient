@@ -10,16 +10,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo;
 import com.wyc.cloudapp.bean.GiftCardInfo;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.callback.ArrayResult;
-import com.wyc.cloudapp.utils.http.callback.ObjectResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,7 +53,7 @@ public class GiftCardInfoModel extends ViewModelBase {
             object.put("card_no",code);
 
             String err = "";
-            try(Response response = netRequest(CustomApplication.self().getUrl() + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parm(object,CustomApplication.self().getAppSecret())).execute()) {
+            try(Response response = netRequest(CustomApplication.self().getUrl() + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parma(object,CustomApplication.self().getAppSecret())).execute()) {
                 final ResponseBody body = response.body();
                 if (body != null){
                     final ArrayResult<GiftCardInfo> data =  parseArray(GiftCardInfo.class,body.string());

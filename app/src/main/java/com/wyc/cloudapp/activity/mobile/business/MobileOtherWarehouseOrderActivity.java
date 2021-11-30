@@ -189,7 +189,7 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
         @Override
         protected JSONObject generateAuditCondition() {
             final JSONObject condition = new JSONObject();
-            condition.put("api","/api/bgd/sh");
+            condition.put("api",InterfaceURL.OUT_IN_SH);
             return condition;
         }
 

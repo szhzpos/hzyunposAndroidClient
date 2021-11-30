@@ -53,7 +53,7 @@ public class MobileVipCategoryInfoActivity extends AbstractMobileBaseArchiveActi
         CustomApplication.execute(()->{
             final JSONObject param = new JSONObject();
             param.put("appid",getAppId());
-            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parm(param,getAppSecret()),true);
+            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parma(param,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));

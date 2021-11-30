@@ -27,7 +27,6 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,7 +73,7 @@ public class AppUpdateService extends Service {
             final JSONObject object = new JSONObject();
             object.put("appid", appid);
             object.put("dir_name","pos_youren_an");
-            final JSONObject retJson = HttpUtils.sendPost(url,HttpRequest.generate_request_parm(object,appSecret),30,true);
+            final JSONObject retJson = HttpUtils.sendPost(url,HttpRequest.generate_request_parma(object,appSecret),30,true);
             switch (retJson.getIntValue("flag")) {
                 case 0:
                     int rsCode = Utils.getNotKeyAsNumberDefault(retJson,"rsCode",-1);
@@ -115,7 +114,7 @@ public class AppUpdateService extends Service {
                                         if (packageInfo.versionName.compareTo(online_ver) < 0){
                                             object.clear();
                                             object.put("appid",appid);
-                                            downloadApkFile(httpRequest,file_info.getDwn_url(),HttpRequest.generate_request_parm(object,appSecret),file_info.getSize());
+                                            downloadApkFile(httpRequest,file_info.getDwn_url(),HttpRequest.generate_request_parma(object,appSecret),file_info.getSize());
                                         }else {
                                             check_ver_intent.putExtra("status",SUCCESS_STATUS);
                                             sendBroadcast(check_ver_intent);

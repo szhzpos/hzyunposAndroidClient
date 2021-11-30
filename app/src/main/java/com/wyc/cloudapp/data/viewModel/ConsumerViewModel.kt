@@ -32,7 +32,7 @@ class ConsumerViewModel:ViewModelBase() {
             val `object` = JSONObject()
             `object`["appid"] = app.appId
             `object`["stores_id"] = app.storeId
-            netRequest(app.url + "/api/supplier_search/customer_xlist", HttpRequest.generate_request_parm(`object`, app.appSecret)).execute().use {
+            netRequest(app.url + "/api/supplier_search/customer_xlist", HttpRequest.generate_request_parma(`object`, app.appSecret)).execute().use {
                 val code: Int = it.code()
                 if (code == HttpURLConnection.HTTP_OK){
                     val data:ArrayResult<Consumer> = parseArray(Consumer::class.java,it.body()?.string())
@@ -55,7 +55,7 @@ class ConsumerViewModel:ViewModelBase() {
             val `object` = JSONObject()
             `object`["appid"] = app.appId
             `object`["cs_xinzi"] = 2
-            netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parm(`object`, app.appSecret)).execute().use {
+            netRequest(app.url + "/api/supplier_search/get_code", HttpRequest.generate_request_parma(`object`, app.appSecret)).execute().use {
                 val code: Int = it.code()
                 if (code == HttpURLConnection.HTTP_OK){
                     parseObject(String::class.java,it.body()?.string())?.let {

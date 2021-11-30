@@ -111,7 +111,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()) ,err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()) ,err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/examine_task",sz_param,true);
             Logger.d_json(retJson.toString());
             if (HttpUtils.checkRequestSuccess(retJson)){
@@ -190,7 +190,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
 
         showProgress(getString(R.string.hints_query_data_sz));
         CustomApplication.execute(()->{
-            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/pd_detail", HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/pd_detail", HttpRequest.generate_request_parma(parameterObj,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));

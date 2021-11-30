@@ -202,7 +202,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
 
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
             CustomApplication.execute(()->{
-                final String param =  HttpRequest.generate_request_parm(mParameterObj,getAppSecret());
+                final String param =  HttpRequest.generate_request_parma(mParameterObj,getAppSecret());
 
                 Logger.d("业务查询参数:%s",param);
 

@@ -240,7 +240,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
             try {
                 object.put("appid",mAppId);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order",HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order",HttpRequest.generate_request_parma(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:
@@ -342,7 +342,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
                 object.put("appid", mAppId);
                 object.put("order_code",order_code);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order_goods", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order_goods", HttpRequest.generate_request_parma(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

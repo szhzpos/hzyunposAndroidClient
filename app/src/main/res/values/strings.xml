@@ -903,7 +903,12 @@
     <string name="search_input_hint">请输入商品或销售单号</string>
     <string name="last_order">最后一单</string>
     <string name="stored_num">存入数量</string>
+    <string name="pick_num">取出数量</string>
     <string name="query_vip_hint">请先查询会员信息!</string>
     <string name="store">存入</string>
     <string name="stuff_not_empty">存货物品不能为空!</string>
+    <string name="sum_store_num">总寄存数</string>
+    <string name="packed_num">已取数量</string>
+    <string name="refresh">刷新</string>
+    <string name="pick_num_error_hint">取货数量不能大于剩余数量!</string>
 </resources>

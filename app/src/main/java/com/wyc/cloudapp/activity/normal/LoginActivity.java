@@ -480,7 +480,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         object.put("cas_account", operId);
         object.put("cas_pwd", mPasswordEt.getText());
 
-        sz_param = HttpRequest.generate_request_parm(object,appSecret);
+        sz_param = HttpRequest.generate_request_parma(object,appSecret);
 
         url = base_url + "/api/cashier/login";
 
@@ -545,7 +545,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                             jsonLogin.put("cas_id", Utils.getNullStringAsEmpty(cashier_json,"cas_id"));
                             jsonLogin.put("soft_version", BuildConfig.VERSION_NAME);
 
-                            final String set_sz_param = HttpRequest.generate_request_parm(jsonLogin, appSecret);
+                            final String set_sz_param = HttpRequest.generate_request_parma(jsonLogin, appSecret);
 
                             mLoginCall.cancel();
                             mLoginCall = HttpUtils.sendAsyncPost(set_url,set_sz_param);

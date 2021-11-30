@@ -273,7 +273,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             HttpRequest httpRequest = new HttpRequest();
             try {
                 object.put("appid",mContext.getAppId());
-                sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+                sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
                 ret_json = httpRequest.sendPost(url,sz_param,true);
                 switch (ret_json.getIntValue("flag")){
                     case 0:
@@ -345,7 +345,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
                 final HttpRequest httpRequest = new HttpRequest();
                 try {
                     object.put("appid",mContext.getAppId());
-                    sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+                    sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
 
                     Logger.d(sz_param);
 

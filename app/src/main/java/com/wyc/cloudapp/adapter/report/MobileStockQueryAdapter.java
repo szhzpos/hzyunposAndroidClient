@@ -108,7 +108,7 @@ public class MobileStockQueryAdapter extends AbstractDataAdapterForJson<MobileSt
                 object.put("limit",mLimit);
                 object.put("appid",mContext.getAppId());
 
-                final JSONObject retJson = HttpUtils.sendPost(mContext.getUrl() + "/api/goods_set/stock_query", HttpRequest.generate_request_parm(object, mContext.getAppSecret()),true);
+                final JSONObject retJson = HttpUtils.sendPost(mContext.getUrl() + "/api/goods_set/stock_query", HttpRequest.generate_request_parma(object, mContext.getAppSecret()),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

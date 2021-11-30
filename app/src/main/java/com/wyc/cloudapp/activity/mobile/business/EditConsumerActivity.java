@@ -182,7 +182,7 @@ public class EditConsumerActivity extends AbstractEditArchiveActivity {
             param.put("mobile",mContactsMobile.getText());
             param.put("roles",mContactsJob.getText());
 
-            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/supplier_search/customer_set", HttpRequest.generate_request_parm(param,getAppSecret()),true);
+            JSONObject ret_obj = HttpUtils.sendPost(getUrl() + "/api/supplier_search/customer_set", HttpRequest.generate_request_parma(param,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {
                     ret_obj = JSONObject.parseObject(ret_obj.getString("info"));

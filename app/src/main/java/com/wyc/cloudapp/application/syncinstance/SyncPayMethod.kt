@@ -41,7 +41,7 @@ class SyncPayMethod:AbstractSyncBase("pay_method", arrayOf("pay_method_id", "nam
                 if (!file.exists()) {
                     val load_img = httpRequest.getFile(file, img_url_info)
                     if (load_img.getIntValue("flag") == 0) {
-                        Logger.e("下载支付方式图片错误：" + load_img.getString("info"))
+                        Logger.e("下载支付方式图片错误：%s,url:%s",load_img.getString("info"),img_file_name)
                     }
                 }
             }

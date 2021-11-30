@@ -97,7 +97,7 @@ final class SyncHandler1 extends Handler {
             mHeartbeat = data;
         }
         mHeartbeat.put("randstr", Utils.getNonce_str(8));
-        final JSONObject retJson = HttpUtils.sendPost(test_url,HttpRequest.generate_request_parm(mHeartbeat,CustomApplication.self().getAppSecret()),true);
+        final JSONObject retJson = HttpUtils.sendPost(test_url,HttpRequest.generate_request_parma(mHeartbeat,CustomApplication.self().getAppSecret()),true);
         err_code = retJson.getIntValue("rsCode");
         switch (retJson.getIntValue("flag")) {
             case 0:
@@ -206,7 +206,7 @@ final class SyncHandler1 extends Handler {
 
                                     Logger.d_json(data.toJSONString());
 
-                                    retJson = HttpUtils.sendPost(CustomApplication.self().getUrl() + "/api/retail_upload/order_upload",HttpRequest.generate_request_parm(send_data,CustomApplication.self().getAppSecret()),true);
+                                    retJson = HttpUtils.sendPost(CustomApplication.self().getUrl() + "/api/retail_upload/order_upload",HttpRequest.generate_request_parma(send_data,CustomApplication.self().getAppSecret()),true);
                                     switch (retJson.getIntValue("flag")){
                                         case 0:
                                             code = false;
@@ -311,7 +311,7 @@ final class SyncHandler1 extends Handler {
                     send_data.put("appid",CustomApplication.self().getAppId());
                     send_data.put("data",data);
 
-                    JSONObject retJson = HttpUtils.sendPost(CustomApplication.self().getUrl() + "/api/transfer/transfer_upload",HttpRequest.generate_request_parm(send_data,CustomApplication.self().getAppSecret()),true);
+                    JSONObject retJson = HttpUtils.sendPost(CustomApplication.self().getUrl() + "/api/transfer/transfer_upload",HttpRequest.generate_request_parma(send_data,CustomApplication.self().getAppSecret()),true);
                     switch (retJson.getIntValue("flag")){
                         case 0:
                             err.append(retJson.getString("info")).append(" sz_ti_code:").append(sz_ti_code);
@@ -370,7 +370,7 @@ final class SyncHandler1 extends Handler {
         object.put("pos_num",CustomApplication.self().getPosNum());
         object.put("stores_id",CustomApplication.self().getStoreId());
 
-        object = HttpUtils.sendPost(url,HttpRequest.generate_request_parm(object,CustomApplication.self().getAppSecret()),true);
+        object = HttpUtils.sendPost(url,HttpRequest.generate_request_parma(object,CustomApplication.self().getAppSecret()),true);
         boolean success;
         if (success = (object.getIntValue("flag") == 1)){
             object = JSON.parseObject(object.getString("info"));

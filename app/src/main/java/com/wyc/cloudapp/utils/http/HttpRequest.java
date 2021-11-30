@@ -357,7 +357,7 @@ public final class HttpRequest {
         return this;
     }
 
-    public  static String generate_request_parm(JSONObject json ,String apiKey) throws JSONException {
+    public  static String generate_request_parma(JSONObject json , String apiKey){
         final Map<String,String> map = new HashMap<>(),sortMap;
         final StringBuilder builder = new StringBuilder();
         String signStr = null,k,v;

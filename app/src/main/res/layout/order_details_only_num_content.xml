@@ -13,7 +13,7 @@
     <TextView
         android:id="@+id/barcode_tv"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/_size_25"
+        android:layout_height="@dimen/size_25"
         android:gravity="center"
         android:minWidth="@dimen/width_118"
         android:text="6954767433073"
@@ -25,7 +25,7 @@
     <TextView
         android:id="@+id/name_tv"
         android:layout_width="0dp"
-        android:layout_height="@dimen/_size_25"
+        android:layout_height="@dimen/size_25"
         android:layout_marginStart="@dimen/margin_8"
         android:gravity="center_vertical"
         android:textColor="@color/text_color"
@@ -47,7 +47,7 @@
     <TextView
         android:id="@+id/num_tv"
         android:layout_width="@dimen/width_68"
-        android:layout_height="@dimen/_size_25"
+        android:layout_height="@dimen/size_25"
         android:gravity="center"
         android:text="8888.00"
         android:textColor="@color/text_color"

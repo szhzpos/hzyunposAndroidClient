@@ -93,7 +93,7 @@ public abstract class AbstractChargeOrderDetailsDialog extends AbstractOrderDeta
 
         Logger.d(data_);
 
-        final String sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+        final String sz_param = HttpRequest.generate_request_parma(data_,appSecret);
         final JSONObject retJson = httpRequest.sendPost(url + "/api/member/cl_money_order",sz_param,true);
 
         switch (retJson.getIntValue("flag")) {

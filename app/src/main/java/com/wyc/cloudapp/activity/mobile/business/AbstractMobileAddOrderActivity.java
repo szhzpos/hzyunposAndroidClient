@@ -425,7 +425,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + api,sz_param,true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
@@ -484,7 +484,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()),api = condition.getString("api"),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + api,sz_param,true);
             Logger.d_json(retJson.toString());
             if (HttpUtils.checkRequestSuccess(retJson)){
@@ -657,7 +657,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
 
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz)).setCancel(true);
             final MutableLiveData<JSONObject> liveData = new ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()))
-                    .get(OrderViewModel.class).getCurrentModel(getUrl() + condition.getString("api"),HttpRequest.generate_request_parm(parameterObj,getAppSecret()));
+                    .get(OrderViewModel.class).getCurrentModel(getUrl() + condition.getString("api"),HttpRequest.generate_request_parma(parameterObj,getAppSecret()));
             if (!liveData.hasActiveObservers())
                 liveData.observe(this, jsonObject -> {
                             mOrderInfo = jsonObject;

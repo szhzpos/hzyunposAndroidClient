@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.data.SQLiteHelper
+import com.wyc.cloudapp.data.room.entity.PracticeAssociated
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
@@ -82,7 +83,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
         }
         data["status"] = 1
 
-        data = HttpUtils.sendPost(CustomApplication.self().url + "/api/heartbeat/set_down_status", HttpRequest.generate_request_parm(data, CustomApplication.self().appSecret), true)
+        data = HttpUtils.sendPost(CustomApplication.self().url + "/api/heartbeat/set_down_status", HttpRequest.generate_request_parma(data, CustomApplication.self().appSecret), true)
         var success: Boolean
         if ((data.getIntValue("flag") == 1).also { success = it }) {
             data = JSON.parseObject(data.getString("info"))
@@ -147,6 +148,12 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                         SyncPromotion.HEART_BEAT_KEY -> {
                             ISync.sync(SyncPromotion())
                         }
+                        SyncGoodsPractice.HEART_BEAT_KEY -> {
+                            ISync.sync(SyncGoodsPractice())
+                        }
+                        SyncPracticeAssociated.HEART_BEAT_KEY -> {
+                            ISync.sync(SyncPracticeAssociated())
+                        }
                     }
                 }
             }
@@ -155,6 +162,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
         fun syncAllBasics(){
             CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler { _, exception ->
                 CustomApplication.showSyncErrorMsg(exception.message)
+                exception.printStackTrace()
             }).launch{
                  val job = launch {
                      syncing.set(true)
@@ -173,6 +181,8 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                      ISync.sync(SyncStepPromotion(),this,true)
                      ISync.sync(SyncSaleOperator(),this,true)
                      ISync.sync(SyncAuxiliaryBarcode(),this,true)
+                     ISync.sync(SyncGoodsPractice(),this,true)
+                     ISync.sync(SyncPracticeAssociated(),this,true)
                      ISync.sync(SyncGoods(),this,true)
                 }
                 job.join()
@@ -191,7 +201,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
 
         if(show)showInfo()
 
-        val retJson = HttpUtils.sendPost(CustomApplication.self().url + path, HttpRequest.generate_request_parm(mParamObj, CustomApplication.self().appSecret), true)
+        val retJson = HttpUtils.sendPost(CustomApplication.self().url + path, HttpRequest.generate_request_parma(mParamObj, CustomApplication.self().appSecret), true)
         when (retJson.getIntValue("flag")) {
             0 -> {
                 mError.append(sys_name).append("错误:").append(retJson.getString("info"))
@@ -270,6 +280,7 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
             CoroutineScope(Dispatchers.IO + CoroutineExceptionHandler{_,exception->
                 CustomApplication.transFailure()
                 Logger.e("%s",exception.localizedMessage)
+                exception.printStackTrace()
             }).launch{
                 asyncRequest(this,show)
             }
@@ -280,8 +291,8 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
     private fun sign(@NonNull data: JSONArray) {
         var obj = getMarkParam(data)
         if (!obj.isEmpty()){
-            val url = CustomApplication.self().url + obj.getString(mMarkPathKey)
-            obj = HttpUtils.sendPost(url, HttpRequest.generate_request_parm(obj, CustomApplication.self().appSecret), true)
+            val url = CustomApplication.self().url + obj.remove(mMarkPathKey)
+            obj = HttpUtils.sendPost(url, HttpRequest.generate_request_parma(obj, CustomApplication.self().appSecret), true)
             var success: Boolean
             if ((obj.getIntValue("flag") == 1).also { success = it }) {
                 obj = JSON.parseObject(obj.getString("info"))

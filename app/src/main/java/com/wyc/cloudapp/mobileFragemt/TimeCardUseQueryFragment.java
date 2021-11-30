@@ -63,7 +63,7 @@ public class TimeCardUseQueryFragment extends AbstractTimeCardQueryFragment {
         param.put("end_time",condition.getEnd());
 
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,getString(R.string.hints_query_data_sz));
-        HttpUtils.sendAsyncPost(mContext.getUrl() + "/api/once_cards/uses", HttpRequest.generate_request_parm(param,mContext.getAppSecret())).
+        HttpUtils.sendAsyncPost(mContext.getUrl() + "/api/once_cards/uses", HttpRequest.generate_request_parma(param,mContext.getAppSecret())).
                 enqueue(new ArrayCallback<VipTimeCardUseOrder>(VipTimeCardUseOrder.class) {
                     @Override
                     protected void onError(String msg) {

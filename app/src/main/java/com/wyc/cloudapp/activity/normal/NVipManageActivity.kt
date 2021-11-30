@@ -6,12 +6,14 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -127,7 +129,7 @@ class NVipManageActivity : MainActivity(){
         val text = remember {mutableStateOf(TextFieldValue(""))}
         SearchTextField(text,{
             Icon(painter = painterResource(R.drawable.r_card), contentDescription = "",
-                Modifier.clickable {
+                Modifier.focusable().clickable {
                     ViewModelProvider(this).get(VipInfoViewModel::class.java).refresh(this,text.value.text)
                 },tint = colorResource(R.color.lightBlue))
         })
@@ -148,18 +150,28 @@ class NVipManageActivity : MainActivity(){
     companion object{
         @JvmStatic
         @Composable
-        fun SearchTextField(textFieldValue:MutableState<TextFieldValue>,trailingIcon: @Composable (() -> Unit)? = null,
-                            placeholder: @Composable (() -> Unit)? = {Text(stringResource(R.string.vip_search_hint_sz))},keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number )){
+        fun ListContent(content:String?,modifier: Modifier){
+            Text(content?:"",modifier.padding(start = 5.dp,top = 2.dp,bottom = 2.dp,end = 5.dp),color = colorResource(R.color.text_color),fontSize = 14.sp,textAlign = TextAlign.Center)
+        }
+        @JvmStatic
+        @Composable
+        fun ListTitle(title:String?,modifier: Modifier,c: Color = colorResource(R.color.white)){
+            Text(title?:"",modifier.padding(5.dp),color = c,fontSize = 16.sp,textAlign = TextAlign.Center)
+        }
 
-            OutlinedTextField(value = textFieldValue.value, onValueChange = {textFieldValue.value = it},modifier = Modifier
+        @JvmStatic
+        @Composable
+        fun SearchTextField(textFieldValue:MutableState<TextFieldValue>,trailingIcon: @Composable (() -> Unit)? = null,modifier: Modifier = Modifier
                 .onFocusChanged { focusState ->
                     if (focusState.isFocused) {
                         val text = textFieldValue.value
                         textFieldValue.value =
                             textFieldValue.value.copy(selection = TextRange(0, text.text.length))
                     }
-                }
-                .padding(top = 5.dp, bottom = 5.dp),placeholder = placeholder,
+                }.padding(top = 5.dp, bottom = 5.dp),
+                            placeholder: @Composable (() -> Unit)? = {Text(stringResource(R.string.vip_search_hint_sz))},keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number )){
+
+            OutlinedTextField(value = textFieldValue.value, onValueChange = {textFieldValue.value = it},modifier = modifier,placeholder = placeholder,
                 trailingIcon = trailingIcon,textStyle = TextStyle(fontSize = 16.sp),singleLine = true,colors = textFieldColors(),keyboardOptions = keyboardOptions
             )
         }

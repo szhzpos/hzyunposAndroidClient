@@ -38,7 +38,7 @@ class SelectGiftCardActivity : AbstractSelectActivity<GiftCardInfo, SelectGiftCa
             obj["card_no"] = c;
         }
         val progressDialog : CustomProgressDialog = CustomProgressDialog.showProgress(this, getString(R.string.hints_query_data_sz));
-        HttpUtils.sendAsyncPost(url + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parm(obj, appSecret))
+        HttpUtils.sendAsyncPost(url + InterfaceURL.GIFT_CARD_INFO, HttpRequest.generate_request_parma(obj, appSecret))
                 .enqueue(object : ArrayCallback<GiftCardInfo>(GiftCardInfo::class.java){
                     override fun onError(msg: String?) {
                         progressDialog.dismiss()

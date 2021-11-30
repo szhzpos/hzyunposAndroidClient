@@ -295,7 +295,7 @@ public final class PayMethod implements Serializable,Cloneable {
         param.put("pay_method",pay_method_id);
         param.put("pay_code_str",pay_code);
 
-        final String sz_param = HttpRequest.generate_request_parm(param,activity.getAppSecret());
+        final String sz_param = HttpRequest.generate_request_parma(param,activity.getAppSecret());
         String url = activity.getUrl() + unified_pay_order;
 
         Logger.i("%s:url:%s%s,param:%s",tag,url ,unified_pay_order,sz_param);
@@ -357,7 +357,7 @@ public final class PayMethod implements Serializable,Cloneable {
             unified_pay_query = InterfaceURL.UNIFIED_PAY_QUERY;
         }
 
-        final String sz_param = HttpRequest.generate_request_parm(param,activity.getAppSecret());
+        final String sz_param = HttpRequest.generate_request_parma(param,activity.getAppSecret());
         String url = activity.getUrl() + unified_pay_query;
 
         Logger.i("%s查询请求:url:%s,param:%s",tag,url ,sz_param);

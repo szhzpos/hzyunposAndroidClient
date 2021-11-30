@@ -143,7 +143,7 @@ public class MobileWholesaleSellOrderActivity extends AbstractMobileBusinessOrde
 
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
             CustomApplication.execute(()->{
-                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/pfdhd/xinfo", HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+                final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/pfdhd/xinfo", HttpRequest.generate_request_parma(parameterObj,getAppSecret()),true);
                 if (HttpUtils.checkRequestSuccess(retJson)){
                     try {
                         final JSONObject info = JSONObject.parseObject(retJson.getString("info"));

@@ -208,7 +208,7 @@ public final class MobileCategoryStatisticsActivity extends AbstractReportActivi
             try {
                 object.put("appid",mAppId);
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/goods_sales_category", HttpRequest.generate_request_parm(object, mAppSecret),true);
+                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/goods_sales_category", HttpRequest.generate_request_parma(object, mAppSecret),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

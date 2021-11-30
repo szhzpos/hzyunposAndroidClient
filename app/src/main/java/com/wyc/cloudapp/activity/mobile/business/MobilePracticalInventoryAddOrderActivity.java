@@ -317,7 +317,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
             final JSONObject parameterObj = new JSONObject();
             parameterObj.put("appid",getAppId());
             parameterObj.put("prefix","PCT");
-            final String sz_param = HttpRequest.generate_request_parm(parameterObj,getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(parameterObj,getAppSecret());
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/codes/mk_code",sz_param,true);
 
             if (HttpUtils.checkRequestSuccess(retJson)){
@@ -357,7 +357,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/create_task_spd",sz_param,true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 final JSONObject info = JSON.parseObject(retJson.getString("info"));
@@ -430,7 +430,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
 
         showProgress(getString(R.string.hints_query_data_sz));
         CustomApplication.execute(()->{
-            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/task_order_list", HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/task_order_list", HttpRequest.generate_request_parma(parameterObj,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
@@ -494,7 +494,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
 
         showProgress(getString(R.string.hints_query_data_sz));
         CustomApplication.execute(()->{
-            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/spd_detail", HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/inventory/spd_detail", HttpRequest.generate_request_parma(parameterObj,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));

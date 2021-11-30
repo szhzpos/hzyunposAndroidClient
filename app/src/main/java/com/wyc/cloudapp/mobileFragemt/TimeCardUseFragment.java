@@ -141,7 +141,7 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
         param.put("appid",mContext.getAppId());
         param.put("members",c);
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,getString(R.string.hints_query_data_sz));
-        HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD, HttpRequest.generate_request_parm(param,mContext.getAppSecret()))
+        HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD, HttpRequest.generate_request_parma(param,mContext.getAppSecret()))
                 .enqueue(new ObjectCallback<VipTimeCardData>(VipTimeCardData.class) {
                     @Override
                     protected void onError(String msg) {
@@ -257,7 +257,7 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
                 param.put("use_num",cardInfo.getSale_num());
 
                 final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,mContext.getString(R.string.dispose_hints));
-                HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD_USE,HttpRequest.generate_request_parm(param,mContext.getAppSecret()))
+                HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD_USE,HttpRequest.generate_request_parma(param,mContext.getAppSecret()))
                         .enqueue(new ArrayCallback<VipTimeCardUseOrder>(VipTimeCardUseOrder.class) {
 
                             @Override

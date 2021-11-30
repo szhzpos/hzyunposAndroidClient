@@ -127,7 +127,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject();
             object.put("appid",getAppId());
-            object = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parm(object,getAppSecret()),true);
+            object = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parma(object,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(object)){
                 object = JSONObject.parseObject(object.getString("info"));
                 if (HttpUtils.checkBusinessSuccess(object)){
@@ -254,7 +254,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
                 object.put("limit",50);
                 object.put("offset",mCurrentRow);
 
-                object = HttpUtils.sendPost(mContext.getUrl() + "/api/member/get_member_list",HttpRequest.generate_request_parm(object,mContext.getAppSecret()),true);
+                object = HttpUtils.sendPost(mContext.getUrl() + "/api/member/get_member_list",HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
                 if (HttpUtils.checkRequestSuccess(object)){
                     object = JSONObject.parseObject(object.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(object)){

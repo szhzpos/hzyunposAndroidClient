@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -51,6 +52,9 @@ public final class HttpUtils {
     //connectTime 单位秒
     public static JSONObject sendPost(final String url, @NonNull final String param,int connectTime,boolean json) {
         return sendPost(createClient(connectTime * 1000L,0,0,false),url,param,json);
+    }
+    public  static String generate_request_param(JSONObject json){
+        return HttpRequest.generate_request_parma(json, CustomApplication.self().getAppSecret());
     }
 
     private static JSONObject sendPost(final OkHttpClient okHttpClient,final String url, @NonNull final String param, boolean json) {//json 请求返回数据类型 true 为json格式 否则为XML

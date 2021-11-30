@@ -114,7 +114,7 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
 
         showProgress();
         CustomApplication.execute(()->{
-            final String param_sz = HttpRequest.generate_request_parm(param_obj,mContext.getAppSecret());
+            final String param_sz = HttpRequest.generate_request_parma(param_obj,mContext.getAppSecret());
             JSONObject ret_obj = HttpUtils.sendPost(mContext.getUrl() + "/api/member/grade_set",param_sz,true);
             if (HttpUtils.checkRequestSuccess(ret_obj)){
                 try {

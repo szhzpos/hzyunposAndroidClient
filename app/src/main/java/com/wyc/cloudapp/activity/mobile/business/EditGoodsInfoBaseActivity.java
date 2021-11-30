@@ -549,7 +549,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
             final JSONObject object = new JSONObject();
             object.put("appid",getAppId());
             object.put("itemcode",mBarcode);
-            final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(object,getAppSecret());
             final JSONObject retJson = httpRequest.sendPost("http://adm.hzyunpos.com/api/getgoods/get_goods",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
@@ -716,7 +716,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
             final HttpRequest httpRequest = new HttpRequest();
             final JSONObject object = new JSONObject();
             object.put("appid",getAppId());
-            final String sz_param = HttpRequest.generate_request_parm(object,getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(object,getAppSecret());
             final JSONObject retJson = httpRequest.sendPost(getUrl() + "/api/goods_set/get_bases",sz_param,true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
@@ -1102,7 +1102,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
 
             Logger.d_json(data);
 
-            final String param = HttpRequest.generate_request_parm(data,getAppSecret());
+            final String param = HttpRequest.generate_request_parma(data,getAppSecret());
 
             final JSONObject retJson = httpRequest.sendPost(getUrl() +"/api/goods_set/goods_sets",param,true);
             switch (retJson.getIntValue("flag")){
@@ -1152,7 +1152,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         data.put("appid",getAppId());
         data.put("pos_num",getPosNum());
         data.put("stores_id",getStoreId());
-        final String param = HttpRequest.generate_request_parm(data,getAppSecret());
+        final String param = HttpRequest.generate_request_parma(data,getAppSecret());
         final JSONObject retJson = httpRequest.sendPost(getUrl() +"/api/goods/get_goods_all",param,true);
         switch (retJson.getIntValue("flag")){
             case 0:

@@ -57,7 +57,6 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         ButterKnife.bind(this);
 
         mNameEt = findViewById(R.id.a_name_et);
-        mRetailPriceEt = findViewById(R.id.a_retail_price_et);
         mItemIdEt = findViewById(R.id.a_item_no_et);
         mVipPriceEt = findViewById(R.id.a_vip_price_et);
 
@@ -331,7 +330,8 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         }
     }
     private void initCkml(){
-        final EditText et = findViewById(R.id.a_ckml_et),pur_price_et = findViewById(R.id.a_pur_price_et);;
+        final EditText et = findViewById(R.id.a_ckml_et),pur_price_et = findViewById(R.id.a_pur_price_et);
+        mRetailPriceEt = findViewById(R.id.a_retail_price_et);
         pur_price_et.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -356,7 +356,32 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             }
         });
         mPurPriceEt = pur_price_et;
+
+        mRetailPriceEt.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                double pur_price = 0.0,retail_pirce = 0.0;
+                try {
+                    pur_price = Double.parseDouble(mPurPriceEt.getText().toString());
+                    retail_pirce = Double.parseDouble(s.toString());
+                }catch (NumberFormatException e){
+                    e.printStackTrace();
+                }
+                et.setText(String.format(Locale.CHINA,"%.2f",retail_pirce - pur_price));
+            }
+        });
     }
+
     public static boolean verifyGoodsAddPermissions(MainActivity context){
         return context.verifyPermissions("31",null,false);
     }
@@ -368,7 +393,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final HttpRequest httpRequest = new HttpRequest();
             final JSONObject object = new JSONObject();
             object.put("appid",mContext.getAppId());
-            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/goods_set/get_bases",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
@@ -444,7 +469,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final JSONObject object = new JSONObject();
             object.put("appid",mContext.getAppId());
             object.put("stores_id",mContext.getStoreId());
-            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/supplier_search/xlist",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
@@ -524,7 +549,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
             final JSONObject object = new JSONObject();
             object.put("appid",mContext.getAppId());
             object.put("itemcode",mBarcode);
-            final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+            final String sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
             final JSONObject retJson = httpRequest.sendPost("http://adm.hzyunpos.com/api/getgoods/get_goods",sz_param,true);
             switch (retJson.getIntValue("flag")){
                 case 0:
@@ -578,7 +603,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
 
             final HttpRequest httpRequest = new HttpRequest();
 
-            final String param = HttpRequest.generate_request_parm(data,mContext.getAppSecret());
+            final String param = HttpRequest.generate_request_parma(data,mContext.getAppSecret());
 
             final JSONObject retJson = httpRequest.sendPost(mContext.getUrl() +"/api/goods_set/goods_sets",param,true);
 
@@ -618,7 +643,7 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
         data.put("appid",activity.getAppId());
         data.put("pos_num",activity.getPosNum());
         data.put("stores_id",activity.getStoreId());
-        final String param = HttpRequest.generate_request_parm(data,activity.getAppSecret());
+        final String param = HttpRequest.generate_request_parma(data,activity.getAppSecret());
         final JSONObject retJson = httpRequest.sendPost(activity.getUrl() +"/api/goods/get_goods_all",param,true);
         switch (retJson.getIntValue("flag")){
             case 0:

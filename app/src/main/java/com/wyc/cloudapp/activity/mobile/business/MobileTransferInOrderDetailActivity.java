@@ -213,7 +213,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractDefinedTitleAct
 
             Logger.d_json(param_obj.toString());
 
-            String sz_param = HttpRequest.generate_request_parm(param_obj,getAppSecret()),err = "";
+            String sz_param = HttpRequest.generate_request_parma(param_obj,getAppSecret()),err = "";
             final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/api_move_in/qr_examine",sz_param,true);
             Logger.d_json(retJson.toString());
             if (HttpUtils.checkRequestSuccess(retJson)){
@@ -314,7 +314,7 @@ public class MobileTransferInOrderDetailActivity extends AbstractDefinedTitleAct
 
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_query_data_sz));
         CustomApplication.execute(()->{
-            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/api_move_in/xinfo", HttpRequest.generate_request_parm(parameterObj,getAppSecret()),true);
+            final JSONObject retJson = HttpUtils.sendPost(getUrl() + "/api/api_move_in/xinfo", HttpRequest.generate_request_parma(parameterObj,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(retJson)){
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));

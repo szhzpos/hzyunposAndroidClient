@@ -87,7 +87,7 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
     private void queryVipLevel(){
         final JSONObject param = new JSONObject();
         param.put("appid",getAppId());
-        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.VIP_GRADE,HttpRequest.generate_request_parm(param,getAppSecret()))
+        HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.VIP_GRADE,HttpRequest.generate_request_parma(param,getAppSecret()))
                 .enqueue(new ArrayCallback<VipGrade>(VipGrade.class,true) {
                     @Override
                     protected void onError(String msg) {
@@ -198,7 +198,7 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
         if (!param.isEmpty()){
             param.put("appid",getAppId());
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_save_data_sz));
-            HttpUtils.sendAsyncPost(getUrl() + "/api/member/mk",HttpRequest.generate_request_parm(param,getAppSecret())).enqueue(new ObjectCallback<String>(String.class,true) {
+            HttpUtils.sendAsyncPost(getUrl() + "/api/member/mk",HttpRequest.generate_request_parma(param,getAppSecret())).enqueue(new ObjectCallback<String>(String.class,true) {
                 @Override
                 protected void onError(String msg) {
                     progressDialog.dismiss();

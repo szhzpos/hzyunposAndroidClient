@@ -40,7 +40,7 @@ class TimeCardViewModel: ViewModelBase() {
             if (Utils.isNotEmpty(c)) {
                 obj["title"] = c
             }
-            netRequest(app.url + InterfaceURL.ONCE_CARD, HttpRequest.generate_request_parm(obj, app.appSecret)).execute().use {
+            netRequest(app.url + InterfaceURL.ONCE_CARD, HttpRequest.generate_request_parma(obj, app.appSecret)).execute().use {
                 val code: Int = it.code()
                 if (code == HttpURLConnection.HTTP_OK){
                     val data: ObjectResult<TimeCardData>? = parseObject(TimeCardData::class.java, it.body()?.string())

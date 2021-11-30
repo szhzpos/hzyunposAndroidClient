@@ -9,7 +9,6 @@ import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
-import java.lang.StringBuilder
 import java.util.*
 
 /*
@@ -58,7 +57,7 @@ class SyncGP:AbstractSyncBase("", arrayOf(), "正在同步组合商品", "/api/p
         `object`["appid"] = CustomApplication.self().appId
         `object`["gp_ids"] = datas
         `object`["pos_num"] = CustomApplication.self().posNum
-        `object` = HttpUtils.sendPost(url, HttpRequest.generate_request_parm(`object`, CustomApplication.self().appSecret), true)
+        `object` = HttpUtils.sendPost(url, HttpRequest.generate_request_parma(`object`, CustomApplication.self().appSecret), true)
         var success: Boolean
         if ((`object`.getIntValue("flag") == 1).also { success = it }) {
             `object` = JSON.parseObject(`object`.getString("info"))

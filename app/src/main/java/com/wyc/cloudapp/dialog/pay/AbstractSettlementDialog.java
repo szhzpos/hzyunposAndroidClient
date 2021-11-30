@@ -865,7 +865,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 object.put("appid",mContext.getAppId());
                 object.put("member_id",mVip.getString("member_id"));
                 object.put("goods_list_json",goods_list_json);
-                final String sz_param = HttpRequest.generate_request_parm(object,mContext.getAppSecret());
+                final String sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
                 final JSONObject retJson = HttpUtils.sendPost(mContext.getUrl() + "/api/point/get_point",sz_param,true);
                 if (HttpUtils.checkRequestSuccess(retJson)){
                     final JSONObject info_obj = JSONObject.parseObject(retJson.getString("info"));
@@ -1094,7 +1094,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             data_.put("pay_method",pay_method_id);
                             data_.put("pay_code_str",v_num);
 
-                            sz_param = HttpRequest.generate_request_parm(data_,appSecret);
+                            sz_param = HttpRequest.generate_request_parma(data_,appSecret);
 
                             Logger.i("结账支付参数:url:%s%s,param:%s",url ,unified_pay_order,sz_param);
                             retJson = httpRequest.sendPost(url + unified_pay_order,sz_param,true);
@@ -1161,7 +1161,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                                             LockSupport.park();
                                                         }
                                                         if (mPayStatus){
-                                                            sz_param = HttpRequest.generate_request_parm(object,appSecret);
+                                                            sz_param = HttpRequest.generate_request_parma(object,appSecret);
 
                                                             Logger.i("结账支付查询参数:url:%s%s,param:%s",url,unified_pay_order,sz_param);
                                                             retJson = httpRequest.sendPost(url + unified_pay_query,sz_param,true);
