@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 
 import java.util.Objects;
 
@@ -37,6 +38,11 @@ public class PracticeAssociated implements Parcelable {
     private String kw_name;
     @ColumnInfo(defaultValue = "0.0")
     private Double kw_price;
+    @Ignore
+    private boolean sel;
+    /**
+     * 1为正常 2为删除
+     * */
     private Integer status;
 
     public PracticeAssociated(){
@@ -139,6 +145,14 @@ public class PracticeAssociated implements Parcelable {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public boolean getSel() {
+        return sel;
+    }
+
+    public void setSel(boolean sel) {
+        this.sel = sel;
     }
 
     @Override

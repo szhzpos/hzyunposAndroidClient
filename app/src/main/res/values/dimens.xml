@@ -196,5 +196,6 @@
     <dimen name="once_card_item_height">@dimen/height_68</dimen>
     <dimen name="gift_card_info_top_margin">@dimen/margin_18</dimen>
     <dimen name="business_print_item_height">45dp</dimen>
+    <dimen name="goods_practice_item_height">65dp</dimen>
     <string name="selected">确认选择</string>
 </resources>

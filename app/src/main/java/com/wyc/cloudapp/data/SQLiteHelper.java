@@ -1,5 +1,10 @@
 package com.wyc.cloudapp.data;
 
+import static android.database.Cursor.FIELD_TYPE_FLOAT;
+import static android.database.Cursor.FIELD_TYPE_INTEGER;
+import static android.database.Cursor.FIELD_TYPE_NULL;
+import static android.database.Cursor.FIELD_TYPE_STRING;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -24,7 +29,6 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
@@ -50,11 +54,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
-
-import static android.database.Cursor.FIELD_TYPE_FLOAT;
-import static android.database.Cursor.FIELD_TYPE_INTEGER;
-import static android.database.Cursor.FIELD_TYPE_NULL;
-import static android.database.Cursor.FIELD_TYPE_STRING;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
     public static final int DATABASE_VERSION = 14;
@@ -187,7 +186,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleDetail` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `face_value` REAL NOT NULL, `gift_card_code` TEXT NOT NULL, `card_chip_no` TEXT NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `goodsPractice` (`kw_id` INTEGER NOT NULL, `kw_code` TEXT NOT NULL, `kw_name` TEXT, `kw_price` REAL, `status` INTEGER, PRIMARY KEY(`kw_id`, `kw_code`))");
-        update_list.add("CREATE TABLE IF NOT EXISTS `practiceAssociated` (`id` INTEGER NOT NULL, `barcode_id` TEXT NOT NULL, `kw_id` INTEGER NOT NULL, `kw_code` TEXT NOT NULL, `kw_name` TEXT NOT NULL, `kw_price` REAL NOT NULL, `status` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        update_list.add("CREATE TABLE IF NOT EXISTS `practiceAssociated` (`id` INTEGER, `barcode_id` TEXT, `kw_id` INTEGER, `kw_code` TEXT DEFAULT '', `kw_name` TEXT DEFAULT '', `kw_price` REAL DEFAULT 0.0, `status` INTEGER, PRIMARY KEY(`id`))");
 
         if (oldVersion <= 10){
             update_list.add("delete from barcode_info;");
@@ -236,6 +235,20 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if(checkColumnNotExists(db, "barcode_info", "updtime")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN updtime INTEGER DEFAULT (0)");
         }
+
+        /*
+         * 20211201 增加做法支持
+         * */
+        if(checkColumnNotExists(db, "retail_order_goods", "goodsPractice")){
+            modify_list.add("ALTER TABLE retail_order_goods ADD COLUMN goodsPractice TEXT DEFAULT '[]'");
+        }
+        if(checkColumnNotExists(db, "refund_order_goods", "goodsPractice")){
+            modify_list.add("ALTER TABLE refund_order_goods ADD COLUMN goodsPractice TEXT DEFAULT '[]'");
+        }
+        if(checkColumnNotExists(db, "hangbill_detail", "goodsPractice")){
+            modify_list.add("ALTER TABLE hangbill_detail ADD COLUMN goodsPractice TEXT DEFAULT '[]'");
+        }
+        /* 20211201 end */
 
         try {
             db.beginTransaction();
@@ -334,7 +347,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean isTrue = true;
         JSONObject jsonObject;
         SQLiteStatement statement = null;
-        int columnN0 = 0;
+        int columnN0;
         if (jsonArray.isEmpty()) {
             return false;
         }
@@ -416,9 +429,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         //type 0 insert 1 replace
 
         boolean isTrue = true;
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
         SQLiteStatement statement = null;
-        int columnN0 = 0;
+        int columnN0;
         if (jsonArray.isEmpty()) {
             return false;
         }
@@ -618,8 +631,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         boolean isTrue = true;
         //执行select语句 json只返回一条记录，如果出错json包含错误信息 sql要执行的数据库查询语句
 
-        ArrayList<String> colNames=new ArrayList<String>();
-        ArrayList<Integer> coltypes=new ArrayList<Integer>();
+        ArrayList<String> colNames= new ArrayList<>();
+        ArrayList<Integer> coltypes= new ArrayList<>();
 
         synchronized (SQLiteHelper.class){
             try(Cursor cursor = mDb.rawQuery(sql,null)){

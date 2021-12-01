@@ -58,12 +58,13 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
                 }else{
                     mWeighDialog.setBarcodeId(goods.getIntValue("barcode_id"));
                     mWeighDialog.read();
-                    mWeighDialog.show();
+                    mWeighDialog.exec();
                 }
             }else{
                 if (!isBarcodeWeighingGoods && isZero)xnum = 1.0;
                 addSaleGoodsPromotion(goods,xnum,isBarcodeWeighingGoods);
             }
+            showGoodsPractice(goods);
         }
     }
 

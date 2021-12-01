@@ -531,7 +531,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
         List<String> tables = Arrays.asList("refund_order","refund_order_goods","refund_order_pays"),
                 refund_order_cols = Arrays.asList("refund_total","ok_cashier_name","ok_cashier_id","cashier_name","member_id","transfer_time","transfer_status","remark","card_code","name",
                         "mobile","refund_ment","is_rk","upload_time","upload_status","order_status","pos_code","addtime","cashier_id","member_card","type","total","order_code","ro_code","stores_id"),
-                refund_order_goods_cols = Arrays.asList("produce_date","conversion", "is_rk","unit_name","barcode","goods_title","rog_id","refund_price","refund_num","price", "xnum","barcode_id","ro_code"),
+                refund_order_goods_cols = Arrays.asList("produce_date","conversion", "is_rk","unit_name","goodsPractice","barcode","goods_title","rog_id","refund_price","refund_num","price", "xnum","barcode_id","ro_code"),
                 refund_order_pays_cols = Arrays.asList("road_pay_status","pay_method_name","is_check","remark","pay_code","pay_serial_no","pay_status","pay_time","pay_money","pay_method","ro_code");
 
         return SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(refund_order_cols,refund_order_goods_cols,refund_order_pays_cols),err,0);
@@ -539,7 +539,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
     public static boolean uploadRefundOrder(final String appid,final String url,final String appSecret,final String order_code,final String ro_code,@NonNull final StringBuilder err){
         final String refund_order_sql = "SELECT refund_total total,member_id,remark,card_code,name,mobile,\n" +
                 "       pos_code,addtime,cashier_id,type,total order_money,order_code,ro_code,stores_id FROM refund_order where order_status = 2 and upload_status = 1 and ro_code = '" + ro_code +"' and (ifnull(order_code,'') = '" + order_code +"')",
-                refund_goods_sql = "SELECT produce_date,conversion,is_rk,rog_id,refund_price,refund_num xnum,price,barcode_id,ro_code FROM refund_order_goods where ro_code = '"+ ro_code +"';",
+                refund_goods_sql = "SELECT produce_date,conversion,is_rk,rog_id,refund_price,goodsPractice,refund_num xnum,price,barcode_id,ro_code FROM refund_order_goods where ro_code = '"+ ro_code +"';",
                 refund_pay_sql = "SELECT road_pay_status,remark,pay_code,pay_serial_no, pay_status,pay_time,pay_money,pay_method,ro_code FROM refund_order_pays where ro_code = '"+ ro_code +"';";
 
         boolean code;

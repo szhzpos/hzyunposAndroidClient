@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/sale_goods_height"
+    android:layout_height="wrap_content"
     android:layout_marginEnd="0dp"
     android:paddingStart="@dimen/margin_5"
     android:paddingEnd="0dp">
@@ -57,7 +57,8 @@
         android:id="@+id/discount_sign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_alignTop="@id/barcode"
+        android:layout_centerHorizontal="true"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/font_size_14" />
 
@@ -85,7 +86,7 @@
         android:id="@+id/symbol_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@id/sale_price"
         android:layout_centerHorizontal="false"
         android:layout_marginStart="@dimen/width_78"
         android:text="@string/currency_symbol_sz"
@@ -96,7 +97,7 @@
         android:id="@+id/sale_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/original_price"
         android:layout_toEndOf="@+id/symbol_text"
         android:text="1028"
         android:textAlignment="viewStart"
@@ -107,7 +108,7 @@
         android:id="@+id/sale_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignTop="@id/unit_name"
         android:layout_marginStart="@dimen/size_35"
         android:layout_toEndOf="@id/sale_price"
         android:textColor="@color/text_color"
@@ -118,7 +119,7 @@
         android:id="@+id/amt_symbol"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/original_price"
         android:layout_toStartOf="@id/sale_amt"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/orange_1"
@@ -128,8 +129,8 @@
         android:id="@+id/sale_amt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignTop="@id/amt_symbol"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
         android:layout_marginEnd="@dimen/margin_2"
         android:textColor="@color/orange_1"
         android:textSize="@dimen/font_size_18" />
@@ -138,10 +139,21 @@
         android:id="@+id/unit_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_below="@id/original_price"
         android:layout_marginStart="@dimen/margin_2"
         android:layout_toEndOf="@id/sale_num"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14" />
 
+    <TextView
+        android:id="@+id/practice_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/amt_symbol"
+        android:layout_alignParentBottom="false"
+        android:gravity="center_vertical"
+        android:padding="@dimen/margin_5"
+        android:text="@string/goods_practice"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14" />
 </RelativeLayout>

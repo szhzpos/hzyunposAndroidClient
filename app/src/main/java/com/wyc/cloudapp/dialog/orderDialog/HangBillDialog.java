@@ -34,6 +34,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -307,7 +308,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     private void loadHangBillDetail(final String hang_id){
         if (mHbDetailCursorAdapter != null){
             try {
-                Cursor cursor = SQLiteHelper.getCursor("SELECT _id,barcode,goods_title,xnum,sale_price,discount,sale_amt,barcode_id FROM hangbill_detail where cas_id = " + mContext.getCashierId() +" and hang_id = " + hang_id,null);
+                Cursor cursor = SQLiteHelper.getCursor("SELECT _id,barcode,goods_title,xnum,sale_price,goodsPractice,discount,sale_amt,barcode_id FROM hangbill_detail where cas_id = " + mContext.getCashierId() +" and hang_id = " + hang_id,null);
                 cursor.moveToFirst();
                 mHbDetailCursorAdapter.changeCursor(cursor);
                 if (cursor.getCount() != 0){
@@ -373,7 +374,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         if (mGetListener != null && mHbDetailCursorAdapter != null){
             if (mCurrentHangId != null){
                 final StringBuilder err = new StringBuilder();
-                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +","+ GoodsInfoViewAdapter.SALE_TYPE +",sale_price price,xnum,sale_amt FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
+                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +","+ GoodsInfoViewAdapter.SALE_TYPE +",sale_price price,xnum,sale_amt,goodsPractice FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
                 if (null != barcode_ids) {
                     final JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
@@ -448,6 +449,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                         tmp_obj.put("original_price",data.getDouble("original_price"));
                         tmp_obj.put("sale_price",data.getDouble("price"));
                         tmp_obj.put("xnum",data.getDouble("xnum"));
+                        tmp_obj.put("goodsPractice", Utils.getNullObjectAsEmptyJsonArray(data,"goodsPractice"));
                         tmp_obj.put("unit_name",data.getString("unit_name"));
                         tmp_obj.put("sale_amt",data.getDouble("sale_amt"));
                         tmp_obj.put(GoodsInfoViewAdapter.SALE_TYPE,data.getIntValue(GoodsInfoViewAdapter.SALE_TYPE));

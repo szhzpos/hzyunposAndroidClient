@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.text.Html;
 import android.view.View;
@@ -20,8 +21,11 @@ import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.bean.FullReduceRule;
 import com.wyc.cloudapp.bean.PromotionRule;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.goods.GoodsPracticeDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
@@ -89,21 +93,22 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     }
 
     protected static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
-        TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt,discount_sign,original_price;
+        TextView row_id,gp_id,goods_id,goods_title,unit_name,barcode_id,barcode,sale_price,sale_num,sale_amt,discount_sign,original_price,goodsPractice;
         MyViewHolder(View itemView) {
             super(itemView);
-            row_id = itemView.findViewById(R.id.row_id);
-            goods_id = itemView.findViewById(R.id.goods_id);
-            gp_id = itemView.findViewById(R.id.gp_id);
-            goods_title =  itemView.findViewById(R.id.goods_title);
-            unit_name =  itemView.findViewById(R.id.unit_name);
-            barcode_id =  itemView.findViewById(R.id.barcode_id);
-            barcode =  itemView.findViewById(R.id.barcode);
-            discount_sign = itemView.findViewById(R.id.discount_sign);
-            sale_price =  itemView.findViewById(R.id.sale_price);
-            sale_num = itemView.findViewById(R.id.sale_num);
-            sale_amt = itemView.findViewById(R.id.sale_amt);
-            original_price = itemView.findViewById(R.id.original_price);
+            row_id = findViewById(R.id.row_id);
+            goods_id = findViewById(R.id.goods_id);
+            gp_id = findViewById(R.id.gp_id);
+            goods_title =  findViewById(R.id.goods_title);
+            unit_name =  findViewById(R.id.unit_name);
+            barcode_id =  findViewById(R.id.barcode_id);
+            barcode =  findViewById(R.id.barcode);
+            discount_sign = findViewById(R.id.discount_sign);
+            sale_price =  findViewById(R.id.sale_price);
+            sale_num = findViewById(R.id.sale_num);
+            sale_amt = findViewById(R.id.sale_amt);
+            original_price = findViewById(R.id.original_price);
+            goodsPractice = findViewById(R.id.practice_tv);
         }
     }
 
@@ -111,7 +116,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     @Override
     public AbstractSaleGoodsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View itemView = View.inflate(mContext, R.layout.normal_sale_goods_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.sale_goods_height)));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
         return new AbstractSaleGoodsAdapter.MyViewHolder(itemView);
     }
     @CallSuper
@@ -140,6 +145,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.3f",goods_info.getDoubleValue("xnum")));
             myViewHolder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("sale_amt")));
 
+            final JSONArray goods_practice = Utils.getNullObjectAsEmptyJsonArray(goods_info,"goodsPractice");
+            if (!goods_practice.isEmpty()){
+                myViewHolder.goodsPractice.setVisibility(View.VISIBLE);
+                myViewHolder.goodsPractice.setText(String.format("%s:%s",mContext.getString(R.string.goods_practice),generateGoodsPracticeInfo(goods_practice)));
+            }else {
+                myViewHolder.goodsPractice.setVisibility(View.GONE);
+                myViewHolder.goodsPractice.setText("");
+            }
+
             if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
                 myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
             }
@@ -148,6 +162,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 setSelectStatus(myViewHolder.itemView);
             }
         }
+    }
+    private String generateGoodsPracticeInfo(@NonNull JSONArray array){
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0,size = array.size();i < size;i ++){
+            final JSONObject obj = array.getJSONObject(i);
+            stringBuilder.append(String.format(Locale.CHINA,"%s(%.2f)",Utils.getNullStringAsEmpty(obj,"kw_name"),Utils.getNotKeyAsNumberDefault(obj,"kw_price",0.0)));
+        }
+        return stringBuilder.toString();
     }
 
 
@@ -171,9 +193,40 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     }
 
     public void addSaleGoods(final JSONObject goods){
-        double num = Utils.getNotKeyAsNumberDefault(goods,"xnum",1);
-        addSaleGoodsPromotion(goods,num,false);
-    };
+        if (null != goods && !goods.isEmpty()){
+            double num = Utils.getNotKeyAsNumberDefault(goods,"xnum",1);
+            addSaleGoodsPromotion(goods,num,false);
+            showGoodsPractice(goods);
+        }else MyDialog.toastMessage(mContext.getNotEmptyHintsString(mContext.getString(R.string.goods_i_sz)));
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    protected final void showGoodsPractice(JSONObject goods){
+        final List<PracticeAssociated> list =  AppDatabase.getInstance().PracticeAssociatedDao().getPracticeByBarcodeId(Utils.getNullStringAsEmpty(goods,"barcode_id"));
+        if (null != list && !list.isEmpty()){
+            final GoodsPracticeDialog dialog = new GoodsPracticeDialog(mContext,list);
+            dialog.setResultListener(data -> {
+                final JSONArray goodsPractices = new JSONArray();
+                double new_price = Utils.getNotKeyAsNumberDefault(goods,"retail_price",0.0);
+                for (PracticeAssociated p : data){
+                    final JSONObject object = new JSONObject();
+                    object.put("barcode_id",p.getBarcode_id());
+                    object.put("kw_name",p.getKw_name());
+                    object.put("kw_price",p.getKw_price());
+                    object.put("kw_xnum",goods.getDoubleValue("xnum"));
+                    goodsPractices.add(object);
+
+                    new_price += p.getKw_price();
+                }
+                goods.put("goodsPractice",goodsPractices);
+
+                updateSaleGoodsInfoPromotion(new_price,1);
+
+                notifyDataSetChanged();
+            });
+            dialog.show();
+        }
+    }
 
     protected final void addSaleGoodsPromotion(@NonNull JSONObject goods, double num, boolean isBarcodeWeighingGoods){
         if (!verifyPromotion_8(goods,num)){

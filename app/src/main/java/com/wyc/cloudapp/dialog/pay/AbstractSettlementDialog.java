@@ -977,7 +977,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 retail_order_cols = Arrays.asList("stores_id","order_code","discount","discount_price","total","cashier_id","addtime","pos_code","order_status","pay_status","pay_time","upload_status",
                         "upload_time","transfer_status","transfer_time","is_rk","mobile","name","card_code","integral_info","sc_ids","sc_tc_money","member_id","discount_money","zl_money","ss_money","remark","zk_cashier_id"),
                 retail_order_goods_cols = Arrays.asList("order_code","barcode_id","xnum","price","buying_price","retail_price","trade_price","cost_price","ps_price","tax_rate","tc_mode","tc_rate","gp_id",
-                        "zk_cashier_id","total_money",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
+                        "zk_cashier_id","total_money","goodsPractice",GoodsInfoViewAdapter.W_G_MARK,"conversion","barcode","y_price"),
                 retail_order_pays_cols = Arrays.asList("order_code","pay_method","pay_money","pay_time","pay_status","pay_serial_no","pay_code","remark","is_check","zk_money","pre_sale_money","give_change_money",
                         "discount_money","xnote","card_no","return_code","v_num","print_info"),
                 discount_record_cols = Arrays.asList("order_code","discount_type","type","stores_id","relevant_id","discount_money","details");

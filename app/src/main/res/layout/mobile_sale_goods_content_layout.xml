@@ -173,6 +173,17 @@
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/practice_tv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:padding="@dimen/margin_5"
+        android:text="@string/goods_practice"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        android:visibility="gone" />
+
     <com.wyc.cloudapp.customizationView.InterceptLinearLayout
         android:id="@+id/mobile_float_fun_btn"
         android:layout_width="match_parent"
@@ -240,5 +251,4 @@
             android:textColor="@color/gray_7"
             android:textSize="@dimen/font_size_14" />
     </com.wyc.cloudapp.customizationView.InterceptLinearLayout>
-
 </LinearLayout>

@@ -108,6 +108,8 @@
     <string name="new_price">新价格</string>
     <string name="abnormal_Network_Status">网络状态异常…</string>
     <string name="search_vip_hint">正在查询会员…</string>
+    <string name="goods_practice">做法</string>
+    <string name="select_practice">选择做法</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
