@@ -11,7 +11,7 @@ import com.wyc.cloudapp.utils.Utils
 import kotlin.math.abs
 import kotlin.math.asin
 
-class SlideRecycleView : RecyclerView{
+class SlideRecycleView : CusRecyclerView{
     private var downX = 0f;
     private  var downY = 0f
     private var mTouchSlop = 0

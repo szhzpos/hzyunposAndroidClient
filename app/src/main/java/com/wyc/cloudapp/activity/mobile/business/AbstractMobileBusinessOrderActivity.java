@@ -110,7 +110,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
         query_time_btn_layout.post(()->{
             float corner_size = query_time_btn_layout.getHeight() / 2.0f;
             query_time_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
-                    ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
+                    ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.lightBlue)));
         });
         query_time_btn_layout.setClickListener(mClickListener);
         query_time_btn_layout.post(today::callOnClick);
@@ -118,7 +118,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
     private final View.OnClickListener mClickListener = v -> {
         final Button btn = (Button) v;
 
-        int white = getColor(R.color.white),text_color = getColor(R.color.text_color),blue = getColor(R.color.blue);
+        int white = getColor(R.color.white),text_color = getColor(R.color.text_color),blue = getColor(R.color.lightBlue);
         final int id = btn.getId();
 
         final LinearLayout m_query_time_tv_layout = findViewById(R.id.m_query_time_tv_layout);
@@ -252,7 +252,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
         audit_btn_layout.post(()->{
             float corner_size = audit_btn_layout.getHeight() / 2.0f;
             audit_btn_layout.setForeground(DrawableUtil.createDrawable(new float[]{corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size,corner_size}
-                    ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.blue)));
+                    ,getColor(R.color.transparent), Utils.dpToPx(this,1),getColor(R.color.lightBlue)));
         });
         if (isFindSourceOrderId()){//如果是查找来源单号则隐藏审核查询条件。
             audit_btn_layout.post(audit_btn::callOnClick);

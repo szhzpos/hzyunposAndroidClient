@@ -28,7 +28,8 @@
     <dimen name="plain_text_height_40">@dimen/height_40</dimen>
     <dimen name="dialog_button_width">@dimen/height_80</dimen>
     <dimen name="dialog_button_height">@dimen/height_40</dimen>
-    <dimen name="goods_type_width">@dimen/width_88</dimen>
+    <dimen name="sec_goods_type_width">@dimen/width_88</dimen>
+    <dimen name="goods_type_width">@dimen/width_108</dimen>
 
     <dimen name="height_30">@dimen/size_30</dimen>
     <dimen name="height_35">@dimen/size_35</dimen>

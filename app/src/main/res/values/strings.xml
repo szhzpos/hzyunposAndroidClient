@@ -895,8 +895,10 @@
     <string name="enter_practice">进入练习收银模式</string>
     <string name="not_enter_practice">练习收银不支持此功能.</string>
 
-    <!--零售打印设置-->
+    <!--各种权限ID-->
     <string name="time_card_per_id">27</string>
+    <string name="open_cash_per_id">5</string>
+    <string name="refund_order_per_id">13</string>
 
     <!--会员管理-->
     <string name="vip_manage">会员管理</string>
@@ -913,4 +915,6 @@
     <string name="packed_num">已取数量</string>
     <string name="refresh">刷新</string>
     <string name="pick_num_error_hint">取货数量不能大于剩余数量!</string>
+    <string name="plus_price_hint">加价合计：%1$s</string>
+    <string name="not_goods_practice">当前商品未关联做法</string>
 </resources>

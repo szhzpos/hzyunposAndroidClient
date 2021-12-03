@@ -7,7 +7,7 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
-public class InterceptLinearLayout extends LinearLayout {
+public class InterceptLinearLayout extends ItemPaddingLinearLayout {
     public InterceptLinearLayout(Context context) {
         super(context);
     }

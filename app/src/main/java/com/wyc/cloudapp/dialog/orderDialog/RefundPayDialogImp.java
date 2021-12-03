@@ -12,7 +12,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
-import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
+import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 
@@ -66,7 +66,7 @@ public class RefundPayDialogImp extends AbstractPayDialog {
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
         recyclerView.setVisibility(View.VISIBLE);
         recyclerView.setLayoutManager(new GridLayoutManager(mContext,4));
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new PayMethodItemDecoration());
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new GridItemDecoration());
         recyclerView.setAdapter(payMethodViewAdapter);
 
         mPayMethodViewAdapter = payMethodViewAdapter;

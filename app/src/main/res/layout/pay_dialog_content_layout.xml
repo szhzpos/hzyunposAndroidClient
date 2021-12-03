@@ -422,7 +422,7 @@
             android:textSize="@dimen/fun_button_font_size_16"
             android:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView
+        <com.wyc.cloudapp.customizationView.CusRecyclerView
             android:id="@+id/pay_method_list"
             android:layout_width="match_parent"
             android:layout_height="@dimen/pay_method_container_height"

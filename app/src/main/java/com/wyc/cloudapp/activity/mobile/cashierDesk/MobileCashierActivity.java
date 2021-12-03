@@ -7,7 +7,6 @@ import android.text.method.ReplacementTransformationMethod;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,7 +30,7 @@ import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
+import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
@@ -132,6 +131,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
             present();
         }else if (id == R.id.mobile_refund_btn){
             setAllRefundStatusView(null,true);
+        }else if (id == R.id.goods_practice){
+            disposeGoodsPractice();
         }
     }
     private void hangOrder(final View btn){
@@ -158,6 +159,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                             goods_info = new JSONObject();
                             if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                 goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
+                                goods_info.put("goodsPractice",Utils.getNullObjectAsEmptyJsonArray(barcode_id_obj,"goodsPractice"));
                                 mSaleGoodsAdapter.addSaleGoods(goods_info);
                                 hangBillDialog.dismiss();
                             }else{
@@ -238,7 +240,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final RecyclerView goods_info_view = findViewById(R.id.mobile_goods_info_list);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.MOBILE_SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GridItemDecoration());
         mGoodsInfoViewAdapter.setOnGoodsSelectListener(object -> {
             if (mMobileSearchGoods != null && mMobileSearchGoods.getVisibility() == View.VISIBLE){
                 mMobileSearchGoods.getText().clear();

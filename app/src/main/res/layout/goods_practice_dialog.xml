@@ -3,15 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/size_328"
+    android:layout_height="308dp"
     android:background="@drawable/round_shape"
     android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
+    <TextView
+        android:id="@+id/goods_practice_amt_tv"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:background="@drawable/bottom_separator"
+        android:gravity="center"
+        android:textColor="@color/orange_1"
+        android:textSize="@dimen/font_size_18" />
+
+    <com.wyc.cloudapp.customizationView.CusRecyclerView
         android:id="@+id/practice_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <LinearLayout
         android:layout_width="match_parent"

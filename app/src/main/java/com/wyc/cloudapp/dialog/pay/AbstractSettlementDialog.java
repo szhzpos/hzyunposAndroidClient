@@ -27,6 +27,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.base.SaleActivity;
+import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.FullReduceRulesAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
@@ -35,7 +36,8 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
+import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
+import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -457,7 +459,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
         recyclerView.setLayoutManager(new GridLayoutManager(mContext,4));
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new PayMethodItemDecoration());
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,mContext.getResources().getDimension(R.dimen.pay_method_height),new GridItemDecoration());
         recyclerView.setAdapter(mPayMethodViewAdapter);
         mPayMethodView = recyclerView;
     }
@@ -1411,13 +1413,14 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line);
             //商品明细
             JSONObject info_obj;
-            double discount_amt = 0.0, xnum = 0.0,order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
+            double discount_amt = 0.0, xnum = 0.0,original_order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
             int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
             final JSONArray sales = Utils.getNullObjectAsEmptyJsonArray(order_info,"sales");
             for (int i = 0, size = sales.size(); i < size; i++) {
                 info_obj = sales.getJSONObject(i);
                 if (info_obj != null) {
-                    order_amt += info_obj.getDoubleValue("original_amt");
+                    original_order_amt += info_obj.getDoubleValue("original_amt");
+                    actual_amt += info_obj.getDoubleValue("sale_amt");
 
                     type = info_obj.getIntValue("type");
                     if (type == 2) {
@@ -1435,19 +1438,24 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("price")),
                                     type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("sale_amt"))))).append(new_line);
 
-                    if (!Utils.equalDouble(discount_amt, 0.0)) {
+                    if (Utils.greaterDouble(discount_amt, 0.0)) {
                         sum_dis_amt += discount_amt;
                         info.append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
                                 context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt)))).append(new_line);
+                    }
+
+                    final JSONArray goodsPractices = Utils.getNullObjectAsEmptyJsonArray(info_obj,"goodsPractice");
+                    if (!goodsPractices.isEmpty()){
+                        info.append(String.format("%s:%s",context.getString(R.string.goods_practice), AbstractSaleGoodsAdapter.generateGoodsPracticeInfo(goodsPractices))).append(new_line);
                     }
                 }
             }
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_amt_sz).concat(String.format(Locale.CHINA, "%.2f", order_amt))
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_amt_sz).concat(String.format(Locale.CHINA, "%.2f", original_order_amt))
                     , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line);
 
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_rec_sz).concat(String.format(Locale.CHINA, "%.2f", order_amt - sum_dis_amt)),
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_rec_sz).concat(String.format(Locale.CHINA, "%.2f",actual_amt)),
                     context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", sum_dis_amt)))).
                     append(new_line_2).append(new_line_2).append(new_line).append(line);
 
@@ -1563,7 +1571,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
             final StringBuilder err = new StringBuilder();
             final String goods_info_sql = "SELECT a.barcode,b.goods_title,b.type,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
-                    "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt FROM retail_order_goods a \n" +
+                    "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt,a.goodsPractice FROM retail_order_goods a \n" +
                     "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,(pre_sale_money - pay_money) pzl,xnote FROM retail_order_pays a \n" +
                     "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
 

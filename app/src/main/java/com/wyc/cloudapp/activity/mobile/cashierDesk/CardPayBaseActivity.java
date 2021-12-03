@@ -29,7 +29,7 @@ import com.wyc.cloudapp.adapter.PayMethodAdapterForObj;
 import com.wyc.cloudapp.bean.ICardPay;
 import com.wyc.cloudapp.bean.PayDetailInfo;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
-import com.wyc.cloudapp.decoration.PayMethodItemDecoration;
+import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
@@ -285,7 +285,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
         });
         final RecyclerView recyclerView = findViewById(R.id.pay_method_list);
         recyclerView.setLayoutManager(new GridLayoutManager(this,4));
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,getResources().getDimension(R.dimen.pay_method_height),new PayMethodItemDecoration());
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView,getResources().getDimension(R.dimen.pay_method_height),new GridItemDecoration());
         recyclerView.setAdapter(mPayMethodViewAdapter);
         mPayMethodView = recyclerView;
     }

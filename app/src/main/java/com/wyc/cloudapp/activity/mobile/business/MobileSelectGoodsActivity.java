@@ -30,7 +30,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.GoodsCategory;
 import com.wyc.cloudapp.constants.WholesalePriceType;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
+import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -157,7 +157,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         mGoodsInfoAdapter = new GoodsAdapter(this,getIntent().getBooleanExtra(MODIFIABLE,true));
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.MOBILE_SPAN_COUNT);
         business_goods_info_list.setLayoutManager(gridLayoutManager);
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(business_goods_info_list,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(business_goods_info_list,getResources().getDimension(R.dimen.goods_height),new GridItemDecoration());
 
         mGoodsInfoAdapter.setOnSelectFinish(barcode_id -> {
             if (isSelectMode){

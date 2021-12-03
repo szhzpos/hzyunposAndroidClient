@@ -163,18 +163,8 @@
                     android:text="@string/hangbill_sz"
                     android:textColor="@color/blue_white"
                     android:textSize="@dimen/font_size_14"
-                    app:shape="1" />
-
-                <Button
-                    android:id="@+id/mobile_clear_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/float_circle_button_size"
-                    android:layout_height="@dimen/float_circle_button_size"
-                    android:layout_marginBottom="@dimen/margin_5"
-                    android:background="@drawable/circle_shape_button"
-                    android:text="@string/clear_sz"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
+                    app:shape="1"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <Button
                     android:id="@+id/mobile_present_btn"
@@ -185,7 +175,20 @@
                     android:background="@drawable/circle_shape_button"
                     android:text="@string/present_sz"
                     android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
+                    android:textSize="@dimen/font_size_14"
+                    tools:ignore="TouchTargetSizeCheck,TouchTargetSizeCheck" />
+
+                <Button
+                    android:id="@+id/mobile_clear_btn"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:layout_marginBottom="@dimen/margin_5"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/clear_sz"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <Button
                     android:id="@+id/mobile_refund_btn"
@@ -196,7 +199,21 @@
                     android:background="@drawable/circle_shape_button"
                     android:text="@string/o_back_sz"
                     android:textColor="@color/blue_white"
-                    android:textSize="@dimen/font_size_14" />
+                    android:textSize="@dimen/font_size_14"
+                    tools:ignore="TouchTargetSizeCheck" />
+
+                <com.wyc.cloudapp.customizationView.JumpTextView
+                    android:id="@+id/goods_practice"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="@dimen/float_circle_button_size"
+                    android:layout_height="@dimen/float_circle_button_size"
+                    android:background="@drawable/circle_shape_button"
+                    android:text="@string/goods_practice"
+                    android:textColor="@color/blue_white"
+                    android:textSize="@dimen/font_size_14"
+                    app:hide="true"
+                    app:perId="@string/refund_order_per_id"
+                    tools:ignore="TouchTargetSizeCheck" />
             </com.wyc.cloudapp.customizationView.InterceptLinearLayout>
 
             <Button
@@ -205,7 +222,8 @@
                 android:layout_width="@dimen/float_circle_button_size"
                 android:layout_height="@dimen/float_circle_button_size"
                 android:background="@drawable/more"
-                android:focusable="false" />
+                android:focusable="false"
+                tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck,SpeakableTextPresentCheck" />
         </LinearLayout>
 
         <LinearLayout
@@ -284,7 +302,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mobile_goods_type_list"
-                android:layout_width="@dimen/width_108"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin_1"
                 android:background="@color/white">
@@ -293,8 +311,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/mobile_goods_info_list"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="@color/white" />
 
         </LinearLayout>

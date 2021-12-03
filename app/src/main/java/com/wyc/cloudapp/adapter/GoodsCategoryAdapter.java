@@ -96,7 +96,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View itemView = View.inflate(mContext, R.layout.goods_type_info_layout, null);
         if (null == mSecLevelGoodsCategoryView){
-             itemView.setLayoutParams(new RecyclerView.LayoutParams( (int) mContext.getResources().getDimension(R.dimen.goods_type_width), (int) mContext.getResources().getDimension(R.dimen.height_50)));
+             itemView.setLayoutParams(new RecyclerView.LayoutParams( (int) mContext.getResources().getDimension(mContext.lessThan7Inches() ? R.dimen.goods_type_width : R.dimen.sec_goods_type_width), (int) mContext.getResources().getDimension(R.dimen.height_50)));
         }else{
             itemView.setLayoutParams(new RecyclerView.LayoutParams( (int) mContext.getResources().getDimension(R.dimen.goods_type_width),ViewGroup.LayoutParams.MATCH_PARENT));
         }

@@ -26,6 +26,7 @@ public class LinearItemDecoration extends SuperItemDecoration {
 
     @Override
     public void onDrawOver(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+        super.onDrawOver(c,parent,state);
         final RecyclerView.LayoutManager manager = parent.getLayoutManager();
         if (manager instanceof LinearLayoutManager) {
             if (((LinearLayoutManager) manager).getOrientation() == LinearLayoutManager.VERTICAL) {

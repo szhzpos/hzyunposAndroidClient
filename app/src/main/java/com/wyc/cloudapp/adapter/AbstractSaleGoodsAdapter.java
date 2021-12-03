@@ -34,6 +34,7 @@ import com.wyc.cloudapp.utils.Utils;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -158,12 +159,13 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
             }
 
+            myViewHolder.itemView.setTag(goods_info);
             if (mCurrentItemIndex == i){
                 setSelectStatus(myViewHolder.itemView);
             }
         }
     }
-    private String generateGoodsPracticeInfo(@NonNull JSONArray array){
+    public static String generateGoodsPracticeInfo(@NonNull JSONArray array){
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0,size = array.size();i < size;i ++){
             final JSONObject obj = array.getJSONObject(i);
@@ -202,30 +204,38 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
 
     @SuppressLint("NotifyDataSetChanged")
     protected final void showGoodsPractice(JSONObject goods){
-        final List<PracticeAssociated> list =  AppDatabase.getInstance().PracticeAssociatedDao().getPracticeByBarcodeId(Utils.getNullStringAsEmpty(goods,"barcode_id"));
-        if (null != list && !list.isEmpty()){
-            final GoodsPracticeDialog dialog = new GoodsPracticeDialog(mContext,list);
-            dialog.setResultListener(data -> {
-                final JSONArray goodsPractices = new JSONArray();
-                double new_price = Utils.getNotKeyAsNumberDefault(goods,"retail_price",0.0);
-                for (PracticeAssociated p : data){
-                    final JSONObject object = new JSONObject();
-                    object.put("barcode_id",p.getBarcode_id());
-                    object.put("kw_name",p.getKw_name());
-                    object.put("kw_price",p.getKw_price());
-                    object.put("kw_xnum",goods.getDoubleValue("xnum"));
-                    goodsPractices.add(object);
-
-                    new_price += p.getKw_price();
-                }
-                goods.put("goodsPractice",goodsPractices);
-
-                updateSaleGoodsInfoPromotion(new_price,1);
-
-                notifyDataSetChanged();
-            });
-            dialog.show();
+        final JSONArray oldGoodsPractices = Utils.getNullObjectAsEmptyJsonArray(goods,"goodsPractice");
+        if (oldGoodsPractices.isEmpty()){
+            final List<PracticeAssociated> list =  AppDatabase.getInstance().PracticeAssociatedDao().getPracticeByBarcodeId(Utils.getNullStringAsEmpty(goods,"barcode_id"));
+            if (null != list && !list.isEmpty()){
+                final GoodsPracticeDialog dialog = new GoodsPracticeDialog(mContext,list,oldGoodsPractices.toJavaList(PracticeAssociated.class));
+                dialog.setResultListener(data -> updateGoodsPractice(data,goods));
+                dialog.show();
+            }
+        }else {
+            updateGoodsPractice(oldGoodsPractices.toJavaList(PracticeAssociated.class),goods);
         }
+    }
+    public void updateGoodsPractice(List<PracticeAssociated> data,JSONObject goods){
+        final JSONArray goodsPractices = new JSONArray();
+        double new_price = Utils.getNotKeyAsNumberDefault(goods,"retail_price",0.0);
+        for (PracticeAssociated p : data){
+            final JSONObject object = new JSONObject();
+            object.put("id",p.getId());
+            object.put("barcode_id",p.getBarcode_id());
+            object.put("kw_code",p.getKw_code());
+            object.put("kw_name",p.getKw_name());
+            object.put("kw_price",p.getKw_price());
+            object.put("kw_xnum",goods.getDoubleValue("xnum"));
+            goodsPractices.add(object);
+
+            new_price += p.getKw_price();
+        }
+        goods.put("goodsPractice",goodsPractices);
+
+        updateSaleGoodsInfoPromotion(new_price,1);
+
+        notifyDataSetChanged();
     }
 
     protected final void addSaleGoodsPromotion(@NonNull JSONObject goods, double num, boolean isBarcodeWeighingGoods){
@@ -368,11 +378,21 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         this.notifyDataSetChanged();
     }
     private boolean isSameLineGoods(final JSONObject o, final JSONObject o2){
-        return isEqualGoodsWithId(o,o2) && GoodsInfoViewAdapter.getSaleType(o) == GoodsInfoViewAdapter.getSaleType(o2) && getBuyXGiveXGoodsBuyId(o) == getBuyXGiveXGoodsBuyId(o2);
+        return isEqualGoodsWithId(o,o2) && GoodsInfoViewAdapter.getSaleType(o) == GoodsInfoViewAdapter.getSaleType(o2)
+                && getBuyXGiveXGoodsBuyId(o) == getBuyXGiveXGoodsBuyId(o2) && isSameGoodsPractice(o,o2);
     }
+
     private boolean isEqualGoodsWithId(final JSONObject o, final JSONObject o2){
-        return null != o && null != o2 && o.getIntValue("barcode_id") == o2.getIntValue("barcode_id") && o.getIntValue("gp_id") == o2.getIntValue("gp_id");
+        return null != o && null != o2 && o.getIntValue("barcode_id") == o2.getIntValue("barcode_id")
+                && o.getIntValue("gp_id") == o2.getIntValue("gp_id");
     }
+
+    private boolean isSameGoodsPractice(final JSONObject o, final JSONObject o2){
+        final List<PracticeAssociated> list = Utils.getNullObjectAsEmptyJsonArray(o,"goodsPractice").toJavaList(PracticeAssociated.class);
+        final List<PracticeAssociated> list2 = Utils.getNullObjectAsEmptyJsonArray(o2,"goodsPractice").toJavaList(PracticeAssociated.class);
+        return Arrays.equals(list.toArray(),list2.toArray());
+    }
+
     private void markBuyXGiveXGoodsId(final JSONObject give_obj,final String buy_x_barcode_id){
         /*buy_x_barcode_id 做买X送X促销的商品barcode_id  参数give_obj是被送商品对象*/
         if (null != give_obj)give_obj.put("BUY_X_ID",buy_x_barcode_id);
@@ -1445,21 +1465,12 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         return order_code;
     }
     protected void setCurrentItemIndexAndItemView(View v){
-        final TextView tv_id,tv_barcode_id,tv_gp_id,sale_type_tv;
         mCurrentItemView = v;
-        if (null != v && (tv_id = v.findViewById(R.id.goods_id)) != null && (sale_type_tv = v.findViewById(R.id.discount_sign)) != null &&
-                (tv_barcode_id = v.findViewById(R.id.barcode_id)) != null && (tv_gp_id = v.findViewById(R.id.gp_id) ) != null){
-
-            final CharSequence id = tv_id.getText(),barcode_id = tv_barcode_id.getText(),gp_id = tv_gp_id.getText();
-            int sale_type = Utils.getViewTagValue(sale_type_tv,0);
-
-            for (int i = 0, length = mData.size(); i < length; i ++){
-                final JSONObject json = mData.getJSONObject(i);
-                if (id.equals(json.getString("goods_id")) && barcode_id.equals(json.getString("barcode_id")) &&
-                        gp_id.equals(json.getString("gp_id")) && sale_type == GoodsInfoViewAdapter.getSaleType(json)){
-                    mCurrentItemIndex = i;
-                    return;
-                }
+        for (int i = 0, length = mData.size(); i < length; i ++){
+            final JSONObject json = mData.getJSONObject(i);
+            if (isSameLineGoods(Utils.getViewTagValue(v),json)){
+                mCurrentItemIndex = i;
+                return;
             }
         }
         mCurrentItemIndex = -1;

@@ -88,7 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/sale_price"
         android:layout_centerHorizontal="false"
-        android:layout_marginStart="@dimen/width_78"
+        android:layout_marginStart="@dimen/size_68"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14" />

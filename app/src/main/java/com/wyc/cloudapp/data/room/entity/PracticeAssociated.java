@@ -9,6 +9,8 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.util.Objects;
 
 /**
@@ -38,12 +40,14 @@ public class PracticeAssociated implements Parcelable {
     private String kw_name;
     @ColumnInfo(defaultValue = "0.0")
     private Double kw_price;
-    @Ignore
-    private boolean sel;
     /**
      * 1为正常 2为删除
      * */
     private Integer status;
+
+    @Ignore
+    @JSONField(serialize =false)
+    private boolean sel;
 
     public PracticeAssociated(){
 
@@ -160,12 +164,12 @@ public class PracticeAssociated implements Parcelable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PracticeAssociated that = (PracticeAssociated) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(id, that.id) && Objects.equals(barcode_id, that.barcode_id) && Objects.equals(kw_code, that.kw_code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, barcode_id, kw_code);
     }
 
     @NonNull

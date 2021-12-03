@@ -36,6 +36,8 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,7 +57,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.decoration.GoodsInfoItemDecoration;
+import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
@@ -86,7 +88,7 @@ import java.util.Locale;
 
 import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
 
-public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback {
+public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback,View.OnClickListener {
     private RecyclerView mSaleGoodsRecyclerView;
     private GoodsCategoryAdapter mGoodsCategoryAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
@@ -362,51 +364,49 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             final PopupWindow window = new PopupWindow(this);
             window.setContentView(View.inflate(this,R.layout.more_fun_popup_window_layout,null));
             window.setOutsideTouchable(true);
-            window.setBackgroundDrawable(getDrawable(R.color.transparent));
+            window.setBackgroundDrawable(ContextCompat.getDrawable(this,R.color.transparent));
 
-            CustomApplication.runInMainThread(()->{
+            runOnUiThread(() -> {
                 final View contentView = window.getContentView();
                 contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
                 final int content_height = contentView.getMeasuredHeight();
-                int width = btn.getWidth(),height = btn.getHeight();
+                int width = btn.getWidth();
                 int[] ints = new int[2];
                 btn.getLocationInWindow(ints);
                 window.showAsDropDown(btn,width, -content_height );
 
                 final InterceptLinearLayout interceptLinearLayout = contentView.findViewById(R.id.interceptLinearLayout);
                 if (interceptLinearLayout != null){
-                    interceptLinearLayout.setClickListener(view -> {
-                        int id = view.getId();
-                        if (id == R.id.pop_present_btn){
-                            if (present())window.dismiss();
-                        }else if (id == R.id.pop_o_cashbox){
-                            if (verifyOpenCashboxPermissions()){
-                                Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
-                                window.dismiss();
-                            }
-                        }else if (id == R.id.pop_sale_man_btn){
-                            final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
-                            final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
-                            mSaleManInfo = new JSONObject();
-                            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
-                            mSaleManInfo.put("name",name);
-                            setSaleManView(name);
-                            window.dismiss();
-                        }else if (id == R.id.pop_refund_btn){
-                            if (RefundDialog.verifyRefundPermission(this)){
-                                setSingleRefundStatus(true);
-                                window.dismiss();
-                            }
-                        }else if (id == R.id.pop_time_card_btn){
-                            window.dismiss();
-                            NTimeCardBusiness.start(this);
-                        }
-                    });
-
+                    interceptLinearLayout.setClickListener(this);
                 }
             });
-
         });
+    }
+    @Override
+    public void onClick(View view) {
+        int id = view.getId();
+        if (id == R.id.pop_present_btn){
+            present();
+        }else if (id == R.id.pop_o_cashbox){
+            if (verifyOpenCashboxPermissions()){
+                Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
+            }
+        }else if (id == R.id.pop_sale_man_btn){
+            final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
+            final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
+            mSaleManInfo = new JSONObject();
+            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
+            mSaleManInfo.put("name",name);
+            setSaleManView(name);
+        }else if (id == R.id.pop_refund_btn){
+            if (RefundDialog.verifyRefundPermission(this)){
+                setSingleRefundStatus(true);
+            }
+        }else if (id == R.id.pop_time_card_btn){
+            NTimeCardBusiness.start(this);
+        }else if (id == R.id.goods_practice){
+            disposeGoodsPractice();
+        }
     }
 
     @CallSuper
@@ -515,7 +515,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         mGoodsInfoViewAdapter.setOnGoodsSelectListener(this::addSaleGoods);
-        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GoodsInfoItemDecoration());
+        SuperItemDecoration.registerGlobalLayoutToRecyclerView(goods_info_view,getResources().getDimension(R.dimen.goods_height),new GridItemDecoration());
         goods_info_view.setAdapter(mGoodsInfoViewAdapter);
     }
     private void initGoodsCategoryAdapter(){
@@ -715,6 +715,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                                     goods_info = new JSONObject();
                                     if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                         goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
+                                        goods_info.put("goodsPractice",Utils.getNullObjectAsEmptyJsonArray(barcode_id_obj,"goodsPractice"));
                                         mSaleGoodsAdapter.addSaleGoods(goods_info);
                                         hangBillDialog.dismiss();
                                     }else{

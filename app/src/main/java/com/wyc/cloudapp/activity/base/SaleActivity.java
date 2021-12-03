@@ -7,12 +7,18 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.MobileSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
+import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.goods.GoodsPracticeDialog;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.util.List;
 
 public class SaleActivity extends MainActivity{
     protected AbstractSaleGoodsAdapter mSaleGoodsAdapter;
@@ -195,5 +201,16 @@ public class SaleActivity extends MainActivity{
 
     public boolean findGoodsByBarcodeId(@NonNull final JSONObject goods,final String barcode_id){
         return false;
+    }
+    protected void disposeGoodsPractice(){
+        final JSONObject goods = mSaleGoodsAdapter.getCurrentContent();
+        if (null != goods){
+            final List<PracticeAssociated> list =  AppDatabase.getInstance().PracticeAssociatedDao().getPracticeByBarcodeId(Utils.getNullStringAsEmpty(goods,"barcode_id"));
+            if (list != null && !list.isEmpty()){
+                final GoodsPracticeDialog dialog = new GoodsPracticeDialog(this,list,Utils.getNullObjectAsEmptyJsonArray(goods,"goodsPractice").toJavaList(PracticeAssociated.class));
+                dialog.setResultListener(data -> mSaleGoodsAdapter.updateGoodsPractice(data,goods));
+                dialog.show();
+            }else MyDialog.toastMessage(getString(R.string.not_goods_practice));
+        }
     }
 }
