@@ -533,9 +533,13 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             mSaleSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",total_sale_amt));
             mDisSumAmtTv.setText(String.format(Locale.CANADA,"%.2f",total_discount_amt));
 
-            mSaleGoodsRecyclerView.scrollToPosition(mSaleGoodsAdapter.getCurrentItemIndex());
-
-            if (mSecondDisplay != null)mSecondDisplay.notifyChange(mSaleGoodsAdapter.getCurrentItemIndex());
+            final int cur = mSaleGoodsAdapter.getCurrentItemIndex();
+            mSaleGoodsRecyclerView.scrollToPosition(cur);
+            final int offset = mSaleGoodsRecyclerView.computeVerticalScrollOffset();
+            if ((mSaleGoodsRecyclerView.canScrollVertically(0) || mSaleGoodsRecyclerView.canScrollVertically(-1)) && offset != 0){
+                mSaleGoodsRecyclerView.scrollBy(0,offset);
+            }
+            if (mSecondDisplay != null)mSecondDisplay.notifyChange(cur);
         });
 
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));

@@ -117,7 +117,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     @Override
     public AbstractSaleGoodsAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
         final View itemView = View.inflate(mContext, R.layout.normal_sale_goods_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) mContext.getResources().getDimension(R.dimen.sale_goods_height)));
         return new AbstractSaleGoodsAdapter.MyViewHolder(itemView);
     }
     @CallSuper
@@ -148,9 +148,11 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
 
             final JSONArray goods_practice = Utils.getNullObjectAsEmptyJsonArray(goods_info,"goodsPractice");
             if (!goods_practice.isEmpty()){
+                myViewHolder.itemView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
                 myViewHolder.goodsPractice.setVisibility(View.VISIBLE);
                 myViewHolder.goodsPractice.setText(String.format("%s:%s",mContext.getString(R.string.goods_practice),generateGoodsPracticeInfo(goods_practice)));
             }else {
+                myViewHolder.itemView.getLayoutParams().height = (int) mContext.getResources().getDimension(R.dimen.sale_goods_height);
                 myViewHolder.goodsPractice.setVisibility(View.GONE);
                 myViewHolder.goodsPractice.setText("");
             }

@@ -1,17 +1,15 @@
 package com.wyc.cloudapp.customizationView
 
 import android.animation.ValueAnimator
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Path
+import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.cos
 import kotlin.math.sin
@@ -31,9 +29,22 @@ import kotlin.math.sin
  */
 open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr: Int): RecyclerView(context,attrs,defStyleAttr) {
     private val mPaint: Paint = Paint()
-    private var mSpace = Utils.dpToPx(context,8f)
     private val mValueAnimator = ValueAnimator()
-    private var mNeedIndicator:Int = 0
+    /**
+     * 第一位表示是否需要绘制指示符 第二位表示是否按下屏幕 第三位表示是否绘制头部指示符 第四位表示是否绘制尾部指示符
+     * */
+    @Volatile
+    private var mNeedIndicator:Int = 2
+
+    private val mOffsetX:Float
+    private val mOffsetY:Float
+    private var mSpace = 6
+    private var mVerOrientation = true
+    private var mHeadAxisX:Float = 0.0f
+    private var mHeadAxisY:Float = 0.0f
+    private var mTailAxisX:Float = 0.0f
+    private var mTailAxisY:Float = 0.0f
+
     init {
         mPaint.isAntiAlias = true
         mPaint.color = Color.RED
@@ -41,10 +52,15 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
         mPaint.style = Paint.Style.STROKE
         mPaint.setShadowLayer(5f,0f,0f,Color.RED)
 
+        val lineLen = Utils.dpToPx(CustomApplication.self(),6f)
+        val radian = Math.PI / 180 * 45
+        mOffsetX = (cos(radian) * lineLen).toFloat()
+        mOffsetY = (sin(radian) * lineLen).toFloat()
+
         mValueAnimator.repeatCount = ValueAnimator.INFINITE
         mValueAnimator.duration = 2000
         mValueAnimator.interpolator = AccelerateDecelerateInterpolator()
-        mValueAnimator.setIntValues(18,8,18)
+        mValueAnimator.setIntValues(12,6,12)
         mValueAnimator.addUpdateListener {
             mSpace = it.animatedValue as Int
             invalidate()
@@ -55,50 +71,32 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
 
     override fun draw(c: Canvas) {
         super.draw(c)
-        if (hasShowIndicator()){
-            drawIndicator(c)
-        }
+        drawIndicator(c)
     }
 
     private fun drawIndicator(c: Canvas){
-        (layoutManager as? LinearLayoutManager)?.apply {
-            val lastVisibility = findLastCompletelyVisibleItemPosition()
-            var xAxis = -1f
-            var yAxis = -1f
-            val vertical = orientation == VERTICAL
-            if (lastVisibility + 1 < itemCount){
-                if (vertical){
-                    xAxis = (width / 2).toFloat()
-                    yAxis = height.toFloat()
-                }else{
-                    xAxis = width.toFloat()
-                    yAxis = (height / 2).toFloat()
-                }
-                drawIcon(c,xAxis,yAxis,vertical,false)
-            }
-            val firstVisibility = findFirstCompletelyVisibleItemPosition()
-            if (firstVisibility > 0){
-                if (vertical){
-                    xAxis = (width / 2).toFloat()
-                    yAxis = 0f
-                }else{
-                    xAxis = 0f
-                    yAxis = (height / 2).toFloat()
-                }
-                drawIcon(c,xAxis,yAxis,vertical,true)
-            }
+        if (hasShowIndicator()){
+            drawHeadIndicator(c)
+            drawTailIndicator(c)
         }
     }
-    private fun drawIcon(c: Canvas, xAxis:Float, yAxis:Float, vert: Boolean,head:Boolean){
-        val lineLen = Utils.dpToPx(context,9f)
-        val radian = Math.PI / 180 * 45
-        val x = (cos(radian) * lineLen).toFloat()
-        val y = (sin(radian) * lineLen).toFloat()
+    private fun drawHeadIndicator(c: Canvas){
+        if (mNeedIndicator and 4 != 0){
+            drawIcon(c,mHeadAxisX,mHeadAxisY,true)
+        }
+    }
+    private fun drawTailIndicator(c: Canvas){
+        if(mNeedIndicator and 8 != 0){
+            drawIcon(c,mTailAxisX,mTailAxisY,false)
+        }
+    }
+
+    private fun drawIcon(c: Canvas, xAxis:Float, yAxis:Float,reverse:Boolean){
         val space = mSpace
-
+        val x = mOffsetX
+        val y = mOffsetY
         val path = Path()
-
-        if (vert){
+        if (mVerOrientation){
             path.moveTo(xAxis - x,yAxis - y)
             path.lineTo(xAxis,yAxis)
             path.lineTo(xAxis + x,yAxis - y)
@@ -111,6 +109,7 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
             path.lineTo(xAxis,yAxis - space * 2)
             path.lineTo(xAxis + x,yAxis - y - space * 2)
         }else {
+
             path.moveTo(xAxis - y,yAxis + x)
             path.lineTo(xAxis,yAxis)
             path.lineTo(xAxis - y,yAxis - x)
@@ -123,9 +122,9 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
             path.lineTo(xAxis - space * 2,yAxis)
             path.lineTo(xAxis - y - space * 2,yAxis - x)
         }
-        if (head){
+        if (reverse){
             c.save()
-            if (vert)
+            if (mVerOrientation)
                 c.scale(1f,-1f)
             else
                 c.scale(-1f,1f)
@@ -140,7 +139,8 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
         when(ev.action){
             MotionEvent.ACTION_DOWN ->{
                 removeCallbacks(disableRunnable)
-                mNeedIndicator = (mNeedIndicator or  (1 shl 1))
+                mNeedIndicator = (mNeedIndicator or 2)
+                invalidate()
             }
             MotionEvent.ACTION_UP,MotionEvent.ACTION_CANCEL->{
                 removeCallbacks(disableRunnable)
@@ -151,28 +151,110 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
     }
 
     private val disableRunnable = Runnable {
-        mNeedIndicator = (mNeedIndicator and 1)
+        mNeedIndicator = (mNeedIndicator and 2.inv())
     }
 
     private fun hasShowIndicator():Boolean{
-        val code = mNeedIndicator == 3
-        if (code && !mValueAnimator.isStarted){
-            mValueAnimator.start()
+        val code = (mNeedIndicator and 3) == 3
+        if (code){
+            startAnim()
+        }else {
+            cancelAnim()
         }
-        return mNeedIndicator == 3
+        return code
     }
 
-    override fun onAttachedToWindow() {
-        super.onAttachedToWindow()
-        (layoutManager as? LinearLayoutManager)?.apply {
-            if((findLastCompletelyVisibleItemPosition() + 1 != itemCount) || (findFirstCompletelyVisibleItemPosition() != 0)){
-                mNeedIndicator = (mNeedIndicator or  1)
+    override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        super.onLayout(changed, l, t, r, b)
+        if (changed){
+            (layoutManager as? LinearLayoutManager)?.apply{
+                calculate(this)
             }
         }
     }
 
+    private val scrollListener = object: RecyclerView.OnScrollListener() {
+         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            super.onScrolled(recyclerView, dx, dy)
+             checkPosition()
+        }
+    }
+
+    private fun checkPosition(){
+        (layoutManager as? LinearLayoutManager)?.apply {
+
+            if (mNeedIndicator and 1 != 1){
+                calculate(this)
+            }
+
+            mNeedIndicator = if (findLastVisibleItemPosition() + 1 < itemCount){
+                mNeedIndicator or 8
+            }else {
+                mNeedIndicator and 8.inv()
+            }
+            mNeedIndicator = if (findFirstVisibleItemPosition() > 0){
+                mNeedIndicator or 4
+            }else{
+                mNeedIndicator and 4.inv()
+            }
+        }
+    }
+
+    private fun calculate(manager: LinearLayoutManager){
+        manager.apply {
+            val lastVisibility = findLastVisibleItemPosition()
+            val firstVisibility = findFirstVisibleItemPosition()
+
+            if (itemCount != 0 && (lastVisibility + 1 != itemCount || firstVisibility != 0)){
+                var xAxis:Float
+                var yAxis:Float
+                val vertical = orientation == VERTICAL
+                if (vertical){
+                    xAxis = (measuredWidth / 2).toFloat()
+                    yAxis = measuredHeight.toFloat()
+                }else{
+                    xAxis = measuredWidth.toFloat()
+                    yAxis = (measuredHeight / 2).toFloat()
+                }
+                mTailAxisX = xAxis
+                mTailAxisY = yAxis
+
+                if (vertical){
+                    xAxis = (measuredWidth / 2).toFloat()
+                    yAxis = 0f
+                }else{
+                    xAxis = 0f
+                    yAxis = (measuredHeight / 2).toFloat()
+                }
+                mHeadAxisX = xAxis
+                mHeadAxisY = yAxis
+
+                mVerOrientation = vertical
+
+
+                mNeedIndicator = mNeedIndicator or  1
+                mNeedIndicator = mNeedIndicator or 8
+                postDelayed(disableRunnable,3000)
+            }
+        }
+    }
+
+    private fun cancelAnim(){
+        if (mValueAnimator.isRunning)mValueAnimator.cancel()
+    }
+    private fun startAnim(){
+        if(!mValueAnimator.isStarted){
+            mValueAnimator.start()
+        }
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        addOnScrollListener(scrollListener)
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        mValueAnimator.cancel()
+        cancelAnim()
     }
 }
