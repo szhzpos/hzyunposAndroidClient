@@ -14,7 +14,7 @@
         android:id="@+id/barcode_tv"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/size_25"
-        android:gravity="center"
+        android:gravity="start|center_vertical"
         android:minWidth="@dimen/width_118"
         android:text="6954767433073"
         android:textColor="@color/text_color"

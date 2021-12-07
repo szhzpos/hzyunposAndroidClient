@@ -9,7 +9,6 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.cos
 import kotlin.math.sin
@@ -51,6 +50,7 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
         mPaint.strokeWidth = Utils.dpToPx(context,1f).toFloat()
         mPaint.style = Paint.Style.STROKE
         mPaint.setShadowLayer(5f,0f,0f,Color.RED)
+        mPaint.alpha = 168
 
         val lineLen = Utils.dpToPx(CustomApplication.self(),6f)
         val radian = Math.PI / 180 * 45
@@ -89,6 +89,9 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
         if(mNeedIndicator and 8 != 0){
             drawIcon(c,mTailAxisX,mTailAxisY,false)
         }
+    }
+    private fun drawLoadIndicator(c: Canvas){
+
     }
 
     private fun drawIcon(c: Canvas, xAxis:Float, yAxis:Float,reverse:Boolean){
@@ -156,17 +159,19 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
 
     private fun hasShowIndicator():Boolean{
         val code = (mNeedIndicator and 3) == 3
-        if (code){
-            startAnim()
-        }else {
-            cancelAnim()
+        if (hasNotScrollBar()){
+            if (code){
+                startAnim()
+            }else {
+                cancelAnim()
+            }
         }
         return code
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         super.onLayout(changed, l, t, r, b)
-        if (changed){
+        if (changed && hasNotScrollBar()){
             (layoutManager as? LinearLayoutManager)?.apply{
                 calculate(this)
             }
@@ -210,21 +215,21 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
                 var yAxis:Float
                 val vertical = orientation == VERTICAL
                 if (vertical){
-                    xAxis = (measuredWidth / 2).toFloat()
+                    xAxis = measuredWidth.toFloat() - mOffsetX * 2
                     yAxis = measuredHeight.toFloat()
                 }else{
                     xAxis = measuredWidth.toFloat()
-                    yAxis = (measuredHeight / 2).toFloat()
+                    yAxis = measuredHeight.toFloat() - mOffsetY * 2
                 }
                 mTailAxisX = xAxis
                 mTailAxisY = yAxis
 
                 if (vertical){
-                    xAxis = (measuredWidth / 2).toFloat()
+                    xAxis = measuredWidth.toFloat() - mOffsetX * 2
                     yAxis = 0f
                 }else{
                     xAxis = 0f
-                    yAxis = (measuredHeight / 2).toFloat()
+                    yAxis = measuredHeight.toFloat() - mOffsetY * 2
                 }
                 mHeadAxisX = xAxis
                 mHeadAxisY = yAxis
@@ -239,6 +244,16 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
         }
     }
 
+    private fun hasVerScrollBar():Boolean{
+        return ((layoutManager as? LinearLayoutManager)?.orientation == VERTICAL && isVerticalScrollBarEnabled)
+    }
+    private fun hasHorScrollBar():Boolean{
+        return ((layoutManager as? LinearLayoutManager)?.orientation == HORIZONTAL && isHorizontalScrollBarEnabled)
+    }
+    private fun hasNotScrollBar():Boolean{
+        return !hasHorScrollBar() && !hasVerScrollBar()
+    }
+
     private fun cancelAnim(){
         if (mValueAnimator.isRunning)mValueAnimator.cancel()
     }
@@ -250,7 +265,7 @@ open class CusRecyclerView(context: Context, attrs: AttributeSet?, defStyleAttr:
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        addOnScrollListener(scrollListener)
+        if (hasNotScrollBar())addOnScrollListener(scrollListener)
     }
 
     override fun onDetachedFromWindow() {

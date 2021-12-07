@@ -10,6 +10,7 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
@@ -98,7 +99,9 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
 
     @Override
     public boolean hookEnterKey() {
-        if (mOk != null)mOk.callOnClick();
+        if (mOk != null){
+            CustomApplication.postAtFrontOfQueue(()-> mOk.callOnClick());
+        }
         return true;
     }
 

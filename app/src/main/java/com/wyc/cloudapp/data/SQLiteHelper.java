@@ -22,6 +22,7 @@ import android.provider.MediaStore;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.room.RoomDatabase;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -29,6 +30,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
@@ -56,7 +58,10 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public final class SQLiteHelper extends SQLiteOpenHelper {
-    public static final int DATABASE_VERSION = 14;
+    /**
+     * DATABASE_VERSION从14开始由AppDatabase负责升级
+     * */
+    private static final int DATABASE_VERSION = AppDatabase.DATABASE_VERSION;
     private static volatile SQLiteDatabase mDb;
 
     private SQLiteHelper(Context context,final String databaseName){
@@ -64,7 +69,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         Logger.d("DATABASE_NAME:%s",databaseName);
     }
 
-    public static String DATABASE_NAME(String storesId){
+    private static String DATABASE_NAME(String storesId){
         //数据库名称order_门店编号
         if (!Utils.isNotEmpty(storesId)){
             Logger.e("init DATABASE_NAME failure because the storesId is empty...");
@@ -111,23 +116,23 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     }
 
     public static boolean isNotInit(){
-        return mDb == null;
+        return mDb == null && AppDatabase.getInstance() != null;
     }
 
     public static void initDb(Context context, final String storesId){
+        final String name = DATABASE_NAME(storesId);
+        AppDatabase.initDataBase(name);
         if (mDb == null){
             synchronized (SQLiteHelper.class){
                 if (mDb == null){
                     try {
-                        final SQLiteHelper sqLiteHelper = new SQLiteHelper(context,DATABASE_NAME(storesId));
-                        mDb = sqLiteHelper.getWritableDatabase();
+                        final SQLiteHelper helper = new SQLiteHelper(context,name);
+                        helper.setWriteAheadLoggingEnabled(AppDatabase.getInstance().getOpenHelper().getWritableDatabase().isWriteAheadLoggingEnabled());
+                        mDb = helper.getWritableDatabase();
                         if (CustomApplication.isPracticeMode())copy(NORMAL_DATABASE_NAME(storesId));
                     }catch (SQLiteException e){
-                        CustomApplication.execute(()-> {
-                            Looper.prepare();
-                            MyDialog.ToastMessage("打开数据库错误：" + e.getLocalizedMessage(), null);
-                            Looper.loop();
-                        });
+                        e.printStackTrace();
+                        MyDialog.toastMessage("打开数据库错误：" + e.getLocalizedMessage());
                         SystemClock.sleep(3000);
                         CustomApplication.self().exit();
                     }
@@ -185,8 +190,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleOrder` (`order_no` TEXT NOT NULL, `online_order_no` TEXT NOT NULL, `amt` REAL NOT NULL, `status` INTEGER NOT NULL DEFAULT 0, `saleId` TEXT NOT NULL, `cas_id` TEXT NOT NULL, `store_id` TEXT DEFAULT '-1', `time` INTEGER NOT NULL DEFAULT 0, `transfer_status` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardSaleDetail` (`rowId` INTEGER NOT NULL, `num` INTEGER NOT NULL, `amt` REAL NOT NULL, `price` REAL NOT NULL, `face_value` REAL NOT NULL, `gift_card_code` TEXT NOT NULL, `card_chip_no` TEXT NOT NULL, `name` TEXT, `discountAmt` REAL NOT NULL, `order_no` TEXT NOT NULL, PRIMARY KEY(`rowId`, `order_no`))");
         update_list.add("CREATE TABLE IF NOT EXISTS `GiftCardPayDetail` (`rowId` INTEGER NOT NULL, `order_no` TEXT NOT NULL, `pay_method_id` INTEGER NOT NULL, `amt` REAL NOT NULL, `zl_amt` REAL NOT NULL, `online_pay_no` TEXT, `remark` TEXT, `status` INTEGER NOT NULL, `cas_id` TEXT, `pay_time` TEXT, PRIMARY KEY(`rowId`, `order_no`))");
-        update_list.add("CREATE TABLE IF NOT EXISTS `goodsPractice` (`kw_id` INTEGER NOT NULL, `kw_code` TEXT NOT NULL, `kw_name` TEXT, `kw_price` REAL, `status` INTEGER, PRIMARY KEY(`kw_id`, `kw_code`))");
-        update_list.add("CREATE TABLE IF NOT EXISTS `practiceAssociated` (`id` INTEGER, `barcode_id` TEXT, `kw_id` INTEGER, `kw_code` TEXT DEFAULT '', `kw_name` TEXT DEFAULT '', `kw_price` REAL DEFAULT 0.0, `status` INTEGER, PRIMARY KEY(`id`))");
 
         if (oldVersion <= 10){
             update_list.add("delete from barcode_info;");
@@ -223,32 +226,6 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         if(checkColumnNotExists(db, "barcode_info", "cash_flow_ratio")){
             modify_list.add("ALTER TABLE barcode_info ADD COLUMN cash_flow_ratio REAL DEFAULT (0.00)");
         }
-
-        if(checkColumnNotExists(db, "transfer_info", "shopping_num") && checkColumnNotExists(db, "transfer_info", "shopping_money")){
-            modify_list.add("ALTER TABLE transfer_info ADD COLUMN shopping_num INTEGER DEFAULT (0)");
-            modify_list.add("ALTER TABLE transfer_info ADD COLUMN shopping_money REAL DEFAULT (0.00)");
-        }
-
-        if(checkColumnNotExists(db, "barcode_info", "goods_img")){
-            modify_list.add("ALTER TABLE barcode_info ADD COLUMN goods_img INTEGER DEFAULT (-1)");
-        }
-        if(checkColumnNotExists(db, "barcode_info", "updtime")){
-            modify_list.add("ALTER TABLE barcode_info ADD COLUMN updtime INTEGER DEFAULT (0)");
-        }
-
-        /*
-         * 20211201 增加做法支持
-         * */
-        if(checkColumnNotExists(db, "retail_order_goods", "goodsPractice")){
-            modify_list.add("ALTER TABLE retail_order_goods ADD COLUMN goodsPractice TEXT DEFAULT '[]'");
-        }
-        if(checkColumnNotExists(db, "refund_order_goods", "goodsPractice")){
-            modify_list.add("ALTER TABLE refund_order_goods ADD COLUMN goodsPractice TEXT DEFAULT '[]'");
-        }
-        if(checkColumnNotExists(db, "hangbill_detail", "goodsPractice")){
-            modify_list.add("ALTER TABLE hangbill_detail ADD COLUMN goodsPractice TEXT DEFAULT '[]'");
-        }
-        /* 20211201 end */
 
         try {
             db.beginTransaction();
@@ -1411,7 +1388,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     public static @NonNull List<String> getSyncDataTableName(){
         return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
-                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info");
+                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info","goodsPractice","practiceAssociated");
     }
 
     public static String[] getGoodsCols(){

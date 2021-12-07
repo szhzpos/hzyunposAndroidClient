@@ -118,7 +118,7 @@
     <dimen name="size_228">228dp</dimen>
 
     <dimen name="dialog_head_height">@dimen/height_45</dimen>
-    <dimen name="goods_height">@dimen/size_82</dimen>
+    <dimen name="goods_height">@dimen/height_88</dimen>
     <dimen name="sale_goods_height">@dimen/height_68</dimen>
     <dimen name="mobile_sale_goods_height">@dimen/height_78</dimen>
     <dimen name="goods_img_width">@dimen/width_88</dimen>

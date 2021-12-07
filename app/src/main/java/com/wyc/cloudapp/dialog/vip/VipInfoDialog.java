@@ -96,6 +96,12 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
         super.onDetachedFromWindow();
     }
 
+    @Override
+    public boolean hookEnterKey() {
+        if (mSearchBtn != null)mSearchBtn.callOnClick();
+        return true;
+    }
+
     private void initChargeBtn(){
         final Button chargeBtn = findViewById(R.id.vip_charge);
         if (null != chargeBtn)

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.alibaba.fastjson.JSONArray;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
@@ -70,6 +71,17 @@ public final class MobileSaleGoodsAdapter extends AbstractSaleGoodsAdapter imple
         myViewHolder.itemView.setOnClickListener(onClickListener);
     }
 
+    @Override
+    protected void showGoodsPractice(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder, @NonNull JSONArray goods_practice) {
+        myViewHolder.itemView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        if (!goods_practice.isEmpty()){
+            myViewHolder.goodsPractice.setVisibility(View.VISIBLE);
+            myViewHolder.goodsPractice.setText(String.format("%s:%s",mContext.getString(R.string.goods_practice),generateGoodsPracticeInfo(goods_practice)));
+        }else {
+            myViewHolder.goodsPractice.setVisibility(View.GONE);
+            myViewHolder.goodsPractice.setText("");
+        }
+    }
 
     private final View.OnClickListener onClickListener = this::setSelectStatus;
 

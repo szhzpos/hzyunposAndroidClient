@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/margin_2">
 
     <TextView
         android:id="@+id/barcode_id"
@@ -177,19 +178,21 @@
         android:id="@+id/practice_tv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/mobile_sale_goods_content_margin"
         android:gravity="center_vertical"
-        android:padding="@dimen/margin_5"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
         android:text="@string/goods_practice"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <com.wyc.cloudapp.customizationView.InterceptLinearLayout
         android:id="@+id/mobile_float_fun_btn"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <Button
             android:id="@+id/mobile_alter_price_btn"

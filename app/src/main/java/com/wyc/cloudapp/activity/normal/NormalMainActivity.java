@@ -240,7 +240,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final WindowManager.LayoutParams p = new WindowManager.LayoutParams();
         p.packageName = anchor.getContext().getPackageName();
         p.gravity = Gravity.TOP|Gravity.START;
-        p.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        p.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL|WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
         p.type = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
         p.token = anchor.getApplicationWindowToken();
 
@@ -670,13 +670,13 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
                         if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
                             final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                            addGoodsInfoDialog.setBarcode(mSearch_content.getText().toString());
+                            addGoodsInfoDialog.setBarcode(content);
                             addGoodsInfoDialog.setFinishListener(barcode -> {
                                 mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
                                 addGoodsInfoDialog.dismiss();
                             });
                             addGoodsInfoDialog.show();
-                        }
+                        }else mSearch_content.selectAll();
                     } else
                         MyDialog.ToastMessage("无此商品!", getWindow());
                 });

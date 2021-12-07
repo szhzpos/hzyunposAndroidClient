@@ -4,17 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="@dimen/goods_height"
     android:background="@drawable/round_shape_blue"
-    android:paddingStart="@dimen/margin_1"
-    android:paddingEnd="@dimen/margin_1">
+    android:padding="@dimen/margin_2">
 
     <ImageView
         android:id="@+id/g_img"
         android:layout_width="@dimen/goods_img_width"
         android:layout_height="match_parent"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
         android:contentDescription="@string/space_sz"
-        android:padding="@dimen/margin_1"
         android:visibility="visible" />
 
     <TextView

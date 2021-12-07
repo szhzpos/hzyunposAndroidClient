@@ -146,16 +146,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             myViewHolder.sale_num.setText(String.format(Locale.CHINA,"%.3f",goods_info.getDoubleValue("xnum")));
             myViewHolder.sale_amt.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue("sale_amt")));
 
-            final JSONArray goods_practice = Utils.getNullObjectAsEmptyJsonArray(goods_info,"goodsPractice");
-            if (!goods_practice.isEmpty()){
-                myViewHolder.itemView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                myViewHolder.goodsPractice.setVisibility(View.VISIBLE);
-                myViewHolder.goodsPractice.setText(String.format("%s:%s",mContext.getString(R.string.goods_practice),generateGoodsPracticeInfo(goods_practice)));
-            }else {
-                myViewHolder.itemView.getLayoutParams().height = (int) mContext.getResources().getDimension(R.dimen.sale_goods_height);
-                myViewHolder.goodsPractice.setVisibility(View.GONE);
-                myViewHolder.goodsPractice.setText("");
-            }
+            showGoodsPractice(myViewHolder,Utils.getNullObjectAsEmptyJsonArray(goods_info,"goodsPractice"));
 
             if(myViewHolder.goods_title.getCurrentTextColor() == mContext.getResources().getColor(R.color.blue,null)){
                 myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
@@ -167,6 +158,19 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             }
         }
     }
+
+    protected void showGoodsPractice(@NonNull AbstractSaleGoodsAdapter.MyViewHolder myViewHolder,@NonNull final JSONArray goods_practice){
+        if (!goods_practice.isEmpty()){
+            myViewHolder.itemView.getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            myViewHolder.goodsPractice.setVisibility(View.VISIBLE);
+            myViewHolder.goodsPractice.setText(String.format("%s:%s",mContext.getString(R.string.goods_practice),generateGoodsPracticeInfo(goods_practice)));
+        }else {
+            myViewHolder.itemView.getLayoutParams().height = (int) mContext.getResources().getDimension(R.dimen.sale_goods_height);
+            myViewHolder.goodsPractice.setVisibility(View.GONE);
+            myViewHolder.goodsPractice.setText("");
+        }
+    }
+
     public static String generateGoodsPracticeInfo(@NonNull JSONArray array){
         final StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0,size = array.size();i < size;i ++){

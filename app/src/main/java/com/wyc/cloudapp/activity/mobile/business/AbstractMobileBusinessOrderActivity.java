@@ -284,7 +284,7 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
     private final View.OnClickListener mAuditStatusClickListener = v -> {
         final Button btn = (Button) v;
 
-        int white = getColor(R.color.white),text_color = getColor(R.color.text_color),blue = getColor(R.color.blue);
+        int white = getColor(R.color.white),text_color = getColor(R.color.text_color),blue = getColor(R.color.lightBlue);
         final int id = btn.getId();
 
         float corner_size = (float) (btn.getHeight() / 2.0);

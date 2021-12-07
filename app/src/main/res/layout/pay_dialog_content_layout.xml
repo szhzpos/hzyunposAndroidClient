@@ -441,7 +441,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/margin_5"
-                android:text="@string/cash_pay_sz"
+                android:text="@string/amt_sz"
                 android:textColor="@color/blue"
                 android:textSize="@dimen/fun_button_font_size_18" />
 

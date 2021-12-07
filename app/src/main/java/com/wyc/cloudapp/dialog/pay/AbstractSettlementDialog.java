@@ -160,6 +160,12 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         });
     }
 
+    @Override
+    public boolean hookEnterKey() {
+        triggerDefaultPay();
+        return true;
+    }
+
     private void allDiscountBtn(){
         final Button all_discount_btn = findViewById(R.id.all_discount);
         if (null != all_discount_btn)
@@ -428,13 +434,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             }
 
                             payMethodDialogImp.setPayAmt(mPay_balance);
-                            final int code = payMethodDialogImp.exec();
-                            mPayMethodViewAdapter.showDefaultPayMethod();
-                            if (code == 1){
+                            payMethodDialogImp.setYesOnclickListener(dialog -> {
                                 final JSONObject jsonObject = payMethodDialogImp.getContent();
                                 if (jsonObject != null)mPayDetailViewAdapter.addPayDetail(jsonObject);
                                 //付款之后的抹零金额计算放在支付明细registerAdapterDataObserver回调中进行，因为还要处理删除支付方式的情况
-                            }else {
+                                mPayMethodViewAdapter.showDefaultPayMethod();
+                                dialog.dismiss();
+                            }).setCancelListener(dialog -> {
                                 if (isPayMethodMol){
                                     if (isNotMol){
                                         if (isDefaultMol){
@@ -446,7 +452,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                         }
                                     }
                                 }
-                            }
+                                mPayMethodViewAdapter.showDefaultPayMethod();
+                                dialog.dismiss();
+                            }).show();
                         }
                     }
                 }else{
