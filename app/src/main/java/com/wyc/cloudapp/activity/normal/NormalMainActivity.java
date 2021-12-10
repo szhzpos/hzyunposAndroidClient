@@ -1,5 +1,7 @@
 package com.wyc.cloudapp.activity.normal;
 
+import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
+
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -37,7 +39,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,16 +47,18 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
-import com.wyc.cloudapp.customizationView.ScaleView;
-import com.wyc.cloudapp.customizationView.TmpOrderButton;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
+import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
+import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.customizationView.ScaleView;
+import com.wyc.cloudapp.customizationView.TmpOrderButton;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -73,6 +76,7 @@ import com.wyc.cloudapp.dialog.orderDialog.QueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
+import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -85,8 +89,6 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
-
-import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
 
 public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback,View.OnClickListener {
     private RecyclerView mSaleGoodsRecyclerView;
@@ -233,7 +235,12 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         store_name.setText(String.format("%s%s%s%s",getStoreName(),"[",getStoreId(),"]"));
     }
     private void initScaleView(){
-        mScaleView = findViewById(R.id.scaleView);
+        final LinearLayout scaleInfo = findViewById(R.id.scaleInfo);
+        if (null != scaleInfo){
+            mScaleView = scaleInfo.findViewById(R.id.scaleView);
+            scaleInfo.findViewById(R.id.r_zero);
+            scaleInfo.findViewById(R.id.tare);
+        }
     }
 
     private WindowManager.LayoutParams createPopupLayoutParams(final View anchor) {
@@ -511,7 +518,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     private void initGoodsInfoAdapter(){
         mGoodsInfoViewAdapter = new GoodsInfoViewAdapter(this);
-        final RecyclerView goods_info_view = findViewById(R.id.goods_info_list);
+        final IndicatorRecyclerView goods_info_view = findViewById(R.id.goods_info_list);
         final GridLayoutManager gridLayoutManager = new GridLayoutManager(this,GoodsInfoViewAdapter.SPAN_COUNT);
         goods_info_view.setLayoutManager(gridLayoutManager);
         mGoodsInfoViewAdapter.setOnGoodsSelectListener(this::addSaleGoods);
@@ -539,12 +546,17 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if ((mSaleGoodsRecyclerView.canScrollVertically(0) || mSaleGoodsRecyclerView.canScrollVertically(-1)) && offset != 0){
                 mSaleGoodsRecyclerView.scrollBy(0,offset);
             }
+
             if (mSecondDisplay != null)mSecondDisplay.notifyChange(cur);
         });
 
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(mSaleGoodsRecyclerView,getResources().getDimension(R.dimen.sale_goods_height),new SaleGoodsItemDecoration(getColor(R.color.gray_subtransparent)));
         mSaleGoodsRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsAdapter);
+    }
+    @Override
+    public void setScaleCurrent(float v){
+        if (mScaleView != null)mScaleView.setCurrentValue(v);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -923,9 +935,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     @Override
     public void showAdjustPriceDialog(){
         if (mGoodsInfoViewAdapter != null)mGoodsInfoViewAdapter.showAdjustPriceDialog(findViewById(R.id.goods_type_list));
-    }
-    public void setScaleCurrent(float v){
-        if (mScaleView != null)mScaleView.setCurrentValue(v);
     }
 
     @Override

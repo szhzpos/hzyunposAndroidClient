@@ -140,17 +140,18 @@
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>
 
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
         <LinearLayout
             android:id="@+id/main_top_right_icon"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_8"
+            android:layout_marginEnd="@dimen/margin_5"
             android:orientation="horizontal">
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="6" />
 
             <ImageView
                 android:id="@+id/network_status"
@@ -180,7 +181,6 @@
                 android:layout_width="@dimen/size_32"
                 android:layout_height="@dimen/size_32"
                 android:layout_marginStart="@dimen/margin_18"
-                android:layout_weight="0.5"
                 android:contentDescription="@string/space_sz"
                 app:srcCompat="@drawable/close" />
 
@@ -274,14 +274,46 @@
 
         </LinearLayout>
 
-        <com.wyc.cloudapp.customizationView.ScaleView
-            android:id="@+id/scaleView"
+        <LinearLayout
+            android:id="@+id/scaleInfo"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/size_108"
+            android:layout_height="@dimen/height_68"
             android:background="@drawable/bottom_separator"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:paddingEnd="@dimen/margin_8">
 
-        <com.wyc.cloudapp.customizationView.CusRecyclerView
+            <com.wyc.cloudapp.customizationView.ScaleView
+                android:id="@+id/scaleView"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/height_68"
+                android:layout_weight="1"
+                android:visibility="visible" />
+
+            <Button
+                android:id="@+id/r_zero"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginEnd="@dimen/margin_8"
+                android:background="@drawable/button_pink"
+                android:text="@string/r_zero"
+                android:textColor="@color/pink_white"
+                android:textSize="@dimen/font_size_18" />
+
+            <Button
+                android:id="@+id/tare"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/button_pink"
+                android:text="@string/tare"
+                android:textColor="@color/pink_white"
+                android:textSize="@dimen/font_size_18" />
+        </LinearLayout>
+
+        <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
             android:id="@+id/sale_goods_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -289,7 +321,7 @@
             android:background="@drawable/round_shape"
             app:stackFromEnd="true">
 
-        </com.wyc.cloudapp.customizationView.CusRecyclerView>
+        </com.wyc.cloudapp.customizationView.IndicatorRecyclerView>
 
         <LinearLayout
             android:id="@+id/order_info_linearLayout"
@@ -620,23 +652,22 @@
 
     </LinearLayout>
 
-    <com.wyc.cloudapp.customizationView.CusRecyclerView
+    <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
         android:id="@+id/goods_type_list"
         android:layout_width="0dp"
         android:layout_height="@dimen/height_50"
         android:background="@drawable/round_shape"
-        android:layoutDirection="ltr"
         android:paddingStart="@dimen/margin_2"
         android:paddingEnd="@dimen/margin_1"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/goods_info_list"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
         app:layout_constraintTop_toBottomOf="@+id/main_top"
         app:layout_constraintVertical_bias="0.0" />
 
-    <com.wyc.cloudapp.customizationView.CusRecyclerView
+    <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
         android:id="@+id/goods_info_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -649,7 +680,7 @@
         app:layout_constraintTop_toBottomOf="@id/goods_type_list"
         tools:ignore="SpeakableTextPresentCheck">
 
-    </com.wyc.cloudapp.customizationView.CusRecyclerView>
+    </com.wyc.cloudapp.customizationView.IndicatorRecyclerView>
 
     <TableLayout
         android:id="@+id/keyboard_layout"

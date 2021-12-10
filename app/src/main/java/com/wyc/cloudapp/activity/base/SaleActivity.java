@@ -194,6 +194,9 @@ public class SaleActivity extends MainActivity{
     public void showAdjustPriceDialog(){}
     public String getOrderCode(){ return "";}
     public void resetOrderCode(){}
+    public void setScaleCurrent(float v){
+
+    }
 
     public boolean containGoods(){
         return false;

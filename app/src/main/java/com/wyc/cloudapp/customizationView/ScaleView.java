@@ -14,6 +14,8 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.wyc.cloudapp.utils.Utils;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
@@ -57,7 +59,7 @@ public class ScaleView extends View {
         super.onMeasure(widthMeasureSpec,heightMeasureSpec);
         int w = getMeasuredWidth(),h = getMeasuredHeight();
         mOutRadius = Math.min(w, h) / 2.1f;
-        mCoordinateCenter.set(w / 5, h / 2);
+        mCoordinateCenter.set(w / 8, h / 2);
         mNumPathList = generateCurrentValuePath();
     }
 
@@ -68,13 +70,7 @@ public class ScaleView extends View {
 
     @Override
     public void onDraw(Canvas canvas){
-        drawDrawable(canvas);
         drawContent(canvas);
-    }
-
-    private void drawDrawable(final Canvas canvas){
-        final Drawable bg = getBackground();
-        if (bg != null)bg.draw(canvas);
     }
 
     public void setCurrentValue(final float v){
@@ -121,21 +117,23 @@ public class ScaleView extends View {
         }else{
             postDelayed(update,5);
         }
-        invalidate();
+        postInvalidate();
     }
 
     private final Runnable update = this::updatePointerAngle;
 
     private void drawContent(final Canvas canvas){
         canvas.translate(mCoordinateCenter.x,mCoordinateCenter.y);
+        drawOnlyCurrentValue(canvas);
+    }
+    private void drawAll(Canvas canvas){
         drawGraduation(canvas);
         drawInCircle(canvas);
         drawPointer(canvas);
         drawCurrentValue(canvas);
     }
-
     private void drawCurrentValue(final Canvas canvas){
-        float xAxis = mOutRadius + dpToPx(mContext,18),yAxis = -mOutRadius / 1.8f,num_width = mNumberWidth,space_8 = mOutRadius / 18,xAxis_spacing = num_width + space_8;
+        float xAxis = mOutRadius + dpToPx(mContext,8),yAxis = -mOutRadius / 1.8f,num_width = mNumberWidth,space_8 = mOutRadius / 18,xAxis_spacing = num_width + space_8;
         float current_value = mCurrentValue / 1000;
 
         final String _value = String.format(Locale.CHINA,"%.3f",current_value);
@@ -160,7 +158,34 @@ public class ScaleView extends View {
 
         }
         canvas.restore();
+    }
 
+    private void drawOnlyCurrentValue(final Canvas canvas){
+        float numSpace = Utils.dpToPx(getContext(),2);
+        float yAxis = -mOutRadius / 1.8f,num_width = mNumberWidth,space_8 = mOutRadius / 18 ,xAxis_spacing = num_width + space_8 + numSpace;
+        float current_value = mCurrentValue / 1000;
+
+        final String _value = String.format(Locale.CHINA,"%.3f",current_value);
+
+        mPaint.setStyle(Paint.Style.STROKE);
+        canvas.save();
+        canvas.translate(0,yAxis);
+
+        mPaint.setColor(Color.RED);
+        for (int i = 0,size = _value.length();i < size; i++){
+            final char c = _value.charAt(i);
+            if (c == '.'){
+                mPaint.setStyle(Paint.Style.FILL);
+                mPaint.setColor(Color.BLUE);
+                canvas.drawCircle(num_width - space_8,- yAxis * 2,mOutRadius / 20.0f,mPaint);
+                mPaint.setColor(Color.RED);
+                mPaint.setStyle(Paint.Style.STROKE);
+            }else{
+                if (i > 0)canvas.translate(xAxis_spacing,0 );
+                drawNumber(canvas,c);
+            }
+        }
+        canvas.restore();
     }
 
     private void drawNumber(final Canvas canvas,char num){

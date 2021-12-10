@@ -64,8 +64,8 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     private static final int DATABASE_VERSION = AppDatabase.DATABASE_VERSION;
     private static volatile SQLiteDatabase mDb;
 
-    private SQLiteHelper(Context context,final String databaseName){
-        super(context, databaseName, null, DATABASE_VERSION);
+    private SQLiteHelper(Context context,final String databaseName,int ver){
+        super(context, databaseName, null, ver);
         Logger.d("DATABASE_NAME:%s",databaseName);
     }
 
@@ -87,7 +87,7 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     * */
     private static void copy(final String src) {
         final ContentValues values = new ContentValues();
-        final SQLiteDatabase src_sqLiteHelper = new SQLiteHelper(CustomApplication.self(), src).getWritableDatabase();
+        final SQLiteDatabase src_sqLiteHelper = new SQLiteHelper(CustomApplication.self(), src,DATABASE_VERSION).getWritableDatabase();
         try{
             final List<String> tables = getSyncDataTableName();
             src_sqLiteHelper.beginTransaction();
@@ -121,14 +121,28 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     public static void initDb(Context context, final String storesId){
         final String name = DATABASE_NAME(storesId);
-        AppDatabase.initDataBase(name);
+        final boolean exist = new File(name).exists();
+        if (exist){
+            AppDatabase.initDataBase(name);
+        }
         if (mDb == null){
             synchronized (SQLiteHelper.class){
                 if (mDb == null){
                     try {
-                        final SQLiteHelper helper = new SQLiteHelper(context,name);
-                        helper.setWriteAheadLoggingEnabled(AppDatabase.getInstance().getOpenHelper().getWritableDatabase().isWriteAheadLoggingEnabled());
+
+                        int ver = DATABASE_VERSION;
+                        if (!exist){
+                            ver = DATABASE_VERSION - 1;
+                        }
+
+                        final SQLiteHelper helper = new SQLiteHelper(context,name,ver);
+                        helper.setWriteAheadLoggingEnabled(true);
                         mDb = helper.getWritableDatabase();
+
+                        if (!exist){
+                            AppDatabase.initDataBase(name);
+                        }
+
                         if (CustomApplication.isPracticeMode())copy(NORMAL_DATABASE_NAME(storesId));
                     }catch (SQLiteException e){
                         e.printStackTrace();

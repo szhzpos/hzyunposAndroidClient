@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.Presentation;
 import android.content.Context;
@@ -184,6 +185,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
             mShowInterval = interval;
         }
     }
+    @SuppressLint("NotifyDataSetChanged")
     public void notifyChange(int index){
         mNormalSaleGoodsAdapter.setCurrentItemIndex(index).notifyDataSetChanged();
     }

@@ -34,10 +34,12 @@ import com.wyc.cloudapp.bean.VipInfo
 import com.wyc.cloudapp.bean.VipPickStuffInfo
 import com.wyc.cloudapp.constants.InterfaceURL
 import com.wyc.cloudapp.data.SQLiteHelper
+import com.wyc.cloudapp.data.viewModel.OrderIdViewModel
 import com.wyc.cloudapp.data.viewModel.VipInfoViewModel
 import com.wyc.cloudapp.databinding.StoredNumEditBinding
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
@@ -135,17 +137,19 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                 }
             }
 
-            val uploadObj = JSONObject()
-            uploadObj["appid"] = CustomApplication.self().appId
-            uploadObj["stores_id"] = CustomApplication.self().storeId
-            uploadObj["pt_user_id"] = CustomApplication.self().ptUserId
-            uploadObj["bgd_code"] = mStuffList!![0].bgdCode
-            uploadObj["member_id"] = getVipInfo()?.member_id
-            uploadObj["bgd_type"] = 7
-            uploadObj["goods_list_json"] = data
 
             val progress = CustomProgressDialog.showProgress(requireActivity(), getString(R.string.upload_order_hints))
             launch {
+
+                val uploadObj = JSONObject()
+                uploadObj["appid"] = CustomApplication.self().appId
+                uploadObj["stores_id"] = CustomApplication.self().storeId
+                uploadObj["pt_user_id"] = CustomApplication.self().ptUserId
+                uploadObj["bgd_code"] = ViewModelProvider(requireActivity()).get(OrderIdViewModel::class.java).syncGetOrderId("BG")
+                uploadObj["member_id"] = getVipInfo()?.member_id
+                uploadObj["bgd_type"] = 7
+                uploadObj["goods_list_json"] = data
+
                 var retJson = HttpUtils.sendPost(CustomApplication.self().url + InterfaceURL.O_OUT_IN_UPLOAD, HttpRequest.generate_request_parma(uploadObj,CustomApplication.self().appSecret), true)
                 if (HttpUtils.checkRequestSuccess(retJson)) {
                     var info = JSON.parseObject(retJson.getString("info"))
@@ -358,6 +362,7 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
             param["pt_user_id"]= CustomApplication.self().ptUserId
             param["xtype"]= "card_code"
             param["stores_id"]= CustomApplication.self().storeId
+            param["wh_id"]= CustomApplication.self().whId
             param["keyword"] = vipInfo.card_code
 
             val progressDialog = CustomProgressDialog.showProgress(requireContext(), requireContext().getString(R.string.hints_query_data_sz))
@@ -391,10 +396,11 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
     private fun dealData(d: MutableList<VipPickStuffInfo>){
         val info = JSONObject()
         d.forEach {
-            if (SQLiteHelper.execSql(info,"select retail_price,conversion,unit_id from barcode_info where barcode_id = '"+ it.barcodeId +"'")){
+            if (SQLiteHelper.execSql(info,"select goods_id,retail_price,conversion,unit_id from barcode_info where barcode_id = '"+ it.barcodeId +"'")){
                 it.conversion = info.getIntValue("conversion")
                 it.unitId = info.getString("unit_id")
                 it.price = info.getDoubleValue("retail_price")
+                it.goodsId = info.getString("goods_id")
             }else {
                 MyDialog.toastMessage(info.getString("info"))
                 return@forEach

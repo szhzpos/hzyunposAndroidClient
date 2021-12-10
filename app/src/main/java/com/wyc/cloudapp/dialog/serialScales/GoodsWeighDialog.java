@@ -14,6 +14,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
@@ -34,7 +35,8 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
     private double mValue;
-    private boolean mContinuousWeighing = false;
+    private boolean mContinuousWeighing = true;
+
     public GoodsWeighDialog(@NonNull SaleActivity context, final String title) {
         super(context,title);
 
@@ -183,6 +185,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(double num) {
+                            mContext.setScaleCurrent((float) num * 1000);
                             if (mContinuousWeighing){
                                 mValue = num;
                                 if (mOnYesClick != null)mContext.runOnUiThread(()-> mOnYesClick.onYesClick(num));
@@ -215,5 +218,4 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     public final void setOnYesOnclickListener(OnYesOnclickListener listener){
         mOnYesClick = listener;
     }
-
 }

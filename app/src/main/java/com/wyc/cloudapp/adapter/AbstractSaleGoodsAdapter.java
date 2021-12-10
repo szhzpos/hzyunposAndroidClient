@@ -72,11 +72,24 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                     n3 += jsonObject.getDouble("discount_amt");
                     n4 += jsonObject.getDouble("original_amt");
                 }
-                mTotalSaleNum = n1;
-                mTotalSaleAmt = n2;
-                mTotalDiscountAmt = n3;
-                mTotalOriginalAmt = n4;
-                if (mDataListener != null)mDataListener.onChange(n1,n2,n3);
+                boolean refresh = false;
+                if (!Utils.equalDouble(mTotalSaleNum,n1)){
+                    mTotalSaleNum = n1;
+                    refresh = true;
+                }
+                if (!Utils.equalDouble(mTotalSaleAmt,n2)){
+                    mTotalSaleAmt = n2;
+                    refresh = true;
+                }
+                if (!Utils.equalDouble(mTotalDiscountAmt,n3)){
+                    mTotalDiscountAmt = n3;
+                    refresh = true;
+                }
+                if (!Utils.equalDouble(mTotalOriginalAmt,n4)){
+                    mTotalOriginalAmt = n4;
+                    refresh = true;
+                }
+                if (refresh && mDataListener != null)mDataListener.onChange(n1,n2,n3);
             }
         });
     }

@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.text.Html;
 
@@ -21,6 +22,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
     private GoodsWeighDialog mWeighDialog;
     public NormalSaleGoodsAdapter(final SaleActivity context){
         super(context);
+        mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
     }
 
     @Override
@@ -121,13 +123,15 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void clearGoods(){
         super.clearGoods();
-        if (mWeighDialog != null){
+/*        if (mWeighDialog != null){
             mWeighDialog.stopRead();
             mWeighDialog = null;
-        }
+        }*/
         notifyDataSetChanged();
+        mContext.setScaleCurrent(0.0f);
     }
 }

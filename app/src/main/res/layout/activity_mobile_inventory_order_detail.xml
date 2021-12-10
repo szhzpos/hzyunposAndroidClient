@@ -273,7 +273,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.wyc.cloudapp.customizationView.CusRecyclerView
+        <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
             android:id="@+id/details_list"
             android:layout_width="match_parent"
             android:layout_height="0dp"

@@ -5,29 +5,19 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
-import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.abs
 import kotlin.math.asin
+import kotlin.math.sqrt
 
-class SlideRecycleView : CusRecyclerView{
-    private var downX = 0f;
-    private  var downY = 0f
-    private var mTouchSlop = 0
+class SlideRecycleView : IndicatorRecyclerView{
     private var isChildLeftDrag = false
     private var isChildRightDrag = false
-    private var isSlideLeft = false
-    private var isSlideRight = false
-    constructor(context: Context):this(context, null){
 
-    }
-    constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0){
-
-    }
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr){
-        mTouchSlop = ViewConfiguration.get(context).scaledPagingTouchSlop
-    }
+    constructor(context: Context):this(context, null)
+    constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr)
 
     private fun isClickView(view: View?, x: Float, y: Float): Boolean {
         if (view == null) return false
@@ -58,42 +48,27 @@ class SlideRecycleView : CusRecyclerView{
     private fun clearDragFlag(){
         isChildLeftDrag = false
         isChildRightDrag = false
-        isSlideLeft = false
-        isSlideRight = false
+        clearLeftRight()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val code = super.dispatchTouchEvent(ev)
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
-                downX = ev.x
-                downY = ev.y
                 clearDragFlag()
                 checkChildDrag(findChildByCoordinate(ev.x,ev.y))
             }
             MotionEvent.ACTION_MOVE -> {
-                val moveX = ev.x
-                val moveY = ev.y
-                val xDiff = abs(moveX - downX)
-                val yDiff = abs(moveY - downY)
-                if (xDiff > mTouchSlop || yDiff > mTouchSlop) {
-                    val squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff).toDouble())
-                    val degree = asin(yDiff / squareRoot) * 180 / Math.PI
-                    val isMeetSlidingXAngle = degree <= 45
-                    if (isMeetSlidingXAngle){
-                        isSlideLeft = moveX <= downX
-                        isSlideRight = moveX >= downX
-                        if ((isSlideRight && !isChildRightDrag && !canScrollHorizontally(-1)) || (isSlideLeft && !isChildLeftDrag && !canScrollHorizontally(1))) {
-                            return false
-                        }
-                    }
+                if ((hasSlideRight() && !isChildRightDrag && !canScrollHorizontally(-1)) || (hasSlideLeft() && !isChildLeftDrag && !canScrollHorizontally(1))) {
+                    return false
                 }
             }
             MotionEvent.ACTION_UP -> {
-                if (!Utils.equalDouble(downX, ev.x) && ((isSlideRight && !isChildRightDrag) || (isSlideLeft && !isChildLeftDrag))) {
+                if (!Utils.equalDouble(downX, ev.x) && ((hasSlideRight() && !isChildRightDrag) || (hasSlideLeft() && !isChildLeftDrag))) {
                     return false
                 }
             }
         }
-        return super.dispatchTouchEvent(ev)
+        return code
     }
 }
