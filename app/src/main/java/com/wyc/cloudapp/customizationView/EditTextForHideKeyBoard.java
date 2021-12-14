@@ -29,7 +29,7 @@ public class EditTextForHideKeyBoard extends EditText {
 
     public EditTextForHideKeyBoard(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.EditTextForHideKeyBoard, 0, 0);
+        final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.EditTextForHideKeyBoard, defStyleAttr, defStyleRes);
         int indexCount = typedArray.getIndexCount();
         for (int i = 0; i < indexCount; i++) {
             int index = typedArray.getIndex(i);

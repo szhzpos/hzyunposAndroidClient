@@ -8,4 +8,5 @@ public interface ISerialScale {
     void startRead();
     void stopRead();
     void close();
+    void write(byte[] c);
 }

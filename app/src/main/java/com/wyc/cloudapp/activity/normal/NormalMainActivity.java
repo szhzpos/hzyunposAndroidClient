@@ -76,7 +76,7 @@ import com.wyc.cloudapp.dialog.orderDialog.QueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
-import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -235,11 +235,15 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         store_name.setText(String.format("%s%s%s%s",getStoreName(),"[",getStoreId(),"]"));
     }
     private void initScaleView(){
-        final LinearLayout scaleInfo = findViewById(R.id.scaleInfo);
-        if (null != scaleInfo){
-            mScaleView = scaleInfo.findViewById(R.id.scaleView);
-            scaleInfo.findViewById(R.id.r_zero);
-            scaleInfo.findViewById(R.id.tare);
+        if (((NormalSaleGoodsAdapter)mSaleGoodsAdapter).hasAutoGetWeigh()){
+            final LinearLayout scaleInfo = findViewById(R.id.scaleInfo);
+            if (null != scaleInfo){
+                scaleInfo.setVisibility(View.VISIBLE);
+                mScaleView = scaleInfo.findViewById(R.id.scaleView);
+                scaleInfo.findViewById(R.id.r_zero).setOnClickListener(v -> ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).rZero());
+                scaleInfo.findViewById(R.id.tare).setOnClickListener(v -> ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).tare());
+                mScaleView.setCurrentValue(AbstractSerialScaleImp.OnReadStatus.STABLE,((NormalSaleGoodsAdapter)mSaleGoodsAdapter).getWeigh());
+            }
         }
     }
 
@@ -467,6 +471,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
 
     private void clearResource(){
+        ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).closeWeigh();
         hideLastOrderInfo();
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
     }
@@ -555,8 +560,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsAdapter);
     }
     @Override
-    public void setScaleCurrent(float v){
-        if (mScaleView != null)mScaleView.setCurrentValue(v);
+    public void setScaleCurrent(int stat,float v){
+        if (mScaleView != null)mScaleView.setCurrentValue(stat,v);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -672,28 +677,30 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     @Override
     public boolean hookEnterKey() {
-        final SaleActivity context = this;
-        final String content = mSearch_content.getText().toString();
-        if (content.length() == 0){
-            mGoodsCategoryAdapter.trigger_preView();
-        }else{
-            if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                CustomApplication.runInMainThread(()->{
-                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
-                        if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
-                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                            addGoodsInfoDialog.setBarcode(content);
-                            addGoodsInfoDialog.setFinishListener(barcode -> {
-                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                addGoodsInfoDialog.dismiss();
-                            });
-                            addGoodsInfoDialog.show();
-                        }else mSearch_content.selectAll();
-                    } else
-                        MyDialog.ToastMessage("无此商品!", getWindow());
-                });
+        CustomApplication.postAtFrontOfQueue(()->{
+            final SaleActivity context = this;
+            final String content = mSearch_content.getText().toString();
+            if (content.length() == 0){
+                mGoodsCategoryAdapter.trigger_preView();
+            }else{
+                if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
+                    CustomApplication.runInMainThread(()->{
+                        if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
+                            if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
+                                final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
+                                addGoodsInfoDialog.setBarcode(content);
+                                addGoodsInfoDialog.setFinishListener(barcode -> {
+                                    mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                    addGoodsInfoDialog.dismiss();
+                                });
+                                addGoodsInfoDialog.show();
+                            }else mSearch_content.selectAll();
+                        } else
+                            MyDialog.ToastMessage("无此商品!", getWindow());
+                    });
+                }
             }
-        }
+        });
         return true;
     }
 
@@ -916,8 +923,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         if (mGoodsInfoViewAdapter.getSingleGoods(content,jsonObject.getString(GoodsInfoViewAdapter.W_G_MARK),id)){
             hideLastOrderInfo();
             mSaleGoodsAdapter.addSaleGoods(content);
-        }else{
-            if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + content.getString("info"), null);
         }
     }
     private boolean isAdjustPriceMode(){

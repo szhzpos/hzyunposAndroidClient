@@ -7,63 +7,10 @@
     android:background="@drawable/round_border_sub_gray"
     android:orientation="horizontal">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/w_g_img"
-            android:layout_width="@dimen/width_128"
-            android:layout_height="@dimen/size_108"
-            android:layout_marginStart="@dimen/margin_2"
-            android:contentDescription="@string/space_sz"
-            android:scaleType="fitXY"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <Button
-            android:id="@+id/d_tare"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/button_pink"
-            android:minWidth="58dp"
-            android:minHeight="48dp"
-            android:text="@string/tare"
-            android:textColor="@color/pink_white"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintEnd_toEndOf="@id/w_g_img"
-            app:layout_constraintStart_toEndOf="@id/d_zero"
-            app:layout_constraintTop_toBottomOf="@id/w_g_img" />
-
-        <Button
-            android:id="@+id/d_zero"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:background="@drawable/button_pink"
-            android:minWidth="58dp"
-            android:minHeight="48dp"
-            android:text="@string/r_zero"
-            android:textColor="@color/pink_white"
-            android:textSize="@dimen/font_size_16"
-            app:layout_constraintEnd_toStartOf="@id/d_tare"
-            app:layout_constraintStart_toStartOf="@id/w_g_img"
-            app:layout_constraintTop_toTopOf="@id/d_tare" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_1"
-        android:layout_weight="1"
         android:background="@drawable/left_separator"
         android:orientation="vertical">
 
@@ -83,7 +30,7 @@
                 android:textSize="@dimen/font_size_18" />
 
             <TextView
-                android:id="@+id/w_g_name"
+                android:id="@+id/_name"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="start|center_vertical"
@@ -107,25 +54,21 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
 
-            <TextView
-                android:id="@+id/w_g_price"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/margin_8"
-                android:paddingEnd="@dimen/size_0"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
+            <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
+                android:id="@+id/price"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_1"
+                android:background="@drawable/round_border_sub_gray"
+                android:ems="8"
+                android:focusable="auto"
+                android:focusableInTouchMode="true"
+                android:inputType="numberSigned|numberDecimal"
+                android:padding="@dimen/margin_5"
+                android:text="@string/zero_p_z_sz"
+                android:textSize="@dimen/font_size_18"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
-            <TextView
-                android:id="@+id/unit_name"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/height_45"
-                android:gravity="start|center_vertical"
-                android:paddingStart="@dimen/margin_8"
-                android:paddingEnd="@dimen/size_0"
-                android:textColor="@color/text_color"
-                android:textSize="@dimen/font_size_18" />
         </LinearLayout>
 
         <LinearLayout
@@ -138,13 +81,13 @@
                 android:layout_height="@dimen/height_45"
                 android:layout_marginStart="@dimen/margin_5"
                 android:gravity="center"
-                android:text="@string/weigh_sz"
+                android:text="@string/m_num_sz"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
 
             <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
-                android:id="@+id/w_value"
+                android:id="@+id/new_num"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_1"
@@ -154,7 +97,9 @@
                 android:focusableInTouchMode="true"
                 android:inputType="numberSigned|numberDecimal"
                 android:padding="@dimen/margin_5"
+                android:text="1.00"
                 android:textSize="@dimen/font_size_18"
+                app:onFocusTime="0"
                 tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
 
         </LinearLayout>
@@ -185,6 +130,25 @@
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_18" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/weight_btn"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/margin_12"
+            android:layout_marginTop="@dimen/margin_5"
+            android:layout_marginEnd="@dimen/margin_12"
+            android:layout_marginBottom="@dimen/margin_5"
+            android:background="@drawable/button_pink"
+            android:text="@string/get_weight"
+            android:textColor="@color/pink_white"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/w_g_img"
+            app:layout_constraintStart_toEndOf="@id/d_zero"
+            app:layout_constraintTop_toBottomOf="@id/w_g_img" />
     </LinearLayout>
 
     <com.wyc.cloudapp.customizationView.KeyboardView

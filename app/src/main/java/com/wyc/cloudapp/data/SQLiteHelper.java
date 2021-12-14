@@ -122,17 +122,18 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
     public static void initDb(Context context, final String storesId){
         final String name = DATABASE_NAME(storesId);
         final boolean exist = new File(name).exists();
-        if (exist){
-            AppDatabase.initDataBase(name);
-        }
-        if (mDb == null){
-            synchronized (SQLiteHelper.class){
-                if (mDb == null){
-                    try {
 
+        try {
+            if (exist){
+                new SQLiteHelper(context,name,13).getWritableDatabase().close();
+                AppDatabase.initDataBase(name);
+            }
+            if (mDb == null){
+                synchronized (SQLiteHelper.class){
+                    if (mDb == null){
                         int ver = DATABASE_VERSION;
                         if (!exist){
-                            ver = DATABASE_VERSION - 1;
+                            ver = 13;
                         }
 
                         final SQLiteHelper helper = new SQLiteHelper(context,name,ver);
@@ -144,14 +145,14 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                         }
 
                         if (CustomApplication.isPracticeMode())copy(NORMAL_DATABASE_NAME(storesId));
-                    }catch (SQLiteException e){
-                        e.printStackTrace();
-                        MyDialog.toastMessage("打开数据库错误：" + e.getLocalizedMessage());
-                        SystemClock.sleep(3000);
-                        CustomApplication.self().exit();
                     }
                 }
             }
+        }catch (Exception e){
+            e.printStackTrace();
+            MyDialog.toastMessage("打开数据库错误：" + e.getLocalizedMessage());
+            SystemClock.sleep(3000);
+            CustomApplication.self().exit();
         }
     }
 
@@ -160,6 +161,12 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
         initTables(db);//初始化数据库
         onUpgrade(db,0,0);
     }
+
+    @Override
+    public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db,int oldVersion, int newVersion) {
         final List<String> update_list = new ArrayList<>(),modify_list = new ArrayList<>();

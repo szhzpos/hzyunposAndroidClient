@@ -13,6 +13,8 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -57,6 +59,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private int mPriceType = WholesalePriceType.BUYING_PRICE;
     private View.OnClickListener mDelListener;
     private OnContinueListener mContinueListener;
+    private CheckBox mContinueScan;
+    private Button mContinueBtn;
     /*需要过滤商品类别*/
     private String mGoodsCategory;
 
@@ -187,6 +191,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     }
 
     private void initView(){
+        mContinueScan = findViewById(R.id.continue_cb);
         mItemNoTv = findViewById(R.id.item_no_tv);
         mNameTv = findViewById(R.id.name_tv);
         mNumEt = findViewById(R.id.num_tv);
@@ -391,6 +396,10 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
 
         mUnitTv.setTag(object.getString("unit_id"));
         mUnitTv.setText(object.getString("unit_name"));
+
+        if (mContinueScan.isChecked()){
+            mContinueBtn.callOnClick();
+        }
     }
 
 
@@ -435,11 +444,11 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             });
         }
 
-        final Button btn = findViewById(R.id.continue_btn);
+        mContinueBtn = findViewById(R.id.continue_btn);
         if (isModify()){
-            btn.setVisibility(View.GONE);
+            mContinueBtn.setVisibility(View.GONE);
         }else {
-            btn.setOnClickListener(this);
+            mContinueBtn.setOnClickListener(this);
         }
     }
 

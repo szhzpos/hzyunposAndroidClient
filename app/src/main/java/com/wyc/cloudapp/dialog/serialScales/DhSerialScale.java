@@ -40,7 +40,7 @@ public class DhSerialScale extends AbstractSerialScaleImp {
                                     tmp_v  = Double.valueOf(builder.toString()) / 1000;
                                     if (!Utils.equalDouble(value,tmp_v)){
                                         value = tmp_v;
-                                        if (mOnReadStatus != null)mOnReadStatus.onFinish(value);
+                                        if (mOnReadStatus != null)mOnReadStatus.onFinish(0,value);
                                     }
                                 }
                                 break;

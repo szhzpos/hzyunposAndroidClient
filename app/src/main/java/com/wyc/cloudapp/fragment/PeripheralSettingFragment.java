@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -16,12 +19,14 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import android_serialport_api.SerialPortFinder;
 
 public class PeripheralSettingFragment extends AbstractParameterFragment {
     private static final String mTitle = "外设设置";
+    private static final String NONE = "NONE";
     private ArrayAdapter<String> mSerialPortAdapter;
     private JSONArray mProTypes;
     public PeripheralSettingFragment() {
@@ -98,6 +103,20 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         final ArrayAdapter<String> proTypeAdaper = new ArrayAdapter<>(mContext,R.layout.drop_down_style);
         mSerialPortAdapter.setDropDownViewResource(R.layout.drop_down_style);
         proTypeAdaper.setDropDownViewResource(R.layout.drop_down_style);
+        ser_port.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                final CheckBox auto_weigh_rb = findViewById(R.id.auto_weigh);
+                if (NONE.equals(mSerialPortAdapter.getItem(position))){
+                    auto_weigh_rb.setVisibility(View.GONE);
+                }else auto_weigh_rb.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         //协议类型
         mProTypes = AbstractSerialScaleImp.generateProductType();
@@ -114,7 +133,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         final SerialPortFinder mSerialPortFinder = new SerialPortFinder();
 
         final String[] entryValues = mSerialPortFinder.getAllDevicesPath();
-        mSerialPortAdapter.add("NONE");
+        mSerialPortAdapter.add(NONE);
         for(String value : entryValues){
             mSerialPortAdapter.add(value);
         }
@@ -124,14 +143,20 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
     private JSONObject get_or_show_serialScale_setting(boolean way){
         JSONObject object;
         final Spinner pro_type_s = findViewById(R.id.pro_type),ser_port_s = findViewById(R.id.ser_port);
+        final CheckBox auto_weigh_rb = findViewById(R.id.auto_weigh);
         if (way){
             object = mProTypes.getJSONObject(pro_type_s.getSelectedItemPosition());
             object.put("ser_port",ser_port_s.getSelectedItem());
+            object.put("auto_weigh",auto_weigh_rb.isChecked());
         }else{
             object = new JSONObject();
             if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
                 final String cls_id = Utils.getNullStringAsEmpty(object,"cls_id"),name = Utils.getNullStringAsEmpty(object,"name"),
                         ser_port = Utils.getNullStringAsEmpty(object,"ser_port");
+
+                boolean auto_weigh = object.getBooleanValue("auto_weigh");
+                auto_weigh_rb.setChecked(auto_weigh);
+
                 for (int i = 0,size = mProTypes.size();i < size;i ++){
                     object = mProTypes.getJSONObject(i);
                     if (null != object){
@@ -152,5 +177,4 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         }
         return object;
     }
-
 }

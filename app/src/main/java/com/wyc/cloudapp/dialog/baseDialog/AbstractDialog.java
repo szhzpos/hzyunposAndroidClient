@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.IHookKey;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -90,11 +91,20 @@ public abstract class AbstractDialog extends Dialog implements IHookKey {
     @Override
     public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
         if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER)){
+            CustomApplication.cancelGlobalToast();
             if (event.getAction() == KeyEvent.ACTION_UP){
                 return hookEnterKey() || super.dispatchKeyEvent(event);
             }
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(@NonNull MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN){
+            CustomApplication.cancelGlobalToast();
+        }
+        return super.dispatchTouchEvent(ev);
     }
 
     public boolean hookEnterKey(){

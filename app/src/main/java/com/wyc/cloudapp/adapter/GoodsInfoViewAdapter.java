@@ -1,8 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -11,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONArray;
@@ -20,15 +20,19 @@ import com.google.android.material.snackbar.Snackbar;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.viewModel.GoodsViewModel;
+import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.goods.CurPriceDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener {
+public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener, IndicatorRecyclerView.OnLoad {
     public static final int SPAN_COUNT = 5,MOBILE_SPAN_COUNT = 1;
     public static final String W_G_MARK = "IWG",SALE_TYPE = "ST";//计重、计份并且通过扫条码选择的商品标志
     private final SaleActivity mContext;
@@ -37,14 +41,29 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     private boolean mShowPic = true;
     private View mCurrentItemView;
     private boolean mPriceAdjustMode;
+    private static final String NOBARCODEGOODS = "9999999999999";
+
+    private int mPageIndex = 0;
+    private static final int mPageNum = 40;
+    private int mCategoryId = -1;
+    private boolean mLoadMore = true;
+
+    @SuppressLint("NotifyDataSetChanged")
     public GoodsInfoViewAdapter(final SaleActivity context){
         this.mContext = context;
         final JSONObject jsonObject = new JSONObject();
+
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
             mShowPic = (Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1);
         }else{
             MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"), null);
         }
+
+        new ViewModelProvider(context).get(GoodsViewModel.class).init().observe(mContext, array -> {
+            mDatas = array;
+            updateLoadFlag(array);
+            notifyDataSetChanged();
+        });
     }
 
     @Override
@@ -52,6 +71,22 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         set_selected_status(v);
         Utils.disableView(v,300);
         if (mSelectListener != null)mSelectListener.onSelect(getSelectGoodsByIndex());
+    }
+
+    @Override
+    public void onLoad(@NonNull ORIENTATION orientation) {
+        Logger.d("orientation:%s",orientation);
+        loadMore(orientation);
+    }
+
+    @Override
+    public boolean continueLoad() {
+        return mLoadMore;
+    }
+
+    @Override
+    public void onAbort() {
+        MyDialog.toastMessage(R.string.cancel_load);
     }
 
     static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -159,31 +194,52 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
     public void loadGoodsByCategoryId(final String id){
         try {
-            setDatas(Integer.parseInt(id));
+            resetLoadMoreParam();
+            mCategoryId = Integer.parseInt(id);
+            setData(mCategoryId);
         }catch (NumberFormatException e){
             e.printStackTrace();
         }
     }
+    private void resetLoadMoreParam(){
+        mPageIndex = 0;
+        mLoadMore = true;
+    }
+    private void setData(int id){
+        new ViewModelProvider(mContext).get(GoodsViewModel.class).refresh(getSql(id));
+    }
+    @SuppressLint("NotifyDataSetChanged")
+    private void loadMore(ORIENTATION orientation){
+        mPageIndex++;
+        final JSONArray array = GoodsViewModel.load(getSql(mCategoryId));
+        updateLoadFlag(array);
+        if (array != null && !array.isEmpty()){
+            if (orientation == ORIENTATION.BEHIND)
+                mDatas.addAll(array);
+            else mDatas.addAll(1,array);
+            CustomApplication.postAtFrontOfQueue(this::notifyDataSetChanged);
+        }
+    }
+    private void updateLoadFlag(final JSONArray array){
+        mLoadMore = array != null && array.size() == mPageNum;
+        if (!mLoadMore){
+            MyDialog.toastMessage(R.string.no_more_data);
+        }
+    }
 
-    private void setDatas(int id){
-
-        final StringBuilder err = new StringBuilder();
+    private String getSql(int id){
         final String sql;
         if (-1 == id){
             sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                     " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
                     "where status = 1";
         }else{
-            sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode," +
-                    "type,retail_price price,ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and category_id in (select category_id from shop_category where path like '%" + id +"%')";
-        }
+            final String cols = "-1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode, " +
+                    "type,retail_price price,ifnull(img_url,'') img_url ";
 
-        mDatas = SQLiteHelper.getListToJson(sql,0,0,false,err);
-        if (mDatas != null){
-            this.notifyDataSetChanged();
-        }else{
-            MyDialog.ToastMessage("加载商品错误：" + err, null);
+            sql = "select "+ cols +" from barcode_info where barcode='"+NOBARCODEGOODS+"' and category_id = '"+ id +"'  UNION select "+ cols +" from barcode_info where (goods_status = 1 and barcode_status = 1 and barcode<>'9999999999999') and category_id in (select category_id from shop_category where path like '%" + id +"%') limit "+ mPageIndex * mPageNum + "," + mPageNum;
         }
+        return sql;
     }
 
     public boolean fuzzy_search_goods(@NonNull final String search_content,boolean autoSelect){
@@ -245,18 +301,31 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
                 "brand_id,gs_id,a.category_id category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
-                "metering_id,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and ";
+                "metering_id,current_goods,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and ";
 
         boolean isWeighBarcode = Utils.isNotEmpty(weigh_barcode_info);
         if (isWeighBarcode){
             full_sql = sql + "only_coding = '" + id + "'";
         }else
             full_sql = sql + "barcode_id = " + id + " UNION select gp_id ,-1 goods_id,ifnull(gp_title,'') goods_title,ifnull(unit_name,'') unit_name, -1 barcode_id,ifnull(gp_code,'') barcode,-1 only_coding,ifnull(type,0) type," +
-                    "'' brand_id,'' gs_id, '' category_id,'' path,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,1 conversion from goods_group \n" +
+                    "'' brand_id,'' gs_id, '' category_id,'' path,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,0 current_goods,1 conversion from goods_group \n" +
                     "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
             makeCommonSaleType(object);
+
+            boolean noBarcode = GoodsInfoViewAdapter.isNoBarcodeGoods(object);
+            if (noBarcode || GoodsInfoViewAdapter.isCurPriceGoods(object)){
+                final CurPriceDialog dialog = new CurPriceDialog(mContext,object.getString("goods_title"),noBarcode ? 0 : 1);
+                if (dialog.exec() == 1){
+                    object.put("retail_price",dialog.getPrice());
+                    object.put("price",dialog.getPrice());
+                    object.put("xnum",dialog.getNum());
+                }else {
+                    return false;
+                }
+            }
+
             if (mPriceAdjustMode){
                 code = false;
                 final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext,object);
@@ -268,7 +337,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     code = getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId());
                 }
             }
-        }
+        }else MyDialog.ToastMessage(object.getString("info"), null);
        return code;
     }
 
@@ -321,6 +390,13 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         }
         Logger.d("PromotionGoodsSQL：%s",sql);
         return code;
+    }
+
+    public static boolean isNoBarcodeGoods(final JSONObject goods){
+        return NOBARCODEGOODS.equals(Utils.getNullStringAsEmpty(goods,"barcode"));
+    }
+    public static boolean isCurPriceGoods(final JSONObject goods){
+        return Utils.getNotKeyAsNumberDefault(goods,"current_goods",-1) == 1;
     }
 
     public static int getSaleType(final JSONObject goods){

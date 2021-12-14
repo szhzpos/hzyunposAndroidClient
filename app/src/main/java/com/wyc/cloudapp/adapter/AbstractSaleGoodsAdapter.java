@@ -274,46 +274,47 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         boolean exist = false,isPromotion = GoodsInfoViewAdapter.isSpecialPromotion(goods);
         JSONObject tmp_obj;
 
-        for (int i = 0, length = mData.size(); i < length; i++){
-            tmp_obj = mData.getJSONObject(i);
+        if (!GoodsInfoViewAdapter.isNoBarcodeGoods(goods))
+            for (int i = 0, length = mData.size(); i < length; i++){
+                tmp_obj = mData.getJSONObject(i);
 
-            if (isSameLineGoods(goods,tmp_obj)){
-                exist = true;
+                if (isSameLineGoods(goods,tmp_obj)){
+                    exist = true;
 
-                original_price = tmp_obj.getDoubleValue("original_price");
-                sum_xnum = tmp_obj.getDoubleValue("xnum") + num;
+                    original_price = tmp_obj.getDoubleValue("original_price");
+                    sum_xnum = tmp_obj.getDoubleValue("xnum") + num;
 
-                if (Utils.equalDouble(sum_xnum,0.0)){
-                    deleteSaleGoods(i);
-                    return;
+                    if (Utils.equalDouble(sum_xnum,0.0)){
+                        deleteSaleGoods(i);
+                        return;
+                    }
+
+                    if (isPromotion){
+                        new_price = goods.getDoubleValue("price");
+                        tmp_obj.put("price",new_price);
+                    }else {
+                        new_price = tmp_obj.getDoubleValue("price");
+                    }
+
+                    original_amt = original_price * sum_xnum;
+                    current_sale_amt = sum_xnum * new_price;
+
+                    discount_amt = current_discount_amt = original_amt - current_sale_amt;
+
+                    Logger.d("new_price:%f,original_price:%f,current_sale_amt:%f,original_amt:%f,current_discount_amt:%f,sum_xnum:%f,num:%f",new_price,original_price,current_sale_amt,original_amt,current_discount_amt,sum_xnum,num);
+
+                    tmp_obj.put("discount_amt", discount_amt);
+                    tmp_obj.put("xnum",Utils.formatDouble(sum_xnum,4));
+                    tmp_obj.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
+                    tmp_obj.put("original_amt",Utils.formatDouble(original_amt,4));
+
+                    if (!GoodsInfoViewAdapter.isBuyXGiveX(goods))mCurrentItemIndex = i;
+
+                    discount_type = getGoodsLastDiscountType(tmp_obj);
+                    goods = tmp_obj;
+                    break;
                 }
-
-                if (isPromotion){
-                    new_price = goods.getDoubleValue("price");
-                    tmp_obj.put("price",new_price);
-                }else {
-                    new_price = tmp_obj.getDoubleValue("price");
-                }
-
-                original_amt = original_price * sum_xnum;
-                current_sale_amt = sum_xnum * new_price;
-
-                discount_amt = current_discount_amt = original_amt - current_sale_amt;
-
-                Logger.d("new_price:%f,original_price:%f,current_sale_amt:%f,original_amt:%f,current_discount_amt:%f,sum_xnum:%f,num:%f",new_price,original_price,current_sale_amt,original_amt,current_discount_amt,sum_xnum,num);
-
-                tmp_obj.put("discount_amt", discount_amt);
-                tmp_obj.put("xnum",Utils.formatDouble(sum_xnum,4));
-                tmp_obj.put("sale_amt",Utils.formatDouble(current_sale_amt,4));
-                tmp_obj.put("original_amt",Utils.formatDouble(original_amt,4));
-
-                if (!GoodsInfoViewAdapter.isBuyXGiveX(goods))mCurrentItemIndex = i;
-
-                discount_type = getGoodsLastDiscountType(tmp_obj);
-                goods = tmp_obj;
-                break;
             }
-        }
 
         if (!exist){
             original_price = goods.getDoubleValue("retail_price");

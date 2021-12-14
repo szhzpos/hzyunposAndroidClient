@@ -17,6 +17,7 @@ import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.fragment.BaseParameterFragment;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -28,7 +29,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     private View mCurrentItemView;//当前选择的类别item
     private GoodsCategoryAdapter mChildGoodsCategoryAdapter;
     private final RecyclerView mSecLevelGoodsCategoryView;
-    private boolean mChildShow = false,mFirstLoad = true;
+    private boolean mChildShow = false,mFirstLoad = true,hasShowGroupGoods = BaseParameterFragment.hasShowGroupGoods(null);
     private String mCategoryId;
     public GoodsCategoryAdapter(SaleActivity context, RecyclerView v){
         mContext = context;
@@ -118,7 +119,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             }
 
             myViewHolder.category_name.setText(String.format(Locale.CHINA,"%s-%s",goods_type_info.getString("category_code"),goods_type_info.getString("name")));
-            if (i == 1 && mFirstLoad && !mContext.containGoods() && (Utils.lessThan7Inches(mContext) || mSecLevelGoodsCategoryView != null)){//一级分类触发第二个类别查询
+            if (i == (hasShowGroupGoods ? 1 : 0) && mFirstLoad && !mContext.containGoods() && (Utils.lessThan7Inches(mContext) || mSecLevelGoodsCategoryView != null)){//一级分类触发第二个类别查询
                 mFirstLoad = false;
                 myViewHolder.itemView.callOnClick();
             }
@@ -132,9 +133,13 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
 
     public void setDatas(int parent_id){
         final StringBuilder err = new StringBuilder();
-        if (0 == parent_id)
-            mDatas = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'' category_code,'组合商品' name order by category_code",0,0,false,err);
-        else
+        if (0 == parent_id) {
+            String sql = "select category_id,category_code,name from shop_category where parent_id='0' and status = 1 order by category_code";
+            if (hasShowGroupGoods){
+                sql = "select category_id,category_code,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'' category_code,'组合商品' name order by category_code";
+            }
+            mDatas = SQLiteHelper.getListToJson(sql, 0, 0, false, err);
+        }else
             mDatas = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where depth = 2 and status = 1 and parent_id='" + parent_id +"' order by category_code",0,0,false,err);
 
         if (mDatas != null){
@@ -182,6 +187,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         }else{
             MyDialog.ToastMessage("加载是否显示商品二级类别参数错误：" + jsonObject.getString("info"), null);
         }
+
     }
 
     public void trigger_preView(){

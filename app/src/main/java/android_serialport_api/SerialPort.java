@@ -34,9 +34,9 @@ public class SerialPort implements Serializable {
 	/*
 	 * Do not remove or rename the field mFd: it is used by native method close();
 	 */
-	private FileDescriptor mFd;
-	private FileInputStream mFileInputStream;
-	private FileOutputStream mFileOutputStream;
+	private final FileDescriptor mFd;
+	private final FileInputStream mFileInputStream;
+	private final FileOutputStream mFileOutputStream;
 
 	public SerialPort(File device, int baudrate, int flags) throws SecurityException, IOException {
 

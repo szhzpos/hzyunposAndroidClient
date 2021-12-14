@@ -16,7 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleEventObserver;
 import androidx.lifecycle.LifecycleOwner;
@@ -269,6 +271,10 @@ public final class MyDialog extends AbstractDialogContext {
 
     public static void toastMessage(final String message){
         CustomApplication.showGlobalToast(message);
+    }
+
+    public static void toastMessage(final @StringRes int id){
+        CustomApplication.showGlobalToast(CustomApplication.self().getString(id));
     }
 
     public static void ToastMessage(final String message, final Window window){

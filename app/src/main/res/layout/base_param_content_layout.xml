@@ -215,7 +215,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_5"
-                    android:layout_marginEnd="@dimen/margin_18"
+                    android:layout_marginEnd="@dimen/margin_5"
                     android:showText="true"
                     android:switchPadding="@dimen/margin_5"
                     android:text="@string/goods_img_show_switch_sz"
@@ -231,6 +231,19 @@
                     android:showText="true"
                     android:switchPadding="@dimen/margin_5"
                     android:text="@string/sec_level_category_show"
+                    android:textColor="@color/text_color"
+                    android:textOff="@string/off_sz"
+                    android:textOn="@string/on_sz"
+                    android:textSize="@dimen/font_size_14" />
+
+                <Switch
+                    android:id="@+id/goods_group_show_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:showText="true"
+                    android:switchPadding="@dimen/margin_5"
+                    android:text="@string/goods_group_show"
                     android:textColor="@color/text_color"
                     android:textOff="@string/off_sz"
                     android:textOn="@string/on_sz"

@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
@@ -79,11 +80,19 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
     @Override
     public boolean dispatchKeyEvent(@NonNull KeyEvent event) {
         if ((event.getKeyCode() == KeyEvent.KEYCODE_ENTER || event.getKeyCode() == KeyEvent.KEYCODE_NUMPAD_ENTER) && event.getAction() == KeyEvent.ACTION_UP){
-            return hookEnterKey();
+            CustomApplication.cancelGlobalToast();
+            return hookEnterKey() || super.dispatchKeyEvent(event);
         }
         return super.dispatchKeyEvent(event);
     }
 
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (ev.getAction() == MotionEvent.ACTION_DOWN){
+            CustomApplication.cancelGlobalToast();
+        }
+        return super.dispatchTouchEvent(ev);
+    }
 
     @Override
     public boolean hookEnterKey() {

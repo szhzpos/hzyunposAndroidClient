@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.MotionEvent
+import android.view.View
 import android.view.ViewConfiguration
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,10 +13,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import java.lang.Runnable
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.locks.LockSupport
 import kotlin.concurrent.thread
@@ -42,7 +41,8 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     private var mTouchSlop = 0
     /**
      * 第一位表示是否需要绘制指示符 第二位表示是否按下屏幕 第三位表示是否绘制头部指示符 第四位表示是否绘制尾部指示符
-     * 第五位表示 1表示左滑动 第六位 1表示右滑动 第7位 1表示上滑动 第8位 1表示下滑动 第9位 1表示终止加载 第10位 1表示表示加载完成
+     * 第五位 1表示左滑动 第六位 1表示右滑动 第7位 1表示上滑动 第8位 1表示下滑动 第9位 1表示终止加载 第10位 1表示表示加载完成
+     * 第11位 1表示可以继续加载
      * */
     @Volatile
     private var mNeedIndicator:Int = 2
@@ -68,7 +68,6 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     private var mOriLeft = 0
     private var mStartAngle = 0f
     private val mLoadIndicatorPoint = PointF()
-    private var mListener:OnLoadListener? = null
     @Volatile
     private var mLoading = AtomicBoolean(false)
 
@@ -77,7 +76,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         mPaint.color = Color.RED
         mPaint.strokeWidth = Utils.dpToPx(context,1f).toFloat()
         mPaint.style = Paint.Style.STROKE
-        mPaint.setShadowLayer(5f,0f,0f,mPaint.color)
+        mPaint.setShadowLayer(3f,0f,0f,mPaint.color)
         mPaint.alpha = 168
 
         val lineLen = Utils.dpToPx(CustomApplication.self(),6f)
@@ -119,7 +118,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun initLoadIndicatorPoint(){
-        if (hasListener()){
+        if (hasContinueLoad()){
             val diameter = Utils.dpToPx(context,18f)
             val radius = diameter shr 1
             if (isVerOrientation()){
@@ -164,7 +163,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun hasLoadIndicator():Boolean{
-       return (hasListener() && !hasFinishLoad() &&
+       return (hasContinueLoad() && !hasFinishLoad() &&
                (isVerOrientation() && (hasSlideDown() && !hasHeadIndicator() || hasSlideUp() && !hasTailIndicator()) ||
                isHorOrientation() &&(hasSlideLeft() && !hasTailIndicator() || hasSlideRight() && !hasHeadIndicator())))
     }
@@ -186,8 +185,8 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         }
         val radius = if (isVerOrientation()) mLoadIndicatorPoint.y else mLoadIndicatorPoint.x
 
-        val controlX = radius - 2
-        val controlY = radius - 2
+        val controlX = radius
+        val controlY = radius
 
 
         val leftPointX = if (isHorOrientation()){
@@ -244,7 +243,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
     private fun drawLoadIndicator(c: Canvas,x:Float,y:Float){
         val loadIndicator = Utils.dpToPx(context,6f)
-        mPaint.color = Color.RED
+        mPaint.color = Color.YELLOW
         mPaint.style = Paint.Style.STROKE
         c.drawArc(x - loadIndicator,y - loadIndicator,x + loadIndicator,y + loadIndicator,mStartAngle,270f,false,mPaint)
         mPaint.color = Color.RED
@@ -342,8 +341,8 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
                             mRealMoveY = 0f
                             abortLoad()
                         }
-                        slideUp(moveY <= downY)
-                        slideDown(moveY >= downY)
+                        slideUp(moveY < downY)
+                        slideDown(moveY > downY)
                     }
                     invalidate()
                 }
@@ -410,6 +409,14 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
     private fun hasFinishLoad():Boolean{
         return (mNeedIndicator and 512) == 512
+    }
+    private fun continueFlag(code:Boolean){
+        mNeedIndicator = if (code)
+            mNeedIndicator or 1024
+        else mNeedIndicator and 1024.inv()
+    }
+    private fun hasContinueLoad():Boolean{
+        return (mNeedIndicator and 1024) == 1024 && (adapter as OnLoad).continueLoad()
     }
 
     protected fun clearLeftRight(){
@@ -545,7 +552,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun startLoad(){
-        if (hasListener()){
+        if (hasContinueLoad()){
             if (isTouchMove()){
                 mRealMoveY = 0f
                 mRealMoveX = 0f
@@ -557,8 +564,15 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
                 if (!mLoading.get()){
                     mLoading.set(true)
                     launch {
-                        mListener!!.onLoad(if (hasSlideRight() || hasSlideDown()) 1 else 2)
+                        (adapter as OnLoad).onLoad(if (isHorOrientation() && hasSlideRight() || isVerOrientation() && hasSlideDown()) OnLoad.ORIENTATION.FRONT else OnLoad.ORIENTATION.BEHIND)
                         endLoad()
+                        withContext(Dispatchers.Main){
+                            if (isVerOrientation() && hasSlideUp())
+                                scrollBy(0,28)
+                            else if (isHorOrientation() && hasSlideLeft()){
+                                scrollBy(28 ,0)
+                            }
+                        }
                     }
                 }
             }
@@ -571,13 +585,15 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         cancelLoadAnim()
     }
     private fun abortLoad(){
-        abortedLoadFlag(true)
-        Logger.d("abortedLoad:%s",hasAborted())
+        if (hasContinueLoad()){
+            abortedLoadFlag(true)
+            Logger.d("abortedLoad:%s",hasAborted())
 
-        mListener?.onAbort()
+            (adapter as OnLoad).onAbort()
 
-        finishLoad()
-        cancelLoadAnim()
+            finishLoad()
+            cancelLoadAnim()
+        }
     }
 
     private fun cancelLoadAnim(){
@@ -609,20 +625,28 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
         cancel()
     }
+
+    override fun setAdapter(adapter: Adapter<*>?) {
+        super.setAdapter(adapter)
+        continueFlag((adapter as? OnLoad)?.continueLoad()?:false)
+    }
+
     /**
-     * orientation 1表示加载的数据应该在前面显示 2表示加载的数据应该在后面显示
+     * orientation FRONT表示加载的数据应该在前面显示 BEHIND表示加载的数据应该在后面显示
      * */
-    interface OnLoadListener{
+    interface OnLoad{
+        enum class ORIENTATION {
+            FRONT,
+            BEHIND
+        }
         /**
          * 需要同步返回
          * */
-        fun onLoad(orientation: Int)
+        fun onLoad(orientation: ORIENTATION)
+        /**
+         * true可以继续加载 false数据已经加载完毕
+         * */
+        fun continueLoad():Boolean
         fun onAbort()
-    }
-    fun setLoadListener(listener:OnLoadListener){
-        mListener = listener
-    }
-    private fun hasListener():Boolean{
-        return mListener != null
     }
 }

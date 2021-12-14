@@ -139,6 +139,14 @@ public final class CustomApplication extends Application {
         mGlobalToast.setText(message);
         mGlobalToast.show();
     }
+    public static void cancelGlobalToast(){
+        if (Looper.myLooper() == Looper.getMainLooper()){
+            cancelToast();
+        }else postAtFrontOfQueue(CustomApplication::cancelToast);
+    }
+    private static void cancelToast(){
+        if (mGlobalToast != null)mGlobalToast.cancel();
+    }
 
     public static boolean isPracticeMode(){
         return !mApplication.mBusinessMode;

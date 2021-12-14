@@ -10,12 +10,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
+import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.MobileSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
+import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPracticeDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.List;
@@ -32,7 +35,8 @@ public class SaleActivity extends MainActivity{
             mSaleGoodsAdapter = new NormalSaleGoodsAdapter(this);
     }
 
-    protected void addSaleGoods(final @NonNull JSONObject jsonObject){}
+    protected void addSaleGoods(final @NonNull JSONObject jsonObject){
+    }
 
     public void addBuyFullGiveGoods(final @NonNull JSONObject goods){
         mSaleGoodsAdapter.addSaleGoods(goods);
@@ -194,7 +198,7 @@ public class SaleActivity extends MainActivity{
     public void showAdjustPriceDialog(){}
     public String getOrderCode(){ return "";}
     public void resetOrderCode(){}
-    public void setScaleCurrent(float v){
+    public void setScaleCurrent(int stat,float v){
 
     }
 

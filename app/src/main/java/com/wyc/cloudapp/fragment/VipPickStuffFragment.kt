@@ -147,6 +147,8 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                 uploadObj["pt_user_id"] = CustomApplication.self().ptUserId
                 uploadObj["bgd_code"] = ViewModelProvider(requireActivity()).get(OrderIdViewModel::class.java).syncGetOrderId("BG")
                 uploadObj["member_id"] = getVipInfo()?.member_id
+                uploadObj["remark"] = String.format("会员%s【%s】%s",getVipInfo()?.mobile?:"",getVipInfo()?.name?:"",
+                    CustomApplication.self().getString(R.string.pick_stuff))
                 uploadObj["bgd_type"] = 7
                 uploadObj["goods_list_json"] = data
 

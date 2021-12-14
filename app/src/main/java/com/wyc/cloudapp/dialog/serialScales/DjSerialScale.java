@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.dialog.serialScales;
 
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
@@ -29,7 +30,7 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                 }
                 final InputStream inputStream = mSerialPort.getInputStream();
                 final StringBuilder stringBuilder = new StringBuilder();
-                int size = -1,start,end;
+                int size = -1,start,end,stat = OnReadStatus.STABLE,statTmp ;
                 char b;
                 double value = 0.0,tmp_v = 0.0;
                 while (mReading){
@@ -41,13 +42,18 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                                 stringBuilder.delete(0,stringBuilder.length());
                                 break;
                             case 0x03:
+                                statTmp = stringBuilder.indexOf("S") != -1 ? OnReadStatus.STABLE : stringBuilder.indexOf("U") != -1 ? OnReadStatus.NO_STABLE : OnReadStatus.OTHER;
+
                                 start = stringBuilder.indexOf(" ");
+                                if (start == -1)start = stringBuilder.indexOf("-");
+
                                 end = stringBuilder.indexOf("k");
                                 if ( -1 < start && start < stringBuilder.length() && start <= end && end < stringBuilder.length()){
-                                    tmp_v  = Double.valueOf(stringBuilder.substring(start,end));
-                                    if (!Utils.equalDouble(value,tmp_v)){
+                                    tmp_v  = Double.parseDouble(stringBuilder.substring(start,end));
+                                    if (!Utils.equalDouble(value,tmp_v) || stat != statTmp){
                                         value = tmp_v;
-                                        if (mOnReadStatus != null)mOnReadStatus.onFinish(value);
+                                        stat = statTmp;
+                                        if (mOnReadStatus != null)mOnReadStatus.onFinish(stat,value);
                                     }
                                 }
                                 break;

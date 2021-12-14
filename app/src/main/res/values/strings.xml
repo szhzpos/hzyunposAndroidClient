@@ -110,6 +110,8 @@
     <string name="search_vip_hint">正在查询会员…</string>
     <string name="goods_practice">做法</string>
     <string name="select_practice">选择做法</string>
+    <string name="no_more_data">最后一页</string>
+    <string name="cancel_load">取消加载</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -168,6 +170,7 @@
     <string name="display_setting_sz">显示设置</string>
     <string name="goods_img_show_switch_sz">显示商品图片:</string>
     <string name="sec_level_category_show">显示二级分类:</string>
+    <string name="goods_group_show">显示组合商品:</string>
     <string name="on_sz">开</string>
     <string name="off_sz">关</string>
     <string name="ml_setting_sz">抹零设置</string>
@@ -238,6 +241,9 @@
     <string name="g_price_sz">价格：</string>
     <string name="title_sz">名称：</string>
     <string name="weigh_sz">重量：</string>
+    <string name="stable">稳定</string>
+    <string name="no_stable">不稳定</string>
+    <string name="auto_weight">快速取重</string>
 
     <!-- 零售单查询窗口 -->
     <string name="query_time_sz">查询时间</string>
@@ -624,6 +630,7 @@
     <string name="scan_code_label">扫码录入</string>
     <string name="business_barcode_sz">@string/barcode_colon_sz</string>
     <string name="business_item_no_sz">@string/item_no_colon_sz</string>
+    <string name="continue_scan">连续扫描</string>
 
     <!--各种提示信息-->
     <string name="tip_crash">非常抱歉,程序出现异常.</string>
@@ -915,8 +922,16 @@
     <string name="packed_num">已取数量</string>
     <string name="refresh">刷新</string>
     <string name="pick_num_error_hint">取货数量不能大于剩余数量!</string>
+
+    <!--做法选择窗口-->
     <string name="plus_price_hint">加价合计：%1$s</string>
     <string name="not_goods_practice">当前商品未关联做法</string>
+
+    <!--称重-->
     <string name="r_zero">归零</string>
     <string name="tare">去皮</string>
+    <string name="get_weight">取重</string>
+
+    <string name="no_barcode_goods">无码商品录入</string>
+    <string name="cur_price_goods">时价商品录入</string>
 </resources>

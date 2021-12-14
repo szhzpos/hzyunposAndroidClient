@@ -11,6 +11,7 @@ import android.widget.RadioGroup;
 import android.widget.Switch;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -36,6 +37,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         get_or_show_dual_view(false);
         get_or_show_goodsImgSetting(false);
         get_or_show_secLevelCategorySetting(false);
+        get_or_show_goodsGroupSetting(false);
         get_or_show_autoMol(false);
          return null;
     }
@@ -68,6 +70,12 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         content.put(p_id_key,"sec_l_c_show");
         content.put(p_c_key, get_or_show_secLevelCategorySetting(true));
         content.put(p_desc_key,"二级类别显示设置");
+        array.add(content);
+
+        content = new JSONObject();
+        content.put(p_id_key,"goods_group_show");
+        content.put(p_c_key, get_or_show_goodsGroupSetting(true));
+        content.put(p_desc_key,"显示组合商品");
         array.add(content);
 
         content = new JSONObject();
@@ -259,11 +267,35 @@ public class BaseParameterFragment extends AbstractParameterFragment {
             if (SQLiteHelper.getLocalParameter("sec_l_c_show",value_obj)){
                 sh.setChecked(value_obj.getIntValue("s") == 1);
             }else{
-                MyDialog.ToastMessage("加载商品显示图片参数错误：" + value_obj.getString("info"), null);
+                MyDialog.ToastMessage("加载显示二级分类错误：" + value_obj.getString("info"), null);
             }
         }
         return value_obj;
     }
+    private JSONObject get_or_show_goodsGroupSetting(boolean b){
+        JSONObject value_obj = new JSONObject();
+        Switch sh = findViewById(R.id.goods_group_show_switch);
+        int status = 0;
+        if (b){
+            if (sh.isChecked()){
+                status = 1;
+            }
+            value_obj.put("s",status);
+        }else{
+            sh.setChecked(hasShowGroupGoods(value_obj));
+        }
+        return value_obj;
+    }
+    public static boolean hasShowGroupGoods(@Nullable JSONObject object){
+        if (object == null)object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("goods_group_show",object)){
+            return object.getIntValue("s") == 1;
+        }else{
+            MyDialog.ToastMessage("加载显示组合商品错误：" + object.getString("info"), null);
+        }
+        return false;
+    }
+
     private JSONObject get_or_show_autoMol(boolean b) {
         JSONObject value_obj = new JSONObject();
         Switch sh = findViewById(R.id.auto_mol_switch);

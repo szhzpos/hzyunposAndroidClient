@@ -488,11 +488,10 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
 
     @Override
     protected void addSaleGoods(final @NonNull JSONObject jsonObject){
+        super.addSaleGoods(jsonObject);
         final JSONObject content = new JSONObject();
         if (mGoodsInfoViewAdapter.getSingleGoods(content,null,mGoodsInfoViewAdapter.getGoodsId(jsonObject))){
             mSaleGoodsAdapter.addSaleGoods(content);
-        }else{
-            MyDialog.ToastMessage("选择商品错误：" + content.getString("info"), null);
         }
     }
     @Override

@@ -214,6 +214,8 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
             uploadObj["pt_user_id"] = CustomApplication.self().ptUserId
             uploadObj["member_id"] = getVipInfo()?.member_id
             uploadObj["bgd_code"] = mOrderCode
+            uploadObj["remark"] = String.format("会员%s【%s】%s",getVipInfo()?.mobile?:"",getVipInfo()?.name?:"",
+                CustomApplication.self().getString(R.string.store_stuff))
             uploadObj["bgd_type"] = 3
             uploadObj["goods_list_json"] = data
 

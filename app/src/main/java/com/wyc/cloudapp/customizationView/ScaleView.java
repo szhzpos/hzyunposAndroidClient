@@ -8,12 +8,17 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.List;
@@ -21,8 +26,8 @@ import java.util.Locale;
 import java.util.Vector;
 
 public class ScaleView extends View {
-    private Context mContext;
-    private int  mCapacity = 15000;//capacity 单位g;
+    private final Context mContext;
+    private final int  mCapacity = 15000;//capacity 单位g;
     private Paint mPaint;
     private Point mCoordinateCenter;
     private float mOutRadius;
@@ -30,6 +35,13 @@ public class ScaleView extends View {
     private float mStartPointerAngle, mEndPointerAngle;
     private float mNumberWidth;
     private List<Path> mNumPathList;
+    private int mStat = 0;
+    private final Rect mBoundText = new Rect();
+
+    private static final String stable = CustomApplication.self().getString(R.string.stable);
+    private static final String unstable = CustomApplication.self().getString(R.string.no_stable);
+
+
     public ScaleView(Context context) {
         this(context,null);
     }
@@ -51,6 +63,9 @@ public class ScaleView extends View {
     private void init(){
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
+        mPaint.setTextSize(Utils.sp2px(CustomApplication.self(),12));
+        mPaint.getTextBounds(unstable,0,unstable.length(),mBoundText);
+
         mCoordinateCenter = new Point();
     }
 
@@ -59,7 +74,7 @@ public class ScaleView extends View {
         super.onMeasure(widthMeasureSpec,heightMeasureSpec);
         int w = getMeasuredWidth(),h = getMeasuredHeight();
         mOutRadius = Math.min(w, h) / 2.1f;
-        mCoordinateCenter.set(w / 8, h / 2);
+        mCoordinateCenter.set(w / 2, h / 2);
         mNumPathList = generateCurrentValuePath();
     }
 
@@ -73,8 +88,13 @@ public class ScaleView extends View {
         drawContent(canvas);
     }
 
-    public void setCurrentValue(final float v){
+    public void setCurrentValue(int stat,final float v){
+        mStat = stat;
         mCurrentValue = v;
+        postInvalidate();
+    }
+    public void setCurrentValueAndUpdateAngle(int stat,final float v){
+        setCurrentValue(stat,v);
         mStartPointerAngle = mCurrentValue == 0.0f ? 0.0f : 360.0f / mCapacity * mCurrentValue ;
         updatePointerAngle();
     }
@@ -123,9 +143,39 @@ public class ScaleView extends View {
     private final Runnable update = this::updatePointerAngle;
 
     private void drawContent(final Canvas canvas){
-        canvas.translate(mCoordinateCenter.x,mCoordinateCenter.y);
+        canvas.translate(Utils.dpToPx(getContext(),8),0);
+        drawStat(canvas);
         drawOnlyCurrentValue(canvas);
     }
+    private void drawStat(Canvas canvas){
+
+        mPaint.setStyle(Paint.Style.FILL);
+
+        float verSpace = Utils.dpToPx(getContext(),8);
+
+        float top = (getHeight() -verSpace) / 2 ;
+        float pointRadius = Utils.dpToPx(getContext(),4);
+        float pointTop = top - ((mBoundText.height() - (int) pointRadius) >> 1);
+        float textOffsetX = pointRadius + pointRadius / 2;
+
+        if (mStat == AbstractSerialScaleImp.OnReadStatus.STABLE){
+            mPaint.setColor(Color.GREEN);
+        }else mPaint.setColor(Color.GRAY);
+        canvas.drawCircle(0,pointTop,pointRadius,mPaint);
+
+        canvas.drawText(stable,textOffsetX,top,mPaint);
+
+        if (mStat == AbstractSerialScaleImp.OnReadStatus.NO_STABLE){
+            mPaint.setColor(Color.GREEN);
+        }else mPaint.setColor(Color.GRAY);
+        top = top + verSpace + mBoundText.height();
+        canvas.drawCircle(0,pointTop + verSpace + mBoundText.height(),pointRadius,mPaint);
+        canvas.drawText(unstable,textOffsetX,top,mPaint);
+
+        mPaint.setColor(Color.RED);
+        mPaint.setStyle(Paint.Style.STROKE);
+    }
+
     private void drawAll(Canvas canvas){
         drawGraduation(canvas);
         drawInCircle(canvas);
@@ -161,6 +211,7 @@ public class ScaleView extends View {
     }
 
     private void drawOnlyCurrentValue(final Canvas canvas){
+
         float numSpace = Utils.dpToPx(getContext(),2);
         float yAxis = -mOutRadius / 1.8f,num_width = mNumberWidth,space_8 = mOutRadius / 18 ,xAxis_spacing = num_width + space_8 + numSpace;
         float current_value = mCurrentValue / 1000;
@@ -169,7 +220,7 @@ public class ScaleView extends View {
 
         mPaint.setStyle(Paint.Style.STROKE);
         canvas.save();
-        canvas.translate(0,yAxis);
+        canvas.translate(mBoundText.width() + Utils.dpToPx(getContext(),16),mCoordinateCenter.y + yAxis);
 
         mPaint.setColor(Color.RED);
         for (int i = 0,size = _value.length();i < size; i++){
@@ -177,7 +228,7 @@ public class ScaleView extends View {
             if (c == '.'){
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.BLUE);
-                canvas.drawCircle(num_width - space_8,- yAxis * 2,mOutRadius / 20.0f,mPaint);
+                canvas.drawCircle(num_width,- yAxis * 2,mOutRadius / 20.0f,mPaint);
                 mPaint.setColor(Color.RED);
                 mPaint.setStyle(Paint.Style.STROKE);
             }else{
@@ -192,6 +243,14 @@ public class ScaleView extends View {
         final List<Path> paths = mNumPathList;
         final int[] ints = new int[]{0,1,2,3,4,5,6};
         switch (num){
+            case '-':
+                ints[0] = -1;
+                ints[1] = -1;
+                ints[2] = -1;
+                ints[3] = -1;
+                ints[4] = -1;
+                ints[5] = -1;
+                break;
             case '0':
                 ints[6] = -1;
                 break;

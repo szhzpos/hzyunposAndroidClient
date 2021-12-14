@@ -35,7 +35,12 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
     private double mValue;
-    private boolean mContinuousWeighing = true;
+    private boolean mContinuousWeighing = false;
+    private boolean mStable = false;
+    /**
+     * 自动取重
+     * */
+    private static final boolean mAuto = AbstractSerialScaleImp.hasAutoGetWeigh();
 
     public GoodsWeighDialog(@NonNull SaleActivity context, final String title) {
         super(context,title);
@@ -54,6 +59,11 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
 
         //初始化数字键盘
         initKeyboardView();
+        initClick();
+    }
+    private void initClick(){
+        findViewById(R.id.d_zero).setOnClickListener(v -> rZero());
+        findViewById(R.id.d_tare).setOnClickListener(v -> tare());
     }
 
     @Override
@@ -74,7 +84,15 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     @Override
     public void onDetachedFromWindow(){
         super.onDetachedFromWindow();
-        stopRead();
+        if (!mAuto)stopRead();
+    }
+
+    @Override
+    public void show() {
+        if (mStable && mAuto){
+            getWeigh();
+        }else
+            super.show();
     }
 
     public void setBarcodeId(final int id){
@@ -123,13 +141,18 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
             return null;
         });
         view.setCancelListener(v -> closeWindow());
-        view.setOkListener(v -> {
-            if (mOnYesClick != null){
+        view.setOkListener(v -> getWeigh());
+    }
+    private void getWeigh(){
+        if (mOnYesClick != null){
+            double num = getContent();
+            if (Utils.greaterDouble(num,0)){
                 mOnYesClick.onYesClick(getContent());
                 dismiss();
-            }
-        });
+            }else MyDialog.toastMessage("重量异常");
+        }
     }
+
     private void initGoodsInfo(){
         final JSONObject object = new JSONObject();
         boolean code = SQLiteHelper.execSql(object,"select barcode_id,brand_id,gs_id,a.category_id,b.path path,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,retail_price price,ifnull(img_url,'') img_url from " +
@@ -184,13 +207,15 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                 if (mSerialScale != null){
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
-                        public void onFinish(double num) {
-                            mContext.setScaleCurrent((float) num * 1000);
+                        public void onFinish(int stat,double num) {
+                            mContext.setScaleCurrent(stat,(float) num * 1000);
                             if (mContinuousWeighing){
-                                mValue = num;
                                 if (mOnYesClick != null)mContext.runOnUiThread(()-> mOnYesClick.onYesClick(num));
                             }else
                                 if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
+
+                            mValue = num;
+                            mStable = stat == AbstractSerialScaleImp.OnReadStatus.STABLE;
                         }
                         @Override
                         public void onError(String err) {
@@ -217,5 +242,14 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     }
     public final void setOnYesOnclickListener(OnYesOnclickListener listener){
         mOnYesClick = listener;
+    }
+    public void rZero(){
+        if (mSerialScale != null)mSerialScale.write(new byte[]{0x3C,0x5A,0x4B,0x3E,0x09});
+    }
+    public void tare(){
+        if (mSerialScale != null)mSerialScale.write(new byte[]{0x3C,0x54,0x4B,0x3E,0x09});
+    }
+    public static boolean isAutoGetWeigh(){
+        return mAuto;
     }
 }

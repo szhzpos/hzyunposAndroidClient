@@ -10,19 +10,21 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.callback.ClickListener;
+import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
-public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
+public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     private GoodsWeighDialog mWeighDialog;
     public NormalSaleGoodsAdapter(final SaleActivity context){
         super(context);
-        mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
+        if (GoodsWeighDialog.isAutoGetWeigh())mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
     }
 
     @Override
@@ -127,11 +129,30 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter {
     @Override
     public void clearGoods(){
         super.clearGoods();
-/*        if (mWeighDialog != null){
+        if (mWeighDialog != null && !GoodsWeighDialog.isAutoGetWeigh()){
             mWeighDialog.stopRead();
             mWeighDialog = null;
-        }*/
+        }
         notifyDataSetChanged();
-        mContext.setScaleCurrent(0.0f);
+        mContext.setScaleCurrent(AbstractSerialScaleImp.OnReadStatus.STABLE,0.0f);
+    }
+    public void closeWeigh(){
+        if (mWeighDialog != null){
+            mWeighDialog.stopRead();
+            mWeighDialog = null;
+        }
+    }
+    public void rZero(){
+        if (mWeighDialog != null)mWeighDialog.rZero();
+    }
+    public void tare(){
+        if (mWeighDialog != null)mWeighDialog.tare();
+    }
+    public boolean hasAutoGetWeigh(){
+        return mWeighDialog != null && GoodsWeighDialog.isAutoGetWeigh();
+    }
+    public float getWeigh(){
+        if (mWeighDialog != null)return (float) mWeighDialog.getContent();
+        return 0.0f;
     }
 }

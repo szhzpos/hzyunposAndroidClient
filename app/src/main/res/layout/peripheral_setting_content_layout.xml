@@ -234,6 +234,15 @@
                     android:foreground="@drawable/spinner_style"
                     android:minWidth="@dimen/width_118" />
             </LinearLayout>
+
+            <CheckBox
+                android:id="@+id/auto_weigh"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/param_value_height"
+                android:layout_gravity="center_vertical"
+                android:text="@string/auto_weight"
+                tools:ignore="TouchTargetSizeCheck" />
+
         </LinearLayout>
 
         <LinearLayout

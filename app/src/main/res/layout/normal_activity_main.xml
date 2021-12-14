@@ -280,7 +280,8 @@
             android:layout_height="@dimen/height_68"
             android:background="@drawable/bottom_separator"
             android:orientation="horizontal"
-            android:paddingEnd="@dimen/margin_8">
+            android:paddingEnd="@dimen/margin_5"
+            android:visibility="gone">
 
             <com.wyc.cloudapp.customizationView.ScaleView
                 android:id="@+id/scaleView"
@@ -295,11 +296,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/margin_8"
+                android:layout_marginEnd="@dimen/margin_5"
                 android:background="@drawable/button_pink"
+                android:minWidth="58dp"
+                android:minHeight="48dp"
                 android:text="@string/r_zero"
                 android:textColor="@color/pink_white"
-                android:textSize="@dimen/font_size_18" />
+                android:textSize="@dimen/font_size_16" />
 
             <Button
                 android:id="@+id/tare"
@@ -308,9 +311,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:background="@drawable/button_pink"
+                android:minWidth="58dp"
+                android:minHeight="48dp"
                 android:text="@string/tare"
                 android:textColor="@color/pink_white"
-                android:textSize="@dimen/font_size_18" />
+                android:textSize="@dimen/font_size_16" />
         </LinearLayout>
 
         <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
@@ -1263,7 +1268,8 @@
             android:padding="@dimen/margin_5"
             android:singleLine="true"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_18" />
+            android:textSize="@dimen/font_size_18"
+            tools:ignore="TouchTargetSizeCheck" />
 
     </LinearLayout>
 
