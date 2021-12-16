@@ -151,6 +151,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     public boolean hasAutoGetWeigh(){
         return mWeighDialog != null && GoodsWeighDialog.isAutoGetWeigh();
     }
+    @Override
     public float getWeigh(){
         if (mWeighDialog != null)return (float) mWeighDialog.getContent();
         return 0.0f;

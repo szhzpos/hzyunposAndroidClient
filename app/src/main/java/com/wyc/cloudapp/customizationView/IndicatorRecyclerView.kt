@@ -42,7 +42,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     /**
      * 第一位表示是否需要绘制指示符 第二位表示是否按下屏幕 第三位表示是否绘制头部指示符 第四位表示是否绘制尾部指示符
      * 第五位 1表示左滑动 第六位 1表示右滑动 第7位 1表示上滑动 第8位 1表示下滑动 第9位 1表示终止加载 第10位 1表示表示加载完成
-     * 第11位 1表示可以继续加载
+     * 第11位 1表示可以继续加载 第12位 1表示准备加载，在这种状态下释放按键后会进入加载状态
      * */
     @Volatile
     private var mNeedIndicator:Int = 2
@@ -58,17 +58,17 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     private var mTailAxisY:Float = 0.0f
     /**/
 
-    @Volatile
     private var mLoadAnimStatus = AtomicBoolean(false)
     /**用于移动标识坐标*/
-    private var mRealMoveY = 0f
-    private var mRealMoveX = 0f
-    /**用于计算真实移动距离（当第一个元素或者最后一个在窗口范围之外）*/
-    private var mOriTop = 0
-    private var mOriLeft = 0
+    private var mIndicatorMoveY = 0
+    private var mIndicatorMoveX = 0
+    private val mIndicatorMaxOffset = Utils.dpToPx(context,68f)
+    private var mChildOffset = 0
+    /**/
+
     private var mStartAngle = 0f
     private val mLoadIndicatorPoint = PointF()
-    @Volatile
+
     private var mLoading = AtomicBoolean(false)
 
     init {
@@ -86,7 +86,9 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
         initIndicatorAnimator()
 
-        mTouchSlop = ViewConfiguration.get(context).scaledPagingTouchSlop
+        overScrollMode = OVER_SCROLL_NEVER
+
+        mTouchSlop = ViewConfiguration.get(context).scaledTouchSlop
     }
     constructor(context: Context):this(context,null,0)
     constructor(context: Context, attrs: AttributeSet?) : this(context,attrs,0)
@@ -163,23 +165,27 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun hasLoadIndicator():Boolean{
-       return (hasContinueLoad() && !hasFinishLoad() &&
-               (isVerOrientation() && (hasSlideDown() && !hasHeadIndicator() || hasSlideUp() && !hasTailIndicator()) ||
-               isHorOrientation() &&(hasSlideLeft() && !hasTailIndicator() || hasSlideRight() && !hasHeadIndicator())))
+        return (mLoading.get() || (mIndicatorMoveY != 0 && isVerOrientation() && (hasSlideDown() && !hasHeadIndicator() || hasSlideUp() && !hasTailIndicator()) ||
+                        mIndicatorMoveX != 0 && isHorOrientation() &&(hasSlideLeft() && !hasTailIndicator() || hasSlideRight() && !hasHeadIndicator())))
+    }
+    private fun hasEnterLoad():Boolean{
+        return hasContinueLoad() && (!hasHeadIndicator() ||!hasTailIndicator())
     }
 
     private fun drawRaindrop(c: Canvas){
         val orientationUp = hasSlideUp()
         val orientationLeft = hasSlideLeft()
+        val indicatorMoveX = abs(mIndicatorMoveX)
+        val indicatorMoveY = abs(mIndicatorMoveY)
 
         val centrePointX = if (isHorOrientation()){
-            if (orientationLeft)width - mLoadIndicatorPoint.x - mRealMoveX else mLoadIndicatorPoint.x + mRealMoveX
+            if (orientationLeft)width - mLoadIndicatorPoint.x - indicatorMoveX else mLoadIndicatorPoint.x + indicatorMoveX
         }else{
             mLoadIndicatorPoint.x
         }
 
         val centrePointY = if (isVerOrientation()){
-            if (orientationUp)height - mLoadIndicatorPoint.y - mRealMoveY else mLoadIndicatorPoint.y + mRealMoveY
+            if (orientationUp)height - mLoadIndicatorPoint.y - indicatorMoveY else mLoadIndicatorPoint.y + indicatorMoveY
         }else{
             mLoadIndicatorPoint.y
         }
@@ -190,7 +196,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
 
         val leftPointX = if (isHorOrientation()){
-            (if (orientationLeft)centrePointX else centrePointX  - mRealMoveX ) - radius
+            (if (orientationLeft)centrePointX else centrePointX  - indicatorMoveX ) - radius
         }  else centrePointX - radius
         val leftPointY = centrePointY
 
@@ -200,7 +206,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
 
         val upPointX = centrePointX
-        val upPointY = (if(orientationUp) centrePointY else centrePointY  - mRealMoveY) - radius
+        val upPointY = (if(orientationUp) centrePointY else centrePointY  - indicatorMoveY) - radius
 
 
         val secControlX = centrePointX + controlX
@@ -208,7 +214,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
 
         val rightPointX = if (isHorOrientation()) {
-                (if (orientationLeft)centrePointX + mRealMoveX else centrePointX) + radius
+                (if (orientationLeft)centrePointX + indicatorMoveX else centrePointX) + radius
         }  else centrePointX + radius
         val rightPointY = centrePointY
 
@@ -218,7 +224,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
 
         val downPointX = centrePointX
-        val downPointY = (if(orientationUp) centrePointY + mRealMoveY else centrePointY) + radius
+        val downPointY = (if(orientationUp) centrePointY + indicatorMoveY else centrePointY) + radius
 
 
         val forthControlX = centrePointX - controlX
@@ -293,19 +299,31 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
             c.drawPath(path,mPaint)
     }
 
+    private fun resetChildLocation(){
+        mChildOffset = 0
+        mIndicatorMoveY = 0
+        mIndicatorMoveX = 0
+        if (hasSlideUp()){
+            scrollToPosition(layoutManager?.itemCount?:0)
+        }else if (hasSlideDown()) {
+            scrollToPosition(0)
+        }
+    }
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
         when(ev.action){
             MotionEvent.ACTION_DOWN ->{
                 pointerDown()
                 downX = ev.x
                 downY = ev.y
-                mOriTop = computeVerticalScrollOffset()
-                mOriLeft = computeHorizontalScrollOffset()
-                resetLoadStatus()
+                finishLoadFlag(false)
+                abortedLoadFlag(false)
             }
             MotionEvent.ACTION_UP ->{
                 pointerUp()
                 startLoad()
+                resetChildLocation()
+                touchMove(false)
             }
             MotionEvent.ACTION_CANCEL ->{
                 pointerUp()
@@ -316,43 +334,55 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
                 val xDiff = abs(moveX - downX)
                 val yDiff = abs(moveY - downY)
 
-                if (hasLoadIndicator()){
-                    if (isHorOrientation()){
-                        mRealMoveX = if (hasSlideRight())abs(xDiff - mOriLeft) else abs(xDiff + mOriLeft - computeHorizontalScrollOffset())
-                    }else
-                        mRealMoveY = if (hasSlideDown())abs(yDiff - mOriTop) else abs(yDiff + mOriTop - computeVerticalScrollOffset())
-                }
-
-                if (xDiff > mTouchSlop || yDiff > mTouchSlop || isTouchMove()) {
+                if (xDiff > mTouchSlop || yDiff > mTouchSlop ) {
                     val squareRoot = sqrt((xDiff * xDiff + yDiff * yDiff).toDouble())
                     val degreeX = asin(yDiff / squareRoot) * 180 / Math.PI
                     val degreeY = asin(xDiff / squareRoot) * 180 / Math.PI
-
-                    if (degreeX <= 45){
-                        if(mRealMoveX > Utils.dpToPx(context,128f)){
-                            mRealMoveX = 0f
-                            abortLoad()
-                        }
+                    if (degreeX < 45){
                         slideLeft(moveX < downX)
                         slideRight(moveX > downX)
                     }
-                    if (degreeY <= 45){
-                        if(mRealMoveY > Utils.dpToPx(context,128f)){
-                            mRealMoveY = 0f
-                            abortLoad()
-                        }
+                    if (degreeY < 45){
                         slideUp(moveY < downY)
                         slideDown(moveY > downY)
+                    }
+                }
+                if (hasEnterLoad()){
+                    val d: Int
+                    if (isHorOrientation()){
+                        if (mChildOffset == 0){
+                            mChildOffset = moveX.toInt()
+                        } else{
+                            d = (moveX - mChildOffset).toInt();
+                            mIndicatorMoveX += d
+                            if(abs(mIndicatorMoveX) > mIndicatorMaxOffset){
+                                mIndicatorMoveX = if (mIndicatorMoveX < 0) -mIndicatorMaxOffset else mIndicatorMaxOffset
+                            }else offsetChildrenHorizontal(d)
+
+                            mChildOffset = 0
+                        }
+                    }else{
+                        if (mChildOffset == 0){
+                            mChildOffset = moveY.toInt()
+                        } else{
+                            d = (moveY - mChildOffset).toInt();
+                            mIndicatorMoveY += d
+                            if(abs(mIndicatorMoveY) > mIndicatorMaxOffset){
+                                mIndicatorMoveY = if (mIndicatorMoveY < 0) -mIndicatorMaxOffset else mIndicatorMaxOffset
+                            }else offsetChildrenVertical(d)
+                            mChildOffset = 0
+                        }
+                    }
+                    if (abs(mIndicatorMoveY) > mIndicatorMaxOffset shr 1 || abs(mIndicatorMoveY) > mIndicatorMaxOffset shr 1){
+                        touchMove(true)
+                    }else {
+                        touchMove(false)
                     }
                     invalidate()
                 }
             }
         }
         return super.dispatchTouchEvent(ev)
-    }
-
-    private fun isTouchMove():Boolean{
-        return  isVerOrientation() && mRealMoveY > 0 || isHorOrientation() && mRealMoveX > 0
     }
 
     private fun slideLeft(code:Boolean){
@@ -419,9 +449,30 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         return (mNeedIndicator and 1024) == 1024 && (adapter as OnLoad).continueLoad()
     }
 
+    private fun touchMove(code:Boolean){
+        if (isTouchMove() != code){
+            mNeedIndicator = if (code) {
+                startLoadAnim()
+                mNeedIndicator or 2048
+            }else {
+                if (!mLoading.get())cancelLoadAnim()
+                mNeedIndicator and 2048.inv()
+            }
+        }
+    }
+
+    private fun isTouchMove():Boolean{
+        return (mNeedIndicator and 2048) == 2048
+    }
+
     protected fun clearLeftRight(){
         slideLeft(false)
         slideRight(false)
+    }
+
+    private fun clearUpDown(){
+        slideUp(false)
+        slideDown(false)
     }
 
     private fun pointerDown(){
@@ -470,13 +521,11 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
             }
 
             mNeedIndicator = if (findLastCompletelyVisibleItemPosition() + 1 < itemCount){
-                if (mLoading.get())abortLoad()
                 mNeedIndicator or 8
             }else {
                 mNeedIndicator and 8.inv()
             }
             mNeedIndicator = if (findFirstCompletelyVisibleItemPosition() > 0){
-                if (mLoading.get())abortLoad()
                 mNeedIndicator or 4
             }else{
                 mNeedIndicator and 4.inv()
@@ -546,23 +595,11 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
             mValueAnimator.start()
         }
     }
-    private fun resetLoadStatus(){
-        finishLoadFlag(false)
-        abortedLoadFlag(false)
-    }
 
     private fun startLoad(){
-        if (hasContinueLoad()){
-            if (isTouchMove()){
-                mRealMoveY = 0f
-                mRealMoveX = 0f
-
-                if (hasLoadIndicator()){
-                    startLoadAnim()
-                }
-
-                if (!mLoading.get()){
-                    mLoading.set(true)
+        if (isTouchMove()){
+            if (!hasAborted() && hasContinueLoad()){
+                if (mLoading.compareAndSet(false,true)){
                     launch {
                         (adapter as OnLoad).onLoad(if (isHorOrientation() && hasSlideRight() || isVerOrientation() && hasSlideDown()) OnLoad.ORIENTATION.FRONT else OnLoad.ORIENTATION.BEHIND)
                         endLoad()
@@ -585,19 +622,16 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         cancelLoadAnim()
     }
     private fun abortLoad(){
-        if (hasContinueLoad()){
+        if (!hasAborted() && hasContinueLoad()){
             abortedLoadFlag(true)
             Logger.d("abortedLoad:%s",hasAborted())
-
-            (adapter as OnLoad).onAbort()
-
-            finishLoad()
-            cancelLoadAnim()
         }
+        finishLoad()
+        cancelLoadAnim()
     }
 
     private fun cancelLoadAnim(){
-        mLoadAnimStatus.compareAndSet(true,false)
+        mLoadAnimStatus.set(false)
     }
     private fun startLoadAnim(){
         if (mLoadAnimStatus.compareAndSet(false,true)){
@@ -608,6 +642,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
                     if (mStartAngle > 360f)mStartAngle = 0f
                     mStartAngle += 20f
                     postInvalidate()
+                    Logger.d("mStartAngle:%f",mStartAngle)
                 }
             }
         }
@@ -637,7 +672,8 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     interface OnLoad{
         enum class ORIENTATION {
             FRONT,
-            BEHIND
+            BEHIND,
+            OVER
         }
         /**
          * 需要同步返回

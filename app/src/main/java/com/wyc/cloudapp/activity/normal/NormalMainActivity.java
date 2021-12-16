@@ -242,7 +242,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 mScaleView = scaleInfo.findViewById(R.id.scaleView);
                 scaleInfo.findViewById(R.id.r_zero).setOnClickListener(v -> ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).rZero());
                 scaleInfo.findViewById(R.id.tare).setOnClickListener(v -> ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).tare());
-                mScaleView.setCurrentValue(AbstractSerialScaleImp.OnReadStatus.STABLE,((NormalSaleGoodsAdapter)mSaleGoodsAdapter).getWeigh());
+                mScaleView.setCurrentValue(AbstractSerialScaleImp.OnReadStatus.STABLE, getWeigh());
             }
         }
     }

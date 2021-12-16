@@ -26,6 +26,7 @@ import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -151,7 +152,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         }
     }
 
-    private final static class VipRecordAdapter extends AbstractDataAdapterForJson<VipRecordAdapter.MyViewHolder> implements View.OnClickListener{
+    private final static class VipRecordAdapter extends AbstractDataAdapterForJson<VipRecordAdapter.MyViewHolder> implements View.OnClickListener, IndicatorRecyclerView.OnLoad {
         private final MainActivity mContext;
         private int mCurrentRow;
         private int mCategoryId,mVagueType;
@@ -159,6 +160,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         private boolean isReload = true;
         private VipRecordAdapter(MainActivity mContext) {
             this.mContext = mContext;
+            mData = new JSONArray();
         }
 
         @NonNull
@@ -172,7 +174,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         @Override
         public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
             int size = mData.size();
-            if (position < size){//由于mDatas 赋值与取值不在同一线程，有可能出现数组越界，所以得加个判断
+            if (position < size){//由于mData 赋值与取值不在同一线程，有可能出现数组越界，所以得加个判断
                 final JSONObject vip = mData.getJSONObject(position);
                 holder.vip_name.setText(vip.getString("name"));
                 holder.card_code_tv.setText(vip.getString("card_code"));
@@ -181,10 +183,6 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
                 holder.balance_tv.setText(vip.getString("money_sum"));
                 holder.detail_btn.setTag(vip);
                 holder.detail_btn.setOnClickListener(this);
-
-                if (isReload && position + 5 == size){
-                    reload();
-                }
             }
         }
 
@@ -193,6 +191,21 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
             final JSONObject object = Utils.getViewTagValue(v);
             final VipDetailInfoWindow detailInfoDialog = new VipDetailInfoWindow(mContext,object);
             detailInfoDialog.showAtLocation(mContext.getWindow().getDecorView(), Gravity.CENTER,0,0);
+        }
+
+        @Override
+        public void onLoad(@NonNull ORIENTATION orientation) {
+            reload(orientation);
+        }
+
+        @Override
+        public boolean continueLoad() {
+            return isReload;
+        }
+
+        @Override
+        public void onAbort() {
+            MyDialog.toastMessage(R.string.cancel_load);
         }
 
         static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
@@ -221,76 +234,71 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         }
 
         private void loadVip(final String content,int type){
-            if (Utils.isNotEmpty(content)){
-                mCurrentRow = 0;
-                mQueryContent = content;
-                isReload = true;
-                mVagueType = type;
+            mCurrentRow = 0;
+            mQueryContent = content;
+            isReload = true;
+            mVagueType = type;
 
-                loadVip();
-            }else {
-                MyDialog.toastMessage("请输入查询内容。");
-            }
+            loadVip();
         }
 
         private void loadVip(){
             final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
             progressDialog.setCancel(false).setMessage(mContext.getString(R.string.hints_query_data_sz)).show();
             CustomApplication.execute(()->{
-                JSONObject object = new JSONObject();
-                object.put("appid",mContext.getAppId());
-
-                switch (mVagueType){
-                    case 0://手机
-                        object.put("mobile",mQueryContent);
-                        break;
-                    case 1://卡号
-                        object.put("card_code",mQueryContent);
-                        break;
-                    case 2://名称
-                        object.put("name",mQueryContent);
-                        break;
-                }
-                object.put("limit",50);
-                object.put("offset",mCurrentRow);
-
-                object = HttpUtils.sendPost(mContext.getUrl() + "/api/member/get_member_list",HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
-                if (HttpUtils.checkRequestSuccess(object)){
-                    object = JSONObject.parseObject(object.getString("info"));
-                    if (HttpUtils.checkBusinessSuccess(object)){
-                        int total = object.getIntValue("total");
-                        final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(object,"data");
-                        if (data.isEmpty()){
-                            isReload = false;
-                        }else{
-                            if (total <= data.size())isReload = false;
-                        }
-                        setDataForArray(data);
-                    }else {
-                        MyDialog.toastMessage(object.getString("info"));
-                    }
-                }
+                load(ORIENTATION.OVER);
                 progressDialog.dismiss();
             });
         }
+        private void load(ORIENTATION orientation){
+            JSONObject object = new JSONObject();
+            object.put("appid",mContext.getAppId());
 
-        private void reload(){
-            mCurrentRow++;
-            loadVip();
-            Logger.d("reload mCurrentRow:%d,size:%d",mCurrentRow, mData.size());
+            switch (mVagueType){
+                case 0://手机
+                    object.put("mobile",mQueryContent);
+                    break;
+                case 1://卡号
+                    object.put("card_code",mQueryContent);
+                    break;
+                case 2://名称
+                    object.put("name",mQueryContent);
+                    break;
+            }
+            object.put("limit",15);
+            object.put("offset",mCurrentRow);
+
+            object = HttpUtils.sendPost(mContext.getUrl() + "/api/member/get_member_list",HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
+            if (HttpUtils.checkRequestSuccess(object)){
+                object = JSONObject.parseObject(object.getString("info"));
+                if (HttpUtils.checkBusinessSuccess(object)){
+
+                    final JSONArray data = Utils.getNullObjectAsEmptyJsonArray(object,"data");
+                    if (data.isEmpty() || data.size() < 15 ){
+                        isReload = false;
+                        MyDialog.toastMessage(R.string.no_more_data);
+                    }
+                    switch (orientation){
+                        case BEHIND:
+                            mData.addAll(data);
+                            break;
+                        case FRONT:
+                            mData.addAll(0,data);
+                            break;
+                        default:
+                            mData = data;
+                    }
+                    CustomApplication.postAtFrontOfQueue(this::notifyDataSetChanged);
+                }else {
+                    MyDialog.toastMessage(object.getString("info"));
+                }
+            }
         }
 
-        @Override
-        public void setDataForArray(JSONArray array) {
-            if (mVagueType >= 0 || mCurrentRow == 0){
-                mData = array;
-            }else {
-                mData.addAll(array);
-            }
-            if (Looper.myLooper() != Looper.getMainLooper()){
-                CustomApplication.runInMainThread(this::notifyDataSetChanged);
-            }else
-                notifyDataSetChanged();
+        private void reload(ORIENTATION orientation){
+            mCurrentRow++;
+            load(orientation);
+            Logger.d("reload mCurrentRow:%d,size:%d",mCurrentRow, mData.size());
         }
     }
 

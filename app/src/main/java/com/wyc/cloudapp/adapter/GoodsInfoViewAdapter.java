@@ -222,9 +222,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
     private void updateLoadFlag(final JSONArray array){
         mLoadMore = array != null && array.size() == mPageNum;
-        if (!mLoadMore){
-            MyDialog.toastMessage(R.string.no_more_data);
-        }
     }
 
     private String getSql(int id){

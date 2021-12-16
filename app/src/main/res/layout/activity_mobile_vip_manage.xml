@@ -58,7 +58,7 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
-        <androidx.recyclerview.widget.RecyclerView
+        <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
             android:id="@+id/vip_record_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

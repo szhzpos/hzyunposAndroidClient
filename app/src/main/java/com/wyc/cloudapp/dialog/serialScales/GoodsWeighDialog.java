@@ -34,7 +34,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
-    private double mValue;
+    private volatile double mValue;
     private boolean mContinuousWeighing = false;
     private boolean mStable = false;
     /**

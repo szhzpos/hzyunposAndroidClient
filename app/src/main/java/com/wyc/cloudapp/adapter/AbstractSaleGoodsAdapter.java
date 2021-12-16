@@ -2488,4 +2488,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     public boolean getSingleRefundStatus(){
         return mSingleRefundStatus;
     }
+
+    public float getWeigh(){
+        return 0.0f;
+    }
 }

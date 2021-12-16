@@ -220,4 +220,7 @@ public class SaleActivity extends MainActivity{
             }else MyDialog.toastMessage(getString(R.string.not_goods_practice));
         }
     }
+    public float getWeigh(){
+        return mSaleGoodsAdapter.getWeigh();
+    }
 }

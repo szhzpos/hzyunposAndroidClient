@@ -155,28 +155,30 @@ public class CurPriceDialog extends AbstractDialogSaleActivity {
     }
 
     public void read(){
-        if (mSerialScale == null){
-            final JSONObject object = new JSONObject();
-            int code = AbstractSerialScaleImp.readWeight(object);
-            if (code >= 0){
-                mSerialScale = (AbstractSerialScaleImp) object.get("info");
-                if (mSerialScale != null){
-                    mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
-                        @Override
-                        public void onFinish(int stat,double num) {
-                            mContext.setScaleCurrent(stat,(float) num * 1000);
-                            if (null != mNumTv)CustomApplication.runInMainThread(()-> mNumTv.setText(String.format(Locale.CHINA,"%.3f",num)));
-                        }
-                        @Override
-                        public void onError(String err) {
-                            mContext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err, getWindow()));
-                        }
-                    }).startRead();
+        if (AbstractSerialScaleImp.hasAutoGetWeigh()){
+            mNumTv.setText(String.format(Locale.CHINA,"%.3f",mContext.getWeigh()));
+        }else
+            if (mSerialScale == null){
+                final JSONObject object = new JSONObject();
+                int code = AbstractSerialScaleImp.readWeight(object);
+                if (code >= 0){
+                    mSerialScale = (AbstractSerialScaleImp) object.get("info");
+                    if (mSerialScale != null){
+                        mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
+                            @Override
+                            public void onFinish(int stat,double num) {
+                                if (null != mNumTv)CustomApplication.runInMainThread(()-> mNumTv.setText(String.format(Locale.CHINA,"%.3f",num)));
+                            }
+                            @Override
+                            public void onError(String err) {
+                                mContext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err, getWindow()));
+                            }
+                        }).startRead();
+                    }
+                }else{
+                    MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"), getWindow());
                 }
-            }else{
-                MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"), getWindow());
             }
-        }
     }
 
     private void stopRead(){

@@ -125,7 +125,11 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
         try {
             if (exist){
-                new SQLiteHelper(context,name,13).getWritableDatabase().close();
+                final SQLiteHelper helper = new SQLiteHelper(context,name,13);
+                helper.setWriteAheadLoggingEnabled(true);
+                helper.getWritableDatabase();
+                helper.close();
+
                 AppDatabase.initDataBase(name);
             }
             if (mDb == null){

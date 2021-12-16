@@ -44,6 +44,7 @@ import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
 import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -294,34 +295,34 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
             ListContent(index.toString(),
                 Modifier
                     .width(45.dp))
-            ListContent(stuffInfo.barcode,
+            ListContent(stuffInfo.barcode?:"",
                 Modifier
                     .width(
                         dimensionResource(R.dimen.table_barcode_width)
                     ))
-            ListContent(stuffInfo.onlyCoding,
+            ListContent(stuffInfo.onlyCoding?:"",
                 Modifier
                     .width(dimensionResource(R.dimen.table_barcode_width)))
-            ListContent(stuffInfo.goodsTitle,
+            ListContent(stuffInfo.goodsTitle?:"",
                 Modifier
                     .width(
                         dimensionResource(R.dimen.table_goods_title_width)
                     ))
 
-            ListContent(String.format("%.2f",stuffInfo.xnumJicun),
+            ListContent(String.format("%.2f",stuffInfo.xnumJicun?:0.0),
                 Modifier
                     .width(88.dp))
 
-            ListContent(String.format("%.2f",stuffInfo.xnumOut),
+            ListContent(String.format("%.2f",stuffInfo.xnumOut?:0.0),
                 Modifier
                     .width(88.dp))
 
-            ListContent(stuffInfo.unit,
+            ListContent(stuffInfo.unit?:"",
                 Modifier
                     .width(45.dp))
             AndroidViewBinding(StoredNumEditBinding::inflate){
                 val e = root.findViewById<EditText>(R.id.store_num)
-                e.setText(String.format("%.2f",stuffInfo.xnumSurplus))
+                e.setText(String.format("%.2f",stuffInfo.xnumSurplus?:0.0))
                 e.addTextChangedListener(object : TextWatcher {
                     override fun beforeTextChanged(
                         s: CharSequence?,
@@ -380,7 +381,9 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                         hint: String?
                     ) {
                         d?.let {
-                            launch {
+                            launch(CoroutineExceptionHandler { _, e ->
+                                MyDialog.toastMessage(e.message)
+                            }) {
                                 dealData(d)
                                 mStuffList?.apply {
                                     clear()
