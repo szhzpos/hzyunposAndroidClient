@@ -157,7 +157,7 @@ class MobileEnquiryOrderActivity : AbstractMobileBusinessOrderActivity() {
                 val obj = JSONObject()
                 val old_obj = array.getJSONObject(i)
                 obj["xnum"] = old_obj.getDoubleValue("xnum")
-                obj["xnote"] = ""
+                obj["xnote"] = old_obj.getString("xnote")
                 obj["barcode_id"] = old_obj.getString("barcode_id")
                 obj["goods_id"] = old_obj.getString("goods_id")
                 obj["conversion"] = old_obj.getString("conversion")

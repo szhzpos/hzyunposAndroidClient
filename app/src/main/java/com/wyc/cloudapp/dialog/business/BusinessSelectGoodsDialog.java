@@ -53,7 +53,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     public static final int BARCODE_REQUEST_CODE = 0x000000dd;
     private JSONObject mContentObj;
     private String mBarcode;
-    private EditText mBarcodeEt,mNumEt,mPriceEt;
+    private EditText mBarcodeEt,mNumEt,mPriceEt,mRemarkTv;
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
     private boolean hasSourceOrder;
     private int mPriceType = WholesalePriceType.BUYING_PRICE;
@@ -188,6 +188,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNumEt.setText(R.string.zero_p_z_sz);
         if (mPriceEt != null)mPriceEt.setText(R.string.zero_p_z_sz);
         mUnitTv.setText(R.string.space_sz);
+        mRemarkTv.setText(R.string.space_sz);
     }
 
     private void initView(){
@@ -196,6 +197,7 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mNameTv = findViewById(R.id.name_tv);
         mNumEt = findViewById(R.id.num_tv);
         mUnitTv = findViewById(R.id.unit_tv);
+        mRemarkTv = findViewById(R.id.remark_tv);
         mNumEt.setOnFocusChangeListener(this);
         mNumEt.setOnClickListener(this);
 
@@ -397,6 +399,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
         mUnitTv.setTag(object.getString("unit_id"));
         mUnitTv.setText(object.getString("unit_name"));
 
+        mRemarkTv.setText(Utils.getNullStringAsEmpty(object,"xnote"));
+
         if (mContinueScan.isChecked()){
             mContinueBtn.callOnClick();
         }
@@ -477,6 +481,8 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             }
             object.put("new_price",new_price);
             object.put("new_num",new_num);
+
+            object.put("xnote",mRemarkTv.getText());
         }
         return object;
     }

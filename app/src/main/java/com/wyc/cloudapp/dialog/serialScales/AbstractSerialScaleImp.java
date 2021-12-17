@@ -60,9 +60,6 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
     public static boolean hasAutoGetWeigh(){
         final JSONObject object = new JSONObject();
         boolean code = hasSettingSerialPortScale(object);
-
-        Logger.d("auto_weigh:%s",code && object.getBooleanValue("auto_weigh"));
-
         return code && object.getBooleanValue("auto_weigh");
     }
 

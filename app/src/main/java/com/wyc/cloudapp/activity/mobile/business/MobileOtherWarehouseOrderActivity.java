@@ -156,7 +156,7 @@ public final class MobileOtherWarehouseOrderActivity extends AbstractMobileBusin
                 object.put("xnum",old_obj.getDoubleValue("xnum"));
                 object.put("price",old_obj.getDoubleValue("price"));
                 object.put("buying_price",old_obj.getDoubleValue("price"));
-                object.put("xnote","");
+                object.put("xnote",old_obj.getString("xnote"));
                 object.put("barcode_id",old_obj.getString("barcode_id"));
                 object.put("goods_id",old_obj.getString("goods_id"));
                 object.put("conversion",old_obj.getString("conversion"));

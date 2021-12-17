@@ -64,7 +64,9 @@ public class BuyFullGiveXSelectDialog extends AbstractDialogSaleActivity {
     }
 
     protected double getWidthRatio(){
-        return 0.98;
+        if (Utils.lessThan7Inches(mContext))
+            return 0.98;
+        else return super.getWidthRatio();
     }
 
     private void initRuleList(){

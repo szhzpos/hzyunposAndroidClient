@@ -961,7 +961,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 dismissProgress();
                 break;
             case MessageID.GoodsCategory_CHANGE_ID:
-                if (mSaleGoodsAdapter != null)mGoodsCategoryAdapter.setDatas(0);
+                if (mGoodsCategoryAdapter != null)mGoodsCategoryAdapter.setDatas(0);
                 break;
             case MessageID.TRANSFERSTATUS_ID://传输状态
                 imageView = findViewById(R.id.upload_status);

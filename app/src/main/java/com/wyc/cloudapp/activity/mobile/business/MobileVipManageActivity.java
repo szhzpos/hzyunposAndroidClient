@@ -3,7 +3,6 @@ package com.wyc.cloudapp.activity.mobile.business;
 import android.annotation.SuppressLint;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Looper;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -194,7 +193,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         }
 
         @Override
-        public void onLoad(@NonNull ORIENTATION orientation) {
+        public void onLoad(@NonNull LOADMODE orientation) {
             reload(orientation);
         }
 
@@ -246,11 +245,11 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
             final CustomProgressDialog progressDialog = new CustomProgressDialog(mContext);
             progressDialog.setCancel(false).setMessage(mContext.getString(R.string.hints_query_data_sz)).show();
             CustomApplication.execute(()->{
-                load(ORIENTATION.OVER);
+                load(LOADMODE.OVER);
                 progressDialog.dismiss();
             });
         }
-        private void load(ORIENTATION orientation){
+        private void load(LOADMODE orientation){
             JSONObject object = new JSONObject();
             object.put("appid",mContext.getAppId());
 
@@ -295,7 +294,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
             }
         }
 
-        private void reload(ORIENTATION orientation){
+        private void reload(LOADMODE orientation){
             mCurrentRow++;
             load(orientation);
             Logger.d("reload mCurrentRow:%d,size:%d",mCurrentRow, mData.size());

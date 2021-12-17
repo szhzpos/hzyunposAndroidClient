@@ -665,12 +665,10 @@
         android:paddingStart="@dimen/margin_2"
         android:paddingEnd="@dimen/margin_1"
         android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="@id/goods_info_list"
+        app:layout_constraintBottom_toTopOf="@id/goods_info_list"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
-        app:layout_constraintTop_toBottomOf="@+id/main_top"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/main_top" />
 
     <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
         android:id="@+id/goods_info_list"

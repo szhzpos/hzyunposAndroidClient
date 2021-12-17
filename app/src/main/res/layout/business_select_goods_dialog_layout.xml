@@ -209,12 +209,39 @@
 
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/remark_label"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center"
+        android:text="@string/remark_colon_sz"
+        android:textColor="@color/label_text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/price_and_amt_layout" />
+
+    <EditText
+        android:id="@+id/remark_tv"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/height_35"
+        android:background="@drawable/bottom_separator"
+        android:gravity="center_vertical"
+        android:inputType="text"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp"
+        android:textColor="@color/label_text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="@id/remark_label"
+        app:layout_constraintStart_toEndOf="@id/remark_label"
+        app:layout_constraintTop_toTopOf="@id/remark_label" />
+
     <Button
         android:id="@+id/ok_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/width_88"
         android:layout_height="@dimen/height_45"
-        android:layout_marginTop="@dimen/margin_18"
+        android:layout_marginTop="@dimen/margin_12"
         android:background="@drawable/round_shape_main_color"
         android:text="@string/button_ok"
         android:textColor="@color/white_pink"
@@ -223,7 +250,7 @@
         app:layout_constraintEnd_toStartOf="@+id/cancel_btn"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/continue_btn"
-        app:layout_constraintTop_toBottomOf="@id/price_and_amt_layout" />
+        app:layout_constraintTop_toBottomOf="@id/remark_label" />
 
     <Button
         android:id="@+id/cancel_btn"

@@ -23,7 +23,6 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.viewModel.GoodsViewModel;
-import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.CurPriceDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
@@ -74,9 +73,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     @Override
-    public void onLoad(@NonNull ORIENTATION orientation) {
-        Logger.d("orientation:%s",orientation);
-        loadMore(orientation);
+    public void onLoad(@NonNull LOADMODE loadMode) {
+        Logger.d("loadMode:%s",loadMode);
+        loadMore(loadMode);
     }
 
     @Override
@@ -209,12 +208,12 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         new ViewModelProvider(mContext).get(GoodsViewModel.class).refresh(getSql(id));
     }
     @SuppressLint("NotifyDataSetChanged")
-    private void loadMore(ORIENTATION orientation){
+    private void loadMore(LOADMODE orientation){
         mPageIndex++;
         final JSONArray array = GoodsViewModel.load(getSql(mCategoryId));
         updateLoadFlag(array);
         if (array != null && !array.isEmpty()){
-            if (orientation == ORIENTATION.BEHIND)
+            if (orientation == LOADMODE.BEHIND)
                 mDatas.addAll(array);
             else mDatas.addAll(1,array);
             CustomApplication.postAtFrontOfQueue(this::notifyDataSetChanged);
