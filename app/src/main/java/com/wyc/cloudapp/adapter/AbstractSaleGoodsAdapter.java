@@ -681,7 +681,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     }
 
     private boolean verifyPromotion_8(final @NonNull JSONObject object,double num){
-        if (GoodsInfoViewAdapter.isSpecialPromotion(object) && !GoodsInfoViewAdapter.isBuyXGiveX(object) && !GoodsInfoViewAdapter.isBuyFullGiveX(object)){
+        if (!GoodsInfoViewAdapter.isBuyXGiveX(object) && !GoodsInfoViewAdapter.isBuyFullGiveX(object)){
             double sum_sale_xnum = 0.0,new_price = 0.0,current_promotion_xnum = 0.0,current_goods_num = 0.0,current_goods_promotion_num = 0.0;
             JSONObject tmp_obj;
 
@@ -806,6 +806,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
 
             Logger.d_json(satisfy_rules.toString());
             if (satisfy_rules.isEmpty()){
+                GoodsInfoViewAdapter.clearSpecialPromotionSaleType(object);
                 _deleteGoodsDiscountRecordWithType(object,DISCOUNT_TYPE.PROMOTION);
             }else {
                 List<PromotionRule> lists = satisfy_rules.toJavaList(PromotionRule.class);
@@ -815,6 +816,15 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 final PromotionRule promotionRule = lists.get(0);
                 double limit_xnum = promotionRule.getUpper_limit_num(),price = promotionRule.getPrice();
 
+                double cur_goods_price = object.getDoubleValue("price");
+                //零售特价和单品折采用低价优先20211220
+                if (cur_goods_price < price){
+                    return false;
+                }else {
+                    _deleteGoodsDiscountRecordWithType(object,DISCOUNT_TYPE.M_DISCOUNT);
+                }//
+
+                GoodsInfoViewAdapter.makeSpecialPromotionSaleType(object);
                 object.put("price",price);
 
                 current_promotion_xnum = promotionRule.getCurrent_sum_promotion_xnum();
