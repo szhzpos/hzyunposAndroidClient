@@ -73,7 +73,7 @@ public final class MyDialog extends AbstractDialogContext {
     public MyDialog(Context context,final String title, IconType type){
         this(context,title);
         mContentIconType = type;
-        if (context instanceof LifecycleOwner){
+        if (context instanceof LifecycleOwner && Looper.myLooper() == Looper.getMainLooper()){
             mLifecycleEventObserver = new LifecycleEventObserver() {
                 @Override
                 protected void finalize(){
@@ -95,7 +95,10 @@ public final class MyDialog extends AbstractDialogContext {
     public void dismiss() {
         super.dismiss();
         if (mLifecycleEventObserver != null){
-            ((LifecycleOwner)mContext).getLifecycle().removeObserver(mLifecycleEventObserver);
+            if (Looper.myLooper() != Looper.getMainLooper()){
+                getWindow().getDecorView().post(()-> ((LifecycleOwner)mContext).getLifecycle().removeObserver(mLifecycleEventObserver));
+            }else
+                ((LifecycleOwner)mContext).getLifecycle().removeObserver(mLifecycleEventObserver);
         }
         mDup = null;
     }
