@@ -290,33 +290,39 @@ public final class Printer {
     public static void print(@NonNull final String content){
         if (content.isEmpty())return;
         try {
-            print(content.getBytes(CHARACTER_SET));
+            printInner(content);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
     }
 
-    public static void print(@NonNull final byte[] inbyte){
-        if (inbyte.length == 0)return;
-
+    private static void printInner(@NonNull final String content) throws UnsupportedEncodingException {
+        if (content.isEmpty())return;
         final JSONObject object = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("printer",object)){
+        if (getPrinterSetting(object)){
             int status_id = object.getIntValue("id");
             String tmp = Utils.getNullStringAsEmpty(object,"v");
             String[] vals = tmp.split("\t");
-            if (vals.length > 1){
-                switch (status_id){
-                    case R.id.bluetooth_p:
-                        bluetooth_print(inbyte,vals[1]);
-                        break;
-                    case R.id.usb_p:
-                        usb_print_byte(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),inbyte);
-                        break;
+            if (status_id == R.id.innerDriver){
+                AbstractPrinter.printContent(content);
+            }else
+                if (vals.length > 1){
+                    switch (status_id){
+                        case R.id.bluetooth_p:
+                            bluetooth_print(content.getBytes(CHARACTER_SET),vals[1]);
+                            break;
+                        case R.id.usb_p:
+                            usb_print_byte(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content.getBytes(CHARACTER_SET));
+                            break;
+                    }
                 }
-            }
         }else {
             MyDialog.ToastMessage("读取打印机设置错误：" + object.getString("info"), null);
         }
+    }
+
+    public static boolean getPrinterSetting(@NonNull final JSONObject object){
+        return SQLiteHelper.getLocalParameter("printer",object);
     }
 
     public static void printByBluetooth(final String c,final String device_addr){
@@ -469,7 +475,7 @@ public final class Printer {
             final WindowManager wm = (WindowManager)activity.getSystemService(WINDOW_SERVICE);
             final WindowManager.LayoutParams wLayout = (WindowManager.LayoutParams) mICO.getLayoutParams();
             wLayout.x = x;
-            wLayout.y = y - activity.getStatusBarHeight() +  Utils.dpToPx(activity,8);
+            wLayout.y = (int) (y - activity.getStatusBarHeight() +  CustomApplication.getDimension(R.dimen.size_8));
             wm.updateViewLayout(mICO,wLayout);
         }
     }
@@ -494,8 +500,8 @@ public final class Printer {
             wLayout.format= PixelFormat.RGBA_8888;
             wLayout.gravity= Gravity.LEFT|Gravity.TOP;
             wLayout.flags= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL| WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;;
-            wLayout.height = Utils.dpToPx(activity,32);
-            wLayout.width = Utils.dpToPx(activity,32);
+            wLayout.height = (int) CustomApplication.getDimension(R.dimen.size_32);
+            wLayout.width = (int) CustomApplication.getDimension(R.dimen.size_32);
 
             if (mICO != null)wm.removeViewImmediate(mICO);
             mICO = new ImageView(activity);
@@ -548,7 +554,7 @@ public final class Printer {
             if (context.getPrintStatus()){
                 mICO.setImageBitmap(printer);
             }else {
-                mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(context,printer,Utils.dpToPx(context,15),Utils.dpToPx(context,15)));
+                mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(context,printer, (int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
             }
         }
     }

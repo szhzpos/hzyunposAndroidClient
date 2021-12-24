@@ -2,6 +2,7 @@ package com.wyc.cloudapp.activity.normal
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -16,9 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusTarget
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.*
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
@@ -36,6 +35,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter
+import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.VipInfo
 import com.wyc.cloudapp.customizationView.RoundCornerTabLayout
 import com.wyc.cloudapp.data.viewModel.VipInfoViewModel
@@ -63,37 +63,39 @@ class NVipManageActivity : MainActivity(){
         Column(Modifier.background(colorResource(R.color.white))){
             Box(
                 Modifier
-                    .height(45.dp)
+                    .height(dimensionResource(R.dimen.height_45))
                     .fillMaxWidth()
                     .background(colorResource(R.color.activity_title_color))) {
                 Row(
-                    Modifier.clickable { finish() }
-                        .wrapContentWidth().fillMaxHeight()
+                    Modifier
+                        .clickable { finish() }
+                        .wrapContentWidth()
+                        .fillMaxHeight()
                         .align(Alignment.CenterStart),verticalAlignment = Alignment.CenterVertically) {
                     Icon(painter = painterResource(R.drawable.back_ico), contentDescription = "",
                         Modifier
-                            .padding(2.dp)
+                            .padding(dimensionResource(R.dimen.margin_2))
                             ,tint = Color.White )
-                    Text(text = stringResource(R.string.back),color = colorResource(R.color.white),fontSize = 16.sp)
+                    Text(text = stringResource(R.string.back),color = colorResource(R.color.white),fontSize = dimensionResource(R.dimen.font_size_16).value.sp)
                 }
                 Text(text = stringResource(R.string.vip_manage),modifier = Modifier
                     .align(Alignment.Center)
-                    .padding(top = 3.dp),color = colorResource(R.color.white),fontSize = 20.sp,textAlign = TextAlign.Center)
+                    .padding(top = dimensionResource(R.dimen.size_3)),color = colorResource(R.color.white),fontSize = dimensionResource(R.dimen.font_size_20).value.sp,textAlign = TextAlign.Center)
             }
             Row{
                 Column(
                     Modifier
-                        .padding(5.dp)
+                        .padding(dimensionResource(R.dimen.size_5))
                         .fillMaxHeight()
                         .weight(0.4f),horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(text = stringResource(R.string.vip_dialog_title_sz),
-                        Modifier, colorResource(R.color.text_color) ,fontSize = 18.sp,textAlign = TextAlign.Center)
+                        Modifier, colorResource(R.color.text_color) ,fontSize = dimensionResource(R.dimen.font_size_18).value.sp,textAlign = TextAlign.Center)
                     Search()
                 }
                 Spacer(
                     Modifier
                         .fillMaxHeight()
-                        .width(0.5.dp)
+                        .width(dimensionResource(R.dimen.size_1))
                         .background(colorResource(R.color.gray_subtransparent)))
                 Column(
                     Modifier
@@ -122,6 +124,7 @@ class NVipManageActivity : MainActivity(){
         }
     }
 
+    fun Number.toComposeSp()= (toFloat() / Resources.getSystem().displayMetrics.scaledDensity).sp
 
     @Composable
     private fun Search(){
@@ -129,9 +132,13 @@ class NVipManageActivity : MainActivity(){
         val text = remember {mutableStateOf(TextFieldValue(""))}
         SearchTextField(text,{
             Icon(painter = painterResource(R.drawable.r_card), contentDescription = "",
-                Modifier.focusable().clickable {
-                    ViewModelProvider(this).get(VipInfoViewModel::class.java).refresh(this,text.value.text)
-                },tint = colorResource(R.color.lightBlue))
+                Modifier
+                    .focusable()
+                    .clickable {
+                        ViewModelProvider(this)
+                            .get(VipInfoViewModel::class.java)
+                            .refresh(this, text.value.text)
+                    },tint = colorResource(R.color.lightBlue))
         })
         mVipInfo?.value?.let {
             AndroidViewBinding(VipDetailInfoLayoutBinding::inflate){
@@ -151,28 +158,30 @@ class NVipManageActivity : MainActivity(){
         @JvmStatic
         @Composable
         fun ListContent(content:String?,modifier: Modifier){
-            Text(content?:"",modifier.padding(start = 5.dp,top = 2.dp,bottom = 2.dp,end = 5.dp),color = colorResource(R.color.text_color),fontSize = 14.sp,textAlign = TextAlign.Center)
+            Text(content?:"",modifier.padding(start = dimensionResource(R.dimen.size_5),top = dimensionResource(R.dimen.size_2),bottom = dimensionResource(R.dimen.size_2)
+                ,end = dimensionResource(R.dimen.size_5)),color = colorResource(R.color.text_color),fontSize = dimensionResource(R.dimen.font_size_14).value.sp,textAlign = TextAlign.Center)
         }
         @JvmStatic
         @Composable
         fun ListTitle(title:String?,modifier: Modifier,c: Color = colorResource(R.color.white)){
-            Text(title?:"",modifier.padding(5.dp),color = c,fontSize = 16.sp,textAlign = TextAlign.Center)
+            Text(title?:"",modifier.padding(dimensionResource(R.dimen.size_5)),color = c,fontSize = dimensionResource(R.dimen.font_size_16).value.sp,textAlign = TextAlign.Center)
         }
 
         @JvmStatic
         @Composable
         fun SearchTextField(textFieldValue:MutableState<TextFieldValue>,trailingIcon: @Composable (() -> Unit)? = null,modifier: Modifier = Modifier
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        val text = textFieldValue.value
-                        textFieldValue.value =
-                            textFieldValue.value.copy(selection = TextRange(0, text.text.length))
-                    }
-                }.padding(top = 5.dp, bottom = 5.dp),
-                            placeholder: @Composable (() -> Unit)? = {Text(stringResource(R.string.vip_search_hint_sz))},keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number )){
+            .onFocusChanged { focusState ->
+                if (focusState.isFocused) {
+                    val text = textFieldValue.value
+                    textFieldValue.value =
+                        textFieldValue.value.copy(selection = TextRange(0, text.text.length))
+                }
+            }
+            .padding(top = dimensionResource(R.dimen.size_5), bottom = dimensionResource(R.dimen.size_5)),
+                            placeholder: @Composable (() -> Unit)? = {Text(stringResource(R.string.vip_search_hint_sz),fontSize = dimensionResource(R.dimen.font_size_16).value.sp)},keyboardOptions: KeyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Number )){
 
             OutlinedTextField(value = textFieldValue.value, onValueChange = {textFieldValue.value = it},modifier = modifier,placeholder = placeholder,
-                trailingIcon = trailingIcon,textStyle = TextStyle(fontSize = 16.sp),singleLine = true,colors = textFieldColors(),keyboardOptions = keyboardOptions
+                trailingIcon = trailingIcon,textStyle = TextStyle(fontSize = dimensionResource(R.dimen.font_size_16).value.sp),singleLine = true,colors = textFieldColors(),keyboardOptions = keyboardOptions
             )
         }
         @JvmStatic

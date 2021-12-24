@@ -126,7 +126,7 @@ public final class MyDialog extends AbstractDialogContext {
         if (Utils.lessThan7Inches(mContext)){
             return  0.95;
         }
-        return Utils.dpToPx(mContext,368);
+        return Utils.dpToPx(mContext,CustomApplication.getDimension(R.dimen.size_368));
     }
 
     @Override

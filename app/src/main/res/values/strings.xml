@@ -112,6 +112,7 @@
     <string name="select_practice">选择做法</string>
     <string name="no_more_data">最后一页</string>
     <string name="cancel_load">取消加载</string>
+    <string name="selected">确认选择</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -182,6 +183,7 @@
     <string name="business_printer_setting">后台打印设置</string>
     <string name="bluetooth_p_sz">蓝牙</string>
     <string name="USB_p_sz">USB</string>
+    <string name="innerDriver">内置驱动</string>
     <string name="print_way_sz">打印方式:</string>
     <string name="printer_sz">打印机：</string>
     <string name="vip_rc_sz">会员读卡器</string>
@@ -934,4 +936,8 @@
 
     <string name="no_barcode_goods">无码商品录入</string>
     <string name="cur_price_goods">时价商品录入</string>
+    <string name="net">净重</string>
+    <string name="weigh">重量(KG)</string>
+    <string name="price_">价格(元)</string>
+    <string name="amt_scale">金额(元)</string>
 </resources>

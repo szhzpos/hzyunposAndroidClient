@@ -9,6 +9,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.dialog.goods.CurPriceDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 public class LinearItemDecoration extends SuperItemDecoration {
@@ -40,7 +43,7 @@ public class LinearItemDecoration extends SuperItemDecoration {
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof LinearLayoutManager) {
-            if (mSpace == -1)mSpace = Utils.dpToPx(view.getContext(),5);
+            if (mSpace == -1)mSpace = (int) CustomApplication.getDimension(R.dimen.size_5);
             if (((LinearLayoutManager) layoutManager).getOrientation() == LinearLayoutManager.HORIZONTAL) {
                 outRect.set(0, 0,mSpace, 0);
             } else {

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="@dimen/margin_5">
+
+    <TextView
+        android:id="@+id/stable_ico"
+        android:layout_width="@dimen/size_12"
+        android:layout_height="@dimen/size_12"
+        android:background="@color/abnormal_status_color"
+        app:layout_constraintEnd_toStartOf="@+id/stable_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/stable_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_2"
+        android:text="@string/stable"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintBottom_toBottomOf="@id/stable_ico"
+        app:layout_constraintStart_toEndOf="@id/stable_ico"
+        app:layout_constraintTop_toTopOf="@id/stable_ico" />
+
+    <TextView
+        android:id="@+id/net_ico"
+        android:layout_width="@dimen/size_12"
+        android:layout_height="@dimen/size_12"
+        android:background="@color/abnormal_status_color"
+        app:layout_constraintBottom_toBottomOf="@id/weigh"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/weigh" />
+
+    <TextView
+        android:id="@+id/net_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_2"
+        android:text="@string/net"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintBottom_toBottomOf="@id/net_ico"
+        app:layout_constraintStart_toEndOf="@id/net_ico"
+        app:layout_constraintTop_toTopOf="@id/net_ico" />
+
+    <TextView
+        android:id="@+id/weigh_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/weigh"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintEnd_toStartOf="@id/price_label"
+        app:layout_constraintStart_toEndOf="@id/stable_tv"
+        app:layout_constraintTop_toTopOf="@id/stable_tv" />
+
+    <TextView
+        android:id="@+id/weigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_5"
+        android:text="8.888"
+        android:textColor="#F8AC15"
+        android:textSize="@dimen/font_size_24"
+        app:layout_constraintEnd_toEndOf="@id/weigh_label"
+        app:layout_constraintStart_toStartOf="@id/weigh_label"
+        app:layout_constraintTop_toBottomOf="@+id/weigh_label" />
+
+    <TextView
+        android:id="@+id/price_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_2"
+        android:text="@string/price_"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintEnd_toStartOf="@+id/amt_tv"
+        app:layout_constraintStart_toEndOf="@id/weigh_label"
+        app:layout_constraintTop_toTopOf="@id/weigh_label" />
+
+    <TextView
+        android:id="@+id/price_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="15.00"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_24"
+        app:layout_constraintEnd_toEndOf="@id/price_label"
+        app:layout_constraintStart_toStartOf="@id/price_label"
+        app:layout_constraintTop_toTopOf="@id/weigh" />
+
+    <TextView
+        android:id="@+id/amt_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_2"
+        android:text="@string/amt_scale"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/price_label"
+        app:layout_constraintTop_toTopOf="@id/weigh_label" />
+
+    <TextView
+        android:id="@+id/amt_tv"
+        android:layout_width="@dimen/width_108"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="99999.99"
+        android:textColor="#F8AC15"
+        android:textSize="@dimen/font_size_24"
+        app:layout_constraintEnd_toEndOf="@id/amt_label"
+        app:layout_constraintStart_toStartOf="@id/amt_label"
+        app:layout_constraintTop_toTopOf="@id/weigh" />
+
+    <Button
+        android:id="@+id/r_zero"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginTop="@dimen/margin_5"
+        android:background="@drawable/button_pink"
+        android:text="@string/r_zero"
+        android:textColor="@color/pink_white"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toStartOf="@+id/tare"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/weigh" />
+
+    <Button
+        android:id="@+id/tare"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:background="@drawable/button_pink"
+        android:text="@string/tare"
+        android:textColor="@color/pink_white"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/r_zero"
+        app:layout_constraintTop_toTopOf="@id/r_zero" />
+
+    <ImageView
+        android:id="@+id/hide_btn"
+        android:layout_width="@dimen/size_25"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/amt_tv"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/fold_" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/group_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="r_zero,tare"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</merge>

@@ -19,6 +19,8 @@ import androidx.annotation.Nullable;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -121,7 +123,7 @@ public class PieView extends View {
         final Rect textBounds = new Rect();
         mPaint.getTextBounds(sz,0,sz.length(),textBounds);
 
-        canvas.drawText(sz,-textBounds.width() >> 1,-Utils.dpToPx(mContext,18),mPaint);
+        canvas.drawText(sz,-textBounds.width() >> 1,-CustomApplication.getDimension(R.dimen.size_18),mPaint);
         canvas.drawText(centraContent,-mPaint.measureText(centraContent) / 2,textBounds.bottom + textBounds.height() >> 1,mPaint);
     }
 
@@ -317,12 +319,12 @@ public class PieView extends View {
 
         int size = mDataSize - 1,max_legend_width = mMaxLegendWidth;
         float fontHeight = fontSize.height();
-        float start_space = mViewWidth - mPieRect.width() - max_legend_width - Utils.dpToPx(mContext,18),vertical_space = (mPieRect.height() * 0.8f - (size * fontHeight)) / (size == 0 ? 1 :size),pie_right = mPieRect.right,
+        float start_space = mViewWidth - mPieRect.width() - max_legend_width - CustomApplication.getDimension(R.dimen.size_18),vertical_space = (mPieRect.height() * 0.8f - (size * fontHeight)) / (size == 0 ? 1 :size),pie_right = mPieRect.right,
                 pie_top =  mPieRect.top + (mViewHeight - fontHeight * mDataSize - size * vertical_space - fontHeight) / 2,radius = 12;
         float xStart = pie_right + start_space,yStart  = index * (fontHeight + vertical_space) + pie_top;
 
         mPaint.setColor(object.getIntValue("color"));
-        mPaint.setTextSize(Utils.sp2px(mContext,16));
+        mPaint.setTextSize(CustomApplication.getDimension(R.dimen.font_size_16));
         canvas.drawCircle(xStart,yStart,radius,mPaint);
         canvas.drawText(String.format(Locale.CHINA,"%s %s",object.getString("label"),object.getString("value")),xStart + radius / 2 + 8,yStart + fontHeight / 3.0f ,mPaint);
         final RectF legend_coordinate = new RectF(xStart ,yStart - fontHeight ,xStart + max_legend_width,yStart + fontHeight);
@@ -396,14 +398,14 @@ public class PieView extends View {
         if (object != null && object.getBooleanValue("isSel") && object.getDoubleValue("value") != 0.0){
             final String content = String.format(Locale.CHINA,"%s %s (%.2f%s)",object.getString("label"),object.getString("value"),object.getDoubleValue("ratio") * 100,"%");
             final Rect textBounds = new Rect();
-            mPaint.setTextSize(Utils.sp2px(mContext,16));
+            mPaint.setTextSize(CustomApplication.getDimension(R.dimen.font_size_16));
             mPaint.getTextBounds(content,0,content.length(),textBounds);
-            float  wBubble = Utils.dpToPx(mContext, 18) + textBounds.width(),hBubble = Utils.dpToPx(mContext,48);
+            float  wBubble = CustomApplication.getDimension(R.dimen.size_18) + textBounds.width(),hBubble = CustomApplication.getDimension(R.dimen.size_48);
             float xAxis = mTouchX,yAxis = mTouchY;
 
-            int l_edge = Utils.dpToPx(mContext,15),offset_5 = Utils.dpToPx(mContext,5);
+            int l_edge = (int) CustomApplication.getDimension(R.dimen.size_15),offset_5 = (int) CustomApplication.getDimension(R.dimen.size_5);
             float x1 = (float) (Math.sin(45 * Math.PI / 180) * l_edge) + 1,y1 = (float) (Math.cos(45 * Math.PI / 180) * l_edge) + 1;
-            float s_xAxis = 0,s_yAxis = 0,border_radius = Utils.dpToPx(mContext,2);
+            float s_xAxis = 0,s_yAxis = 0,border_radius = CustomApplication.getDimension(R.dimen.size_2);
 
             final Path path = new Path();
             final LinearGradient linear = new LinearGradient(wBubble,hBubble,0,0,new int[]{Color.BLACK,Color.rgb(120, 120, 120),Color.rgb(0, 0, 0)} ,new float[]{0f, 0.5f, 1.0f}, Shader.TileMode.CLAMP);

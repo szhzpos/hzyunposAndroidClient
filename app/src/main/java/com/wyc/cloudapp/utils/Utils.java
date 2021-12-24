@@ -683,7 +683,7 @@ public final class Utils {
     }
 
     public static boolean lessThan7Inches(@NonNull final Context context){
-        return  Utils.getDisplaySize(context) < 7.0;
+        return  Utils.getDisplaySize(context) < 6.5;
     }
 
     public static int getStatusBarHeight(Context context) {

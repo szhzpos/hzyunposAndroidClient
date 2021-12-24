@@ -11,10 +11,9 @@
 
     <LinearLayout
         android:id="@+id/left"
-        android:layout_width="wrap_content"
+        android:layout_width="@dimen/pay_dialog_left_w"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/margin_1"
-        android:layout_weight="1"
         android:background="@drawable/round_border_sub_gray"
         android:orientation="vertical">
 
@@ -167,6 +166,7 @@
             android:background="@drawable/bottom_separator"
             android:gravity="center"
             android:textColor="@color/orange"
+            android:textSize="@dimen/font_size_14"
             android:visibility="gone" />
 
         <LinearLayout
@@ -346,7 +346,7 @@
             <Button
                 android:id="@+id/vip"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_2"
                 android:layout_weight="1"
@@ -358,7 +358,7 @@
             <Button
                 android:id="@+id/ch_price"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_2"
                 android:layout_weight="1"
@@ -370,7 +370,7 @@
             <Button
                 android:id="@+id/all_discount"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_2"
                 android:layout_weight="1"
@@ -382,7 +382,7 @@
             <Button
                 android:id="@+id/mo_l"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_2"
                 android:layout_weight="1"
@@ -394,7 +394,7 @@
             <Button
                 android:id="@+id/remark"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_margin="@dimen/margin_2"
                 android:layout_weight="1"

@@ -42,4 +42,5 @@
     <color name="gray_400">#FFBDBDBD</color>
     <color name="gray_600">#FF757575</color>
     <color name="black_trans">#1A717171</color>
+    <color name="stableColor">#DD0828</color>
 </resources>

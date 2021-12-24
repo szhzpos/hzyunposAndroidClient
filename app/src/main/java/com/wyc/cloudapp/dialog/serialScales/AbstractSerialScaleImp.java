@@ -90,6 +90,11 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
        object.put("name","顶尖ACS-OS2X");
        array.add(object);
 
+       object = new JSONObject();
+       object.put("cls_id","ToledoScale");
+       object.put("name","托利多 Plus U2");
+       array.add(object);
+
         return array;
     }
 
@@ -104,5 +109,11 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
                 MyDialog.toastMessage(e.getMessage());
             }
         }
+    }
+    public void rZero(){
+        write(new byte[]{0x3C,0x5A,0x4B,0x3E,0x09});
+    }
+    public void tare(){
+        write(new byte[]{0x3C,0x54,0x4B,0x3E,0x09});
     }
 }

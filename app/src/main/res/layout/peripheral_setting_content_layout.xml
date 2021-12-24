@@ -208,7 +208,8 @@
                     android:layout_marginStart="@dimen/margin_5"
                     android:layout_marginEnd="@dimen/margin_5"
                     android:text="@string/pro_t_sz"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
 
                 <Spinner
                     android:id="@+id/pro_type"
@@ -224,7 +225,8 @@
                     android:layout_marginStart="@dimen/margin_18"
                     android:layout_marginEnd="@dimen/margin_5"
                     android:text="@string/port_sz"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
 
                 <Spinner
                     android:id="@+id/ser_port"
@@ -241,6 +243,7 @@
                 android:layout_height="@dimen/param_value_height"
                 android:layout_gravity="center_vertical"
                 android:text="@string/auto_weight"
+                android:textSize="@dimen/font_size_14"
                 tools:ignore="TouchTargetSizeCheck" />
 
         </LinearLayout>

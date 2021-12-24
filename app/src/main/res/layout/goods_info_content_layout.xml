@@ -52,6 +52,7 @@
         android:layout_marginEnd="@dimen/margin_2"
         android:layout_toEndOf="@+id/g_img"
         android:maxHeight="@dimen/size_35"
+        android:minWidth="@dimen/width_108"
         android:text="某某商品"
         android:textColor="@color/good_name_color"
         android:textSize="@dimen/font_size_14" />

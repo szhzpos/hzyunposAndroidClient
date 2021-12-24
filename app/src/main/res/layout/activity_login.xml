@@ -341,7 +341,7 @@
                 android:layout_below="@id/user_id"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="@dimen/margin_8"
-                android:autofillHints=""
+                android:autofillHints=" "
                 android:background="@drawable/round_border_sub_gray"
                 android:drawableStart="@drawable/login_password"
                 android:drawablePadding="@dimen/margin_8"
@@ -364,7 +364,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:padding="@dimen/margin_8"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_14" />
 
     <LinearLayout
         android:id="@+id/display_size_layout"

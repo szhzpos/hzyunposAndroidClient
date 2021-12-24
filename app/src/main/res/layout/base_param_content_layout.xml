@@ -69,7 +69,8 @@
                         android:layout_marginEnd="@dimen/margin_8"
                         android:tag="_a_week"
                         android:text="@string/a_week_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
 
                     <RadioButton
                         android:id="@+id/_a_month"
@@ -79,7 +80,8 @@
                         android:checked="true"
                         android:tag="_a_month"
                         android:text="@string/a_month_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
 
                     <RadioButton
                         android:id="@+id/_three_month"
@@ -87,7 +89,8 @@
                         android:layout_height="wrap_content"
                         android:tag="_three_month"
                         android:text="@string/three_month_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
 
                 </RadioGroup>
             </LinearLayout>
@@ -161,13 +164,15 @@
                         android:paddingEnd="@dimen/size_0"
                         android:selectAllOnFocus="true"
                         android:text="@string/five_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_18" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/sec_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
@@ -307,7 +312,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/ml_j_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
 
                     <RadioButton
                         android:id="@+id/mol_y"
@@ -315,7 +321,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/margin_2"
                         android:text="@string/ml_y_sz"
-                        android:textColor="@color/text_color" />
+                        android:textColor="@color/text_color"
+                        android:textSize="@dimen/font_size_14" />
 
                 </RadioGroup>
             </LinearLayout>

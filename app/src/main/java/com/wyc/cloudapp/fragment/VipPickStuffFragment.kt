@@ -96,26 +96,26 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                     loadDetail()
                 },
                     Modifier
-                        .padding(5.dp)
+                        .padding(dimensionResource(R.dimen.size_5))
                     ,colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
                         R.color.lightBlue
                     ),contentColor = colorResource(
                         R.color.white
                     ))) {
-                    Text(stringResource(R.string.refresh), modifier = Modifier.padding(8.dp),fontSize = 18.sp)
+                    Text(stringResource(R.string.refresh), modifier = Modifier.padding(dimensionResource(R.dimen.size_8)),fontSize = dimensionResource(R.dimen.font_size_18).value.sp)
                 }
 
                 Button(onClick = {
                     pickStuff()
                 },
                     Modifier
-                        .padding(5.dp)
+                        .padding(dimensionResource(R.dimen.size_5))
                     ,colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
                         R.color.lightBlue
                     ),contentColor = colorResource(
                         R.color.white
                     ))) {
-                    Text(stringResource(R.string.pick_stuff), modifier = Modifier.padding(8.dp),fontSize = 18.sp)
+                    Text(stringResource(R.string.pick_stuff), modifier = Modifier.padding(dimensionResource(R.dimen.size_8)),fontSize = dimensionResource(R.dimen.font_size_18).value.sp)
                 }
             }
             loadDetail()
@@ -195,9 +195,9 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
     private fun GenerateTitle(){
         Row(
             Modifier
-                .padding(start = 5.dp, end = 5.dp)
+                .padding(start = dimensionResource(R.dimen.size_5), end = dimensionResource(R.dimen.size_5))
                 .background(colorResource(R.color.lightBlue))
-                .height(45.dp)
+                .height(dimensionResource(R.dimen.size_45))
                 .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
 
             mAllChecked = remember {
@@ -213,15 +213,15 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                     addAll(l)
                 } },
                 Modifier
-                    .width(30.dp)
-                    .height(30.dp),colors =  CheckboxDefaults.colors(uncheckedColor = colorResource(
+                    .width(dimensionResource(R.dimen.size_30))
+                    .height(dimensionResource(R.dimen.size_30)),colors =  CheckboxDefaults.colors(uncheckedColor = colorResource(
                     R.color.white
                 )))
 
             ListTitle(
                 stringResource(R.string.row_id_sz),
                 Modifier
-                    .width(45.dp))
+                    .width(dimensionResource(R.dimen.size_45)))
 
             ListTitle(
                 stringResource(R.string.barcode_sz),
@@ -245,21 +245,21 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
             ListTitle(
                 stringResource(R.string.sum_store_num),
                 Modifier
-                    .width(88.dp))
+                    .width(dimensionResource(R.dimen.size_88)))
 
             ListTitle(
                 stringResource(R.string.packed_num),
                 Modifier
-                    .width(88.dp))
+                    .width(dimensionResource(R.dimen.size_88)))
 
             ListTitle(
                 stringResource(R.string.unit_sz),
                 Modifier
-                    .width(45.dp))
+                    .width(dimensionResource(R.dimen.size_45)))
             ListTitle(
                 stringResource(R.string.pick_num),
                 Modifier
-                    .width(88.dp))
+                    .width(dimensionResource(R.dimen.size_45)))
         }
     }
 
@@ -268,9 +268,9 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
         val stuffInfo = list[index - 1]
         Row(
             Modifier
-                .padding(start = 5.dp, top = 2.dp, bottom = 2.dp, end = 5.dp)
+                .padding(start = dimensionResource(R.dimen.size_5), top = dimensionResource(R.dimen.size_2), bottom = dimensionResource(R.dimen.size_2), end = dimensionResource(R.dimen.size_5))
                 .background(colorResource(R.color.white))
-                .height(40.dp)
+                .height(dimensionResource(R.dimen.size_40))
                 .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
 
             val able = remember {
@@ -290,11 +290,11 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                     i.isSel
                 } },
                 Modifier
-                    .width(30.dp)
-                    .height(30.dp))
+                    .width(dimensionResource(R.dimen.size_30))
+                    .height(dimensionResource(R.dimen.size_30)))
             ListContent(index.toString(),
                 Modifier
-                    .width(45.dp))
+                    .width(dimensionResource(R.dimen.size_30)))
             ListContent(stuffInfo.barcode?:"",
                 Modifier
                     .width(
@@ -311,15 +311,15 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
 
             ListContent(String.format("%.2f",stuffInfo.xnumJicun?:0.0),
                 Modifier
-                    .width(88.dp))
+                    .width(dimensionResource(R.dimen.size_88)))
 
             ListContent(String.format("%.2f",stuffInfo.xnumOut?:0.0),
                 Modifier
-                    .width(88.dp))
+                    .width(dimensionResource(R.dimen.size_88)))
 
             ListContent(stuffInfo.unit?:"",
                 Modifier
-                    .width(45.dp))
+                    .width(dimensionResource(R.dimen.size_45)))
             AndroidViewBinding(StoredNumEditBinding::inflate){
                 val e = root.findViewById<EditText>(R.id.store_num)
                 e.setText(String.format("%.2f",stuffInfo.xnumSurplus?:0.0))

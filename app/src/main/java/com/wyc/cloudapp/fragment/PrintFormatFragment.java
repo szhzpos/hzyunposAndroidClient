@@ -37,6 +37,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.BluetoothUtils;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -46,6 +47,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.wyc.cloudapp.utils.BluetoothUtils.REQUEST_BLUETOOTH__PERMISSIONS;
 
 public class PrintFormatFragment extends AbstractParameterFragment {
+    private static final String ToPrinter = "托利多 Plus U2";
     public static final int TIME_CARD_SALE_FORMAT_ID = 100;
     public static final int TIME_CARD_USE_FORMAT_ID = 101;
     public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
@@ -403,8 +405,10 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     }
     private JSONObject get_or_show_printer_setting(boolean way) {
         int id = -1,status = 0;
+        String cls_id = "";//驱动调用对应的实现类名
         JSONObject object = new JSONObject();
         RadioGroup radioGroup = findViewById(R.id.print_way);
+        final String value = mPrinterId.getSelectedItem().toString();
         if (way){
             switch (radioGroup.getCheckedRadioButtonId()){
                 case R.id.bluetooth_p:
@@ -415,27 +419,40 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                     id = R.id.usb_p;
                     status = 1;
                     break;
+                case R.id.innerDriver:
+                    id = R.id.innerDriver;
+                    status = 1;
+                    if (ToPrinter.equals(value)){
+                        cls_id = "ToledoPrinter";
+                    }
+                    break;
             }
             object.put("id",id);
             object.put("s",status);
-            object.put("v",mPrinterId.getSelectedItem());
+            object.put("cls_id",cls_id);
+            object.put("v",value);
         }else{
-            if (SQLiteHelper.getLocalParameter("printer",object)){
+            if (Printer.getPrinterSetting(object)){
                 String printer_info = Utils.getNullStringAsEmpty(object,"v");
                 int status_id = object.getIntValue("id");
                 String[] vals = printer_info.split("\t");
-                if (vals.length > 1){
-                    switch (status_id){
-                        case R.id.bluetooth_p:
-                            BluetoothUtils.bondBlueTooth(vals[1]);
-                            break;
-                        case R.id.usb_p:
-                            startUSBDiscoveryAndAuth(vals[0],vals[1]);
-                            break;
-                        default:
-                            status_id = R.id.usb_p;//默认usb
-                    }
-                }else  status_id = R.id.usb_p;//默认usb
+
+                if (status_id == R.id.innerDriver){
+                    //咱不处理
+                }else {
+                    if (vals.length > 1){
+                        switch (status_id){
+                            case R.id.bluetooth_p:
+                                BluetoothUtils.bondBlueTooth(vals[1]);
+                                break;
+                            case R.id.usb_p:
+                                startUSBDiscoveryAndAuth(vals[0],vals[1]);
+                                break;
+                            default:
+                                status_id = R.id.usb_p;//默认usb
+                        }
+                    }else  status_id = R.id.usb_p;//默认usb
+                }
                 radioGroup.check(status_id);
                 if (Utils.isNotEmpty(printer_info)){
                     mPrintIdAdapter.clear();
@@ -561,7 +578,14 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             case R.id.usb_p:
                 startUSBDiscoveryAndAuth(null,null);
                 break;
+            case R.id.innerDriver:
+                innerDriver();
+                break;
         }
+    }
+
+    private void innerDriver(){
+        mPrintIdAdapter.add(ToPrinter);
     }
 
     private void startUSBDiscoveryAndAuth(final String vid, final String pid){

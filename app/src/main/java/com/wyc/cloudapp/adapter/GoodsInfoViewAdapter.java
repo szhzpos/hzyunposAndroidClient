@@ -33,7 +33,7 @@ import java.util.Locale;
 
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener, IndicatorRecyclerView.OnLoad {
     public static final int SPAN_COUNT = 5,MOBILE_SPAN_COUNT = 1;
-    public static final String W_G_MARK = "IWG",SALE_TYPE = "ST";//计重、计份并且通过扫条码选择的商品标志
+    public static final String W_G_MARK = "IWG",SALE_TYPE = "ST";//W_G_MARK 计重、计份并且通过扫条码选择的商品标志
     private final SaleActivity mContext;
     private JSONArray mDatas;
     private OnGoodsSelectListener mSelectListener;
@@ -233,7 +233,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             final String cols = "-1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode, " +
                     "type,retail_price price,ifnull(img_url,'') img_url ";
 
-            sql = "select "+ cols +" from barcode_info where barcode='"+NOBARCODEGOODS+"' and category_id = '"+ id +"'  UNION select "+ cols +" from barcode_info where (goods_status = 1 and barcode_status = 1 and barcode<>'9999999999999') and category_id in (select category_id from shop_category where path like '%" + id +"%') limit "+ mPageIndex * mPageNum + "," + mPageNum;
+            sql = "select "+ cols +" from barcode_info where goods_status = 1 and barcode_status = 1 and barcode='"+NOBARCODEGOODS+"' and category_id = '"+ id +"'  UNION select "+ cols +" from barcode_info where (goods_status = 1 and barcode_status = 1 and barcode<>'9999999999999') and category_id in (select category_id from shop_category where path like '%" + id +"%') limit "+ mPageIndex * mPageNum + "," + mPageNum;
         }
         return sql;
     }
@@ -307,6 +307,8 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     "'' brand_id,'' gs_id, '' category_id,'' path,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,0 current_goods,1 conversion from goods_group \n" +
                     "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
+        Logger.d(full_sql);
+        Logger.d_json(object);
         if (code){
             makeCommonSaleType(object);
 
@@ -474,6 +476,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
     public static boolean isBarcodeWeighingGoods(final JSONObject goods){
         return Utils.isNotEmpty(goods.getString(GoodsInfoViewAdapter.W_G_MARK));
+    }
+    public static boolean isWeighingGoods(final JSONObject goods){//type 1 普通 2散装称重 3鞋帽
+        return Utils.getNotKeyAsNumberDefault(goods,"type",-1) == 2;
     }
 
     public String getGoodsId(final JSONObject jsonObject){

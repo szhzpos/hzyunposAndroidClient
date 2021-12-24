@@ -31,6 +31,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.room.AppDatabase;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FileUtils;
@@ -86,33 +87,39 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
      * @param src 正常模式下本地库文件的绝对路径
     * */
     private static void copy(final String src) {
-        final ContentValues values = new ContentValues();
-        final SQLiteDatabase src_sqLiteHelper = new SQLiteHelper(CustomApplication.self(), src,DATABASE_VERSION).getWritableDatabase();
-        try{
-            final List<String> tables = getSyncDataTableName();
-            src_sqLiteHelper.beginTransaction();
-            mDb.beginTransaction();
-            for (String name : tables) {
-                mDb.delete(name,null,null);
-                try (Cursor src_cursor = src_sqLiteHelper.query(name, null, null, null, null, null, null)) {
-                    int count = src_cursor.getColumnCount();
-                    while (src_cursor.moveToNext()) {
-                        values.clear();
-                        for (int i = 0; i < count; i++) {
-                            values.put(src_cursor.getColumnName(i), src_cursor.getString(i));
+        final JEventLoop loop = new JEventLoop();
+        CustomApplication.execute(()->{
+            final ContentValues values = new ContentValues();
+            final SQLiteDatabase src_sqLiteHelper = new SQLiteHelper(CustomApplication.self(), src,DATABASE_VERSION).getWritableDatabase();
+            try{
+                final List<String> tables = getCopyTable();
+
+                src_sqLiteHelper.beginTransaction();
+                mDb.beginTransaction();
+                for (String name : tables) {
+                    mDb.delete(name,null,null);
+                    try (Cursor src_cursor = src_sqLiteHelper.query(name, null, null, null, null, null, null)) {
+                        int count = src_cursor.getColumnCount();
+                        while (src_cursor.moveToNext()) {
+                            values.clear();
+                            for (int i = 0; i < count; i++) {
+                                values.put(src_cursor.getColumnName(i), src_cursor.getString(i));
+                            }
+                            mDb.insert(name, null, values);
                         }
-                        mDb.insert(name, null, values);
                     }
                 }
-            }
-            src_sqLiteHelper.setTransactionSuccessful();
-            mDb.setTransactionSuccessful();
-        }finally {
-            src_sqLiteHelper.endTransaction();
-            mDb.endTransaction();
+                src_sqLiteHelper.setTransactionSuccessful();
+                mDb.setTransactionSuccessful();
+            }finally {
+                src_sqLiteHelper.endTransaction();
+                mDb.endTransaction();
 
-            src_sqLiteHelper.close();
-        }
+                src_sqLiteHelper.close();
+            }
+            loop.done(1);
+        });
+        loop.exec();
     }
 
     public static boolean isNotInit(){
@@ -1413,6 +1420,10 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
 
     public static @NonNull List<String> getSyncDataTableName(){
         return Arrays.asList("shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
+                "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info","goodsPractice","practiceAssociated");
+    }
+    private static @NonNull List<String> getCopyTable(){
+        return Arrays.asList("local_parameter","shop_category","shop_stores","barcode_info","pay_method","cashier_info","fullreduce_info","sales_info",
                 "promotion_info","sale_operator_info","goods_group", "goods_group_info","buyfull_give_x","buy_x_give_x","step_promotion_info","auxiliary_barcode_info","goodsPractice","practiceAssociated");
     }
 

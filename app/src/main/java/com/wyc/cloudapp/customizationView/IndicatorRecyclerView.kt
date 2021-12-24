@@ -9,6 +9,7 @@ import android.view.ViewConfiguration
 import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
@@ -48,7 +49,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     private val mValueAnimator = ValueAnimator()
     private val mOffsetX:Float
     private val mOffsetY:Float
-    private var mSpace = Utils.dpToPx(CustomApplication.self(),4f)
+    private var mSpace = CustomApplication.getDimension(R.dimen.size_4).toInt()
     private var mHeadAxisX:Float = 0.0f
     private var mHeadAxisY:Float = 0.0f
     private var mTailAxisX:Float = 0.0f
@@ -59,7 +60,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     /**用于移动标识坐标*/
     private var mIndicatorMoveY = 0
     private var mIndicatorMoveX = 0
-    private val mIndicatorMaxOffset = Utils.dpToPx(context,68f)
+    private val mIndicatorMaxOffset = CustomApplication.getDimension(R.dimen.size_68).toInt()
     private var mChildOffset = 0
     /**/
 
@@ -76,7 +77,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         mPaint.setShadowLayer(3f,0f,0f,mPaint.color)
         mPaint.alpha = 168
 
-        val lineLen = Utils.dpToPx(CustomApplication.self(),6f)
+        val lineLen = CustomApplication.getDimension(R.dimen.size_6)
         val radian = Math.PI / 180 * 45
         mOffsetX = (cos(radian) * lineLen).toFloat()
         mOffsetY = (sin(radian) * lineLen).toFloat()
@@ -108,7 +109,9 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         mValueAnimator.repeatCount = ValueAnimator.INFINITE
         mValueAnimator.duration = 2000
         mValueAnimator.interpolator = AccelerateDecelerateInterpolator()
-        mValueAnimator.setIntValues(Utils.dpToPx(CustomApplication.self(),8f),mSpace,Utils.dpToPx(CustomApplication.self(),8f))
+        mValueAnimator.setIntValues(CustomApplication.getDimension(R.dimen.size_8).toInt(),mSpace,
+            CustomApplication.getDimension(R.dimen.size_8).toInt()
+        )
 
         mValueAnimator.addUpdateListener {
             mSpace = it.animatedValue as Int
@@ -118,7 +121,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
 
     private fun initLoadIndicatorPoint(){
         if (hasContinueLoad()){
-            val diameter = Utils.dpToPx(context,18f)
+            val diameter = CustomApplication.getDimension(R.dimen.size_18).toInt()
             val radius = diameter shr 1
             if (isVerOrientation()){
                 mLoadIndicatorPoint.x = ((width - radius)  shr  1).toFloat()
@@ -260,7 +263,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         drawLoadIndicator(c,centrePointX,centrePointY)
     }
     private fun drawLoadIndicator(c: Canvas,x:Float,y:Float){
-        val loadIndicator = Utils.dpToPx(context,6f)
+        val loadIndicator = CustomApplication.getDimension(R.dimen.size_6)
         mPaint.color = Color.YELLOW
         mPaint.style = Paint.Style.STROKE
         c.drawArc(x - loadIndicator,y - loadIndicator,x + loadIndicator,y + loadIndicator,mStartAngle,270f,false,mPaint)

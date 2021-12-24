@@ -198,7 +198,10 @@ public class SaleActivity extends MainActivity{
     public void showAdjustPriceDialog(){}
     public String getOrderCode(){ return "";}
     public void resetOrderCode(){}
-    public void setScaleCurrent(int stat,float v){
+    public void setScaleInfo(int stat, float v){
+
+    }
+    public void updateScalePrice(double price){
 
     }
 

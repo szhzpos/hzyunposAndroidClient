@@ -184,7 +184,7 @@
 
             <ListView
                 android:id="@+id/hangbill_list"
-                android:layout_width="308dp"
+                android:layout_width="@dimen/hangbill_order_list_width"
                 android:layout_height="match_parent"
                 android:divider="@color/blue_subtransparent"
                 android:dividerHeight="@dimen/margin_1"

@@ -31,6 +31,7 @@
                 android:layout_marginEnd="@dimen/size_0"
                 android:text="@string/print_way_sz"
                 android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14"
                 android:visibility="visible" />
 
             <RadioGroup
@@ -45,7 +46,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/bluetooth_p_sz"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
 
                 <RadioButton
                     android:id="@+id/usb_p"
@@ -53,7 +55,17 @@
                     android:layout_height="wrap_content"
                     android:checked="true"
                     android:text="@string/USB_p_sz"
-                    android:textColor="@color/text_color" />
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
+
+                <RadioButton
+                    android:id="@+id/innerDriver"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/innerDriver"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14" />
             </RadioGroup>
 
             <TextView
@@ -69,6 +81,7 @@
                 android:paddingEnd="@dimen/size_0"
                 android:text="@string/printer_sz"
                 android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14"
                 android:visibility="visible" />
 
             <Spinner
@@ -147,7 +160,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sel_f_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
 
             <RadioGroup
                 android:id="@+id/format_size_rg"
@@ -161,19 +175,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="@string/f_58_sz" />
+                    android:text="@string/f_58_sz"
+                    android:textSize="@dimen/font_size_14" />
 
                 <RadioButton
                     android:id="@+id/f_76"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/f_76_sz" />
+                    android:text="@string/f_76_sz"
+                    android:textSize="@dimen/font_size_14" />
 
                 <RadioButton
                     android:id="@+id/f_80"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="@string/f_80_sz" />
+                    android:text="@string/f_80_sz"
+                    android:textSize="@dimen/font_size_14" />
             </RadioGroup>
         </LinearLayout>
 
@@ -190,7 +207,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/stores_name_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
 
             <EditText
                 android:id="@+id/stores_name"
@@ -221,7 +239,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/footer_info_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
 
             <EditText
                 android:id="@+id/footer_c"
@@ -254,7 +273,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/footer_s_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
 
             <EditText
                 android:id="@+id/footer_space"
@@ -276,14 +296,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_12"
                 android:text="@string/print_c_sz"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/b_f_title_sz"
                 android:textColor="@color/text_color"
-                android:textSize="12sp" />
+                android:textSize="@dimen/font_size_12" />
 
             <EditText
                 android:id="@+id/c_count"

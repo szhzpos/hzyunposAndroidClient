@@ -159,6 +159,7 @@
         android:background="@drawable/bottom_separator"
         android:gravity="center"
         android:textColor="@color/orange"
+        android:textSize="@dimen/font_size_14"
         android:visibility="gone" />
 
     <EditText
@@ -245,7 +246,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autofillHints=""
+            android:autofillHints=" "
             android:background="@drawable/edit_text_style"
             android:ems="10"
             android:focusableInTouchMode="true"
@@ -571,7 +572,7 @@
             android:id="@+id/_ok"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/mobile_pay_dialog_button_width"
-            android:layout_height="102dp"
+            android:layout_height="@dimen/size_102"
             android:layout_marginStart="@dimen/margin_2"
             android:background="@drawable/button_orange"
             android:text="@string/OK"

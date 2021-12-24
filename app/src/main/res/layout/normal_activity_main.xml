@@ -14,8 +14,8 @@
         android:layout_height="@dimen/height_68"
         android:gravity="start"
         android:orientation="horizontal"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
+        android:paddingTop="@dimen/margin_5"
+        android:paddingBottom="@dimen/margin_5"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -35,6 +35,7 @@
         <Space
             android:layout_width="18dp"
             android:layout_height="match_parent" />
+
         <LinearLayout
             android:id="@+id/q_deal_linerLayout"
             android:layout_width="wrap_content"
@@ -87,6 +88,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/cloud_background_layout"
             android:layout_width="wrap_content"
@@ -112,6 +114,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>
+
         <LinearLayout
             android:id="@+id/other_linearLayout"
             android:layout_width="wrap_content"
@@ -274,49 +277,12 @@
 
         </LinearLayout>
 
-        <LinearLayout
-            android:id="@+id/scaleInfo"
+        <com.wyc.cloudapp.customizationView.WeightInfoView
+            android:id="@+id/weighView"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/height_68"
+            android:layout_height="wrap_content"
             android:background="@drawable/bottom_separator"
-            android:orientation="horizontal"
-            android:paddingEnd="@dimen/margin_5"
-            android:visibility="gone">
-
-            <com.wyc.cloudapp.customizationView.ScaleView
-                android:id="@+id/scaleView"
-                android:layout_width="0dp"
-                android:layout_height="@dimen/height_68"
-                android:layout_weight="1"
-                android:visibility="visible" />
-
-            <Button
-                android:id="@+id/r_zero"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="@dimen/margin_5"
-                android:background="@drawable/button_pink"
-                android:minWidth="58dp"
-                android:minHeight="48dp"
-                android:text="@string/r_zero"
-                android:textColor="@color/pink_white"
-                android:textSize="@dimen/font_size_16" />
-
-            <Button
-                android:id="@+id/tare"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:background="@drawable/button_pink"
-                android:minWidth="58dp"
-                android:minHeight="48dp"
-                android:text="@string/tare"
-                android:textColor="@color/pink_white"
-                android:textSize="@dimen/font_size_16" />
-        </LinearLayout>
+            android:visibility="gone" />
 
         <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
             android:id="@+id/sale_goods_list"

@@ -8,6 +8,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
 
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.utils.Utils;
 
 public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
@@ -57,7 +59,7 @@ public class BasketView extends androidx.appcompat.widget.AppCompatImageView {
         super.onDraw(canvas);
 
         final String text = String.valueOf(mNumber);
-        mPaint.setTextSize(Utils.sp2px(getContext(),14));
+        mPaint.setTextSize(CustomApplication.getDimension(R.dimen.font_size_14));
         mPaint.getTextBounds(text,0,text.length(),mTextBounds);
 
         int w = mTextBounds.width(),h = mTextBounds.height();

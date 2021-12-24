@@ -3,14 +3,15 @@ package com.wyc.cloudapp.adapter;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.text.Html;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
+import com.wyc.cloudapp.activity.normal.NormalMainActivity;
 import com.wyc.cloudapp.callback.ClickListener;
-import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
@@ -39,11 +40,17 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     }, this::setSelectStatus);
 
     @Override
+    protected void setSelectStatus(View v) {
+        super.setSelectStatus(v);
+        mContext.updateScalePrice(Utils.getNotKeyAsNumberDefault(Utils.getViewTagValue(v),"price",0.0));
+    }
+
+    @Override
     public void addSaleGoods(final JSONObject goods){
         if (null != goods && !goods.isEmpty()){
             double xnum = goods.getDoubleValue("xnum");//新增的商品不存在xnum字段，xnum等于0.0。挂单、条码秤称重商品、买满赠送已经存在,以及该字段值不会为0
-            boolean isBarcodeWeighingGoods = !Utils.getNullStringAsEmpty(goods,GoodsInfoViewAdapter.W_G_MARK).isEmpty(),isZero = Utils.equalDouble(xnum,0.0);
-            if(!isBarcodeWeighingGoods && isZero && goods.getIntValue("type") == 2){//type 1 普通 2散装称重 3鞋帽
+            boolean isBarcodeWeighingGoods = GoodsInfoViewAdapter.isBarcodeWeighingGoods(goods),isZero = Utils.equalDouble(xnum,0.0);
+            if(!isBarcodeWeighingGoods && isZero && GoodsInfoViewAdapter.isWeighingGoods(goods)){
                 if (mWeighDialog == null)mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
                 mWeighDialog.setOnYesOnclickListener(num -> {
                     if (!Utils.equalDouble(num,0.0)){
@@ -134,7 +141,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
             mWeighDialog = null;
         }
         notifyDataSetChanged();
-        mContext.setScaleCurrent(AbstractSerialScaleImp.OnReadStatus.STABLE,0.0f);
+        mContext.setScaleInfo(AbstractSerialScaleImp.OnReadStatus.STABLE,0.0f);
     }
     public void closeWeigh(){
         if (mWeighDialog != null){

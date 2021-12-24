@@ -16,6 +16,7 @@ import android.os.Message;
 import android.os.StrictMode;
 import android.widget.Toast;
 
+import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -438,6 +439,10 @@ public final class CustomApplication extends Application {
     public static void postDelayed(Runnable r, long delayMillis){
         mApplication.myhandler.removeCallbacks(r);
         mApplication.myhandler.postDelayed(r,delayMillis);
+    }
+
+    public static float getDimension(@DimenRes int id){
+        return mApplication.getResources().getDimension(id);
     }
 
     private static class MyHandler extends Handler {

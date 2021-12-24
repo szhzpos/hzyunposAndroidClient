@@ -49,7 +49,7 @@
             android:id="@+id/start_transfer_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:autofillHints=""
+            android:autofillHints=" "
             android:background="@drawable/left_separator"
             android:enabled="false"
             android:gravity="center_vertical"
@@ -95,7 +95,7 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="@dimen/size_25"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center"
                     android:text="@string/retail_pay_sz"
@@ -139,7 +139,7 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="@dimen/size_25"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center"
                     android:text="@string/refund_dialog_title_sz"
@@ -183,7 +183,7 @@
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="@dimen/size_25"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center"
                     android:text="@string/vip_charge_sz"
@@ -224,7 +224,7 @@
                 <TextView
                     android:id="@+id/label1"
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="@dimen/size_25"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center"
                     android:text="@string/time_card_payment"
@@ -271,7 +271,7 @@
                 <TextView
                     android:id="@+id/label9"
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="@dimen/size_25"
                     android:background="@drawable/bottom_separator"
                     android:gravity="center"
                     android:text="@string/gift_card_payment"
@@ -312,7 +312,7 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/transfer_info_list"
-            android:layout_width="1062dp"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/transfer_list_height"
             android:background="@drawable/bottom_separator" />
 
@@ -411,7 +411,6 @@
                 android:layout_width="@dimen/transfer_details_col01_width"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin_1"
-                android:layout_weight="1"
                 android:background="@drawable/left_separator"
                 android:gravity="center"
                 android:paddingStart="0dp"
@@ -424,7 +423,6 @@
                 android:id="@+id/time_card_sum_amt"
                 android:layout_width="@dimen/transfer_details_col02_width"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@drawable/left_separator"
                 android:gravity="center"
                 android:paddingStart="0dp"
@@ -438,7 +436,6 @@
                 android:layout_width="@dimen/transfer_details_col01_width"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/margin_1"
-                android:layout_weight="1"
                 android:background="@drawable/left_separator"
                 android:gravity="center"
                 android:paddingStart="0dp"
@@ -451,7 +448,6 @@
                 android:id="@+id/gift_sum_amt"
                 android:layout_width="@dimen/transfer_details_col02_width"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
                 android:background="@drawable/left_separator"
                 android:gravity="center"
                 android:paddingStart="0dp"

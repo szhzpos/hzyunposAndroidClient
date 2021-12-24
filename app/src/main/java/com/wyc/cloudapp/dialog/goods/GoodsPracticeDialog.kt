@@ -12,6 +12,7 @@ import butterknife.OnClick
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList
+import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.data.room.entity.PracticeAssociated
 import com.wyc.cloudapp.decoration.GridItemDecoration
 import com.wyc.cloudapp.decoration.SuperItemDecoration
@@ -63,7 +64,7 @@ class GoodsPracticeDialog(context:MainActivity,private var mList : List<Practice
         if (mContext.lessThan7Inches()){
             return 0.98
         }
-        return Utils.dpToPx(mContext,480f).toDouble()
+        return CustomApplication.getDimension(R.dimen.size_480).toDouble()
     }
 
     private fun initList(){

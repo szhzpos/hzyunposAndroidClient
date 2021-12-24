@@ -14,7 +14,6 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
@@ -208,9 +207,9 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(int stat,double num) {
-                            mContext.setScaleCurrent(stat,(float) num * 1000);
+                            mContext.setScaleInfo(stat,(float) num * 1000);
                             if (mContinuousWeighing){
-                                if (mOnYesClick != null)mContext.runOnUiThread(()-> mOnYesClick.onYesClick(num));
+                                if (mOnYesClick != null)CustomApplication.runInMainThread(()-> mOnYesClick.onYesClick(num));
                             }else
                                 if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
 
@@ -219,12 +218,12 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                         }
                         @Override
                         public void onError(String err) {
-                            mContext.runOnUiThread(()-> MyDialog.ToastMessage("读串口错误：" + err, getWindow()));
+                            CustomApplication.runInMainThread(()-> MyDialog.ToastMessage("读数量错误：" + err, getWindow()));
                         }
                     }).startRead();
                 }
             }else{
-                MyDialog.ToastMessage("读串口错误：" + Utils.getNullStringAsEmpty(object,"info"), getWindow());
+                MyDialog.ToastMessage("称初始化错误：" + Utils.getNullStringAsEmpty(object,"info"), getWindow());
             }
         }
     }
@@ -244,10 +243,10 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
         mOnYesClick = listener;
     }
     public void rZero(){
-        if (mSerialScale != null)mSerialScale.write(new byte[]{0x3C,0x5A,0x4B,0x3E,0x09});
+        if (mSerialScale != null)mSerialScale.rZero();
     }
     public void tare(){
-        if (mSerialScale != null)mSerialScale.write(new byte[]{0x3C,0x54,0x4B,0x3E,0x09});
+        if (mSerialScale != null)mSerialScale.tare();
     }
     public static boolean isAutoGetWeigh(){
         return mAuto;

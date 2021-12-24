@@ -174,4 +174,7 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.0.5'
     /* end */
 
+    //托利多一体称
+    implementation files('libs/MtWeighApi.jar')
+    implementation files('libs/MtPrintApi.jar')
 }

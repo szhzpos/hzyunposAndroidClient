@@ -26,6 +26,7 @@
             android:background="@drawable/button_blue"
             android:text="@string/save_sz"
             android:textColor="#1976D2"
+            android:textSize="@dimen/font_size_14"
             tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
 
         <Button
@@ -37,6 +38,7 @@
             android:background="@drawable/button_blue"
             android:text="@string/save_and_new_sz"
             android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_14"
             tools:ignore="TouchTargetSizeCheck,TextContrastCheck" />
     </LinearLayout>
 

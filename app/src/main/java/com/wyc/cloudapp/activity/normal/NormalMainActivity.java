@@ -59,6 +59,7 @@ import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.customizationView.ScaleView;
 import com.wyc.cloudapp.customizationView.TmpOrderButton;
+import com.wyc.cloudapp.customizationView.WeightInfoView;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
@@ -101,7 +102,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private SecondDisplay mSecondDisplay;
     private ConstraintLayout mLastOrderInfo;
     private ImageView mPrinterStatusIv;
-    private ScaleView mScaleView;
+    private WeightInfoView mWeighView;
     private EditText mSearch_content;
     private CustomProgressDialog mProgressDialog;
     @Override
@@ -236,14 +237,20 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     private void initScaleView(){
         if (((NormalSaleGoodsAdapter)mSaleGoodsAdapter).hasAutoGetWeigh()){
-            final LinearLayout scaleInfo = findViewById(R.id.scaleInfo);
-            if (null != scaleInfo){
-                scaleInfo.setVisibility(View.VISIBLE);
-                mScaleView = scaleInfo.findViewById(R.id.scaleView);
-                scaleInfo.findViewById(R.id.r_zero).setOnClickListener(v -> ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).rZero());
-                scaleInfo.findViewById(R.id.tare).setOnClickListener(v -> ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).tare());
-                mScaleView.setCurrentValue(AbstractSerialScaleImp.OnReadStatus.STABLE, getWeigh());
-            }
+            mWeighView = findViewById(R.id.weighView);
+            mWeighView.setVisibility(View.VISIBLE);
+            mWeighView.setAction(new WeightInfoView.OnAction() {
+                @Override
+                public void onZero() {
+                    ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).rZero();
+                }
+
+                @Override
+                public void onTare() {
+                    ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).tare();
+                }
+            });
+            mWeighView.updateInfo(AbstractSerialScaleImp.OnReadStatus.STABLE,getWeigh(),Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"price",0.000));
         }
     }
 
@@ -551,7 +558,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if ((mSaleGoodsRecyclerView.canScrollVertically(0) || mSaleGoodsRecyclerView.canScrollVertically(-1)) && offset != 0){
                 mSaleGoodsRecyclerView.scrollBy(0,offset);
             }
-
             if (mSecondDisplay != null)mSecondDisplay.notifyChange(cur);
         });
 
@@ -560,8 +566,12 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         mSaleGoodsRecyclerView.setAdapter(mSaleGoodsAdapter);
     }
     @Override
-    public void setScaleCurrent(int stat,float v){
-        if (mScaleView != null)mScaleView.setCurrentValue(stat,v);
+    public void setScaleInfo(int stat, float v){
+        if (mWeighView != null)mWeighView.updateInfo(stat,v,Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"price",0.00));
+    }
+    @Override
+    public void updateScalePrice(double price){
+        if (mWeighView != null)mWeighView.updatePrice(price);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -766,7 +776,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             if (ps instanceof Boolean)b = (boolean)ps;
             if (b){
                 b = false;
-                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,Utils.dpToPx(this,15),Utils.dpToPx(this,15)));
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,(int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
                 MyDialog.ToastMessage(imageView,"打印功能已关闭！", getWindow());
             }else{
                 b = true;
@@ -799,7 +809,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                         if (print_s){
                             imageView.setImageBitmap(printer);
                         }else {
-                            imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,Utils.dpToPx(this,15),Utils.dpToPx(this,15)));
+                            imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,(int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
                         }
                     }
                 }

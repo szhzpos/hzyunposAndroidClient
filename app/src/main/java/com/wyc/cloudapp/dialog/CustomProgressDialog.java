@@ -58,7 +58,7 @@ public class CustomProgressDialog extends Dialog implements SurfaceHolder.Callba
         surfaceHolder.addCallback(this);
 
         final Paint paint =  new Paint();
-        paint.setTextSize(Utils.sp2px(getContext(),16));
+        paint.setTextSize(CustomApplication.getDimension(R.dimen.font_size_16));
         paint.setAntiAlias(true);
         paint.setTextAlign(Paint.Align.LEFT);
         paint.setColor(CustomApplication.self().getColor(R.color.white));

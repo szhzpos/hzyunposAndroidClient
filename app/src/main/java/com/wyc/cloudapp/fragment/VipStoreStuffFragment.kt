@@ -108,18 +108,18 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                 val menuText = remember {mutableStateOf(menu[0])}
                 OutlinedTextField(value = menuText.value,{menuText.value = it},
                     Modifier
-                        .width(128.dp)
-                        .padding(5.dp),enabled = false,readOnly = true,
+                        .width(dimensionResource(R.dimen.size_128))
+                        .padding(dimensionResource(R.dimen.size_5)),enabled = false,readOnly = true,
                     trailingIcon = {
                         Icon(painter = painterResource(R.drawable.content), contentDescription = "",
                             Modifier
                                 .clickable {
                                     expanded = !expanded
                                 }
-                                .width(25.dp)
-                                .height(25.dp),tint = colorResource(R.color.lightBlue))
+                                .width(dimensionResource(R.dimen.size_25))
+                                .height(dimensionResource(R.dimen.size_25)),tint = colorResource(R.color.lightBlue))
                     },
-                    textStyle = TextStyle(fontSize = 16.sp),singleLine = true,colors = NVipManageActivity.textFieldColors()
+                    textStyle = TextStyle(fontSize = dimensionResource(R.dimen.font_size_16).value.sp),singleLine = true,colors = NVipManageActivity.textFieldColors()
                 )
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     menu.forEachIndexed { index, s ->
@@ -129,26 +129,26 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                                 expanded = false
                             }
                         ) {
-                            Text(s, modifier = Modifier.padding(8.dp))
+                            Text(s, modifier = Modifier.padding(dimensionResource(R.dimen.size_8)))
                         }
                     }
                 }
                 val textFieldValue = remember {mutableStateOf(TextFieldValue(""))}
                 NVipManageActivity.SearchTextField(
-                    textFieldValue,placeholder = {Text(stringResource(R.string.search_input_hint))},
+                    textFieldValue,placeholder = {Text(stringResource(R.string.search_input_hint),fontSize = dimensionResource(R.dimen.font_size_16).value.sp)},
                     keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text )
                 )
                 Button(onClick = {
                    if (menuText.value == menu[0])getGoods(textFieldValue.value.text,mStuffList)else getGoods(textFieldValue.value.text,mStuffList,1)
                 },
                     Modifier
-                        .padding(5.dp)
+                        .padding(dimensionResource(R.dimen.size_5))
                         .align(Alignment.CenterVertically),colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
                         R.color.lightBlue
                     ),contentColor = colorResource(
                         R.color.white
                     ))) {
-                    Text(stringResource(R.string.query_sz), modifier = Modifier.padding(8.dp),fontSize = 18.sp)
+                    Text(stringResource(R.string.query_sz), modifier = Modifier.padding(dimensionResource(R.dimen.size_8)),fontSize = dimensionResource(R.dimen.font_size_18).value.sp)
                 }
                 Button(onClick = {
                         val vip = getVipInfo()
@@ -157,13 +157,13 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                         }else MyDialog.toastMessage(CustomApplication.self().getString(R.string.query_vip_hint))
                     },
                     Modifier
-                        .padding(5.dp)
+                        .padding(dimensionResource(R.dimen.size_5))
                         .align(Alignment.CenterVertically),colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
                         R.color.lightBlue
                     ),contentColor = colorResource(
                         R.color.white
                     ))) {
-                    Text(stringResource(R.string.last_order), modifier = Modifier.padding(8.dp),fontSize = 18.sp)
+                    Text(stringResource(R.string.last_order), modifier = Modifier.padding(dimensionResource(R.dimen.size_8)),fontSize = dimensionResource(R.dimen.size_18).value.sp)
                 }
             }
             List(mStuffList)
@@ -176,13 +176,13 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
             },
                 Modifier
                     .align(Alignment.CenterHorizontally)
-                    .padding(5.dp)
+                    .padding(dimensionResource(R.dimen.size_5))
                     ,colors = ButtonDefaults.buttonColors(backgroundColor = colorResource(
                     R.color.lightBlue
                 ),contentColor = colorResource(
                     R.color.white
                 ))) {
-                Text(stringResource(R.string.store), modifier = Modifier.padding(8.dp),fontSize = 18.sp)
+                Text(stringResource(R.string.store), modifier = Modifier.padding(dimensionResource(R.dimen.size_8)),fontSize = dimensionResource(R.dimen.font_size_18).value.sp)
             }
         }
     }
@@ -295,14 +295,14 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
     private fun GenerateTitle(){
         Row(
             Modifier
-                .padding(start = 5.dp, end = 5.dp)
+                .padding(start = dimensionResource(R.dimen.size_5), end = dimensionResource(R.dimen.size_5))
                 .background(colorResource(R.color.lightBlue))
-                .height(45.dp)
+                .height(dimensionResource(R.dimen.size_45))
                 .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
-        ListTitle(stringResource(R.string.action_sz),Modifier.width(45.dp))
+        ListTitle(stringResource(R.string.action_sz),Modifier.width(dimensionResource(R.dimen.size_45)))
         ListTitle(stringResource(R.string.row_id_sz),
             Modifier
-                .width(45.dp))
+                .width(dimensionResource(R.dimen.size_45)))
         ListTitle(stringResource(R.string.barcode_sz),
             Modifier
                 .width(
@@ -310,7 +310,7 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                 ))
         ListTitle(stringResource(R.string.item_no_sz),
             Modifier
-                .width(128.dp))
+                .width(dimensionResource(R.dimen.size_128)))
         ListTitle(stringResource(R.string.g_name_sz),
             Modifier
                 .width(
@@ -318,13 +318,13 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                 ))
         ListTitle(stringResource(R.string.sec_price_sz),
             Modifier
-                .width(88.dp))
+                .width(dimensionResource(R.dimen.size_88)))
         ListTitle(stringResource(R.string.unit_sz),
             Modifier
-                .width(45.dp))
+                .width(dimensionResource(R.dimen.size_45)))
         ListTitle(stringResource(R.string.stored_num),
             Modifier
-                .width(88.dp))
+                .width(dimensionResource(R.dimen.size_88)))
         }
     }
     @Composable
@@ -332,20 +332,20 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
         val stuffInfo = stuffList[index - 1]
         Row(
             Modifier
-                .padding(start = 5.dp, top = 2.dp, bottom = 2.dp, end = 5.dp)
+                .padding(start = dimensionResource(R.dimen.size_5), top = dimensionResource(R.dimen.size_2), bottom = dimensionResource(R.dimen.size_2), end = dimensionResource(R.dimen.size_5))
                 .background(colorResource(R.color.white))
-                .height(40.dp)
+                .height(dimensionResource(R.dimen.size_40))
                 .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically) {
             Icon(painter = painterResource(R.drawable.unsel), contentDescription = "",
                 Modifier
-                    .width(45.dp)
-                    .height(20.dp)
+                    .width(dimensionResource(R.dimen.size_45))
+                    .height(dimensionResource(R.dimen.size_20))
                     .clickable {
                         stuffList.remove(stuffInfo)
                     },tint = Color.Red)
             ListContent(index.toString(),
                 Modifier
-                    .width(45.dp))
+                    .width(dimensionResource(R.dimen.size_45)))
             ListContent(stuffInfo.barcode,
                 Modifier
                     .width(
@@ -353,7 +353,7 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                     ))
             ListContent(stuffInfo.itemNo,
                 Modifier
-                    .width(128.dp))
+                    .width(dimensionResource(R.dimen.size_128)))
             ListContent(stuffInfo.name,
                 Modifier
                     .width(
@@ -361,10 +361,10 @@ class VipStoreStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineS
                     ))
             ListContent(String.format("%.2f",stuffInfo.price),
                 Modifier
-                    .width(88.dp))
+                    .width(dimensionResource(R.dimen.size_88)))
             ListContent(stuffInfo.unit,
                 Modifier
-                    .width(45.dp))
+                    .width(dimensionResource(R.dimen.size_45)))
             AndroidViewBinding(StoredNumEditBinding::inflate){
                 val e = root.findViewById<EditText>(R.id.store_num)
                 e.setText(String.format("%.2f",stuffInfo.storeNum))

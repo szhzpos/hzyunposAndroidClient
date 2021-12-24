@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatButton;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.utils.Utils;
 
 public final class TmpOrderButton extends AppCompatButton {
@@ -65,17 +66,17 @@ public final class TmpOrderButton extends AppCompatButton {
     private void drawTriangle(final Canvas canvas){
         mPaint.setColor(mContext.getColor(R.color.orange));
 
-        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = Utils.dpToPx(mContext,30),arcAngle = Utils.dpToPx(mContext,5);
+        int w = getMeasuredWidth(),h = getMeasuredHeight(),offset = (int) CustomApplication.getDimension(R.dimen.size_30),arcAngle = (int) CustomApplication.getDimension(R.dimen.size_5);
 
         mPath.moveTo(w - offset, 0);
         mPath.arcTo(w - arcAngle,0,w,arcAngle,-90,90,false);
-        mPath.lineTo(w, h - Utils.dpToPx(mContext,10));
+        mPath.lineTo(w, h - CustomApplication.getDimension(R.dimen.size_10));
         mPath.close();
         canvas.drawPath(mPath, mPaint);
 
         mPaint.setColor(mContext.getColor(R.color.white));
         mPaint.setTextSize(mContext.getResources().getDimension(R.dimen.font_size_12));
-        canvas.drawText(String.valueOf(mOrderNum),w - Utils.dpToPx(mContext,12),Utils.dpToPx(mContext,15),mPaint);
+        canvas.drawText(String.valueOf(mOrderNum),w - CustomApplication.getDimension(R.dimen.size_12),CustomApplication.getDimension(R.dimen.size_15),mPaint);
     }
 
     private void drawCircle(final Canvas canvas){
@@ -87,7 +88,7 @@ public final class TmpOrderButton extends AppCompatButton {
         mPaint.setColor(context.getColor(R.color.white));
         mPaint.setTextSize(context.getResources().getDimension(R.dimen.font_size_12));
         final String num = String.valueOf(mOrderNum);
-        canvas.drawText(num,(w >> 1) - (mPaint.measureText(num) / 2),Utils.dpToPx(context,14),mPaint);
+        canvas.drawText(num,(w >> 1) - (mPaint.measureText(num) / 2),CustomApplication.getDimension(R.dimen.size_14),mPaint);
     }
 
     public void setNum(int num){

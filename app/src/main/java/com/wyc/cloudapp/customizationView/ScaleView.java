@@ -63,7 +63,7 @@ public class ScaleView extends View {
     private void init(){
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
-        mPaint.setTextSize(Utils.sp2px(CustomApplication.self(),12));
+        mPaint.setTextSize(CustomApplication.getDimension(R.dimen.font_size_12));
         mPaint.getTextBounds(unstable,0,unstable.length(),mBoundText);
 
         mCoordinateCenter = new Point();
@@ -212,7 +212,7 @@ public class ScaleView extends View {
 
     private void drawOnlyCurrentValue(final Canvas canvas){
 
-        float numSpace = Utils.dpToPx(getContext(),2);
+        float numSpace = CustomApplication.getDimension(R.dimen.size_2);
         float yAxis = -mOutRadius / 1.8f,num_width = mNumberWidth,space_8 = mOutRadius / 18 ,xAxis_spacing = num_width + space_8 + numSpace;
         float current_value = mCurrentValue / 1000;
 
@@ -220,7 +220,7 @@ public class ScaleView extends View {
 
         mPaint.setStyle(Paint.Style.STROKE);
         canvas.save();
-        canvas.translate(mBoundText.width() + Utils.dpToPx(getContext(),16),mCoordinateCenter.y + yAxis);
+        canvas.translate(mBoundText.width() + CustomApplication.getDimension(R.dimen.size_16),mCoordinateCenter.y + yAxis);
 
         mPaint.setColor(Color.RED);
         for (int i = 0,size = _value.length();i < size; i++){

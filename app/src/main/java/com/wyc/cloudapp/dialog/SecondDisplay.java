@@ -96,13 +96,12 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         showAdImg();
-        mSurfaceRect = new Rect(0,0,mSurface.getWidth(),mSurface.getHeight() - 30);
+        mSurfaceRect = new Rect(0,0,mSurface.getWidth(), (int) (mSurface.getHeight() - CustomApplication.getDimension(R.dimen.size_30)));
         mBitmapRect = new Rect();
     }
 
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
     }
 
     @Override
@@ -117,7 +116,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         mSurfaceHolder.addCallback(this);
 
         final Paint paint =  new Paint();
-        paint.setTextSize(18);
+        paint.setTextSize(CustomApplication.getDimension(R.dimen.font_size_18));
         paint.setAntiAlias(true);
         paint.setFilterBitmap(true);
         paint.setTextAlign(Paint.Align.CENTER);
@@ -291,7 +290,7 @@ public class SecondDisplay extends Presentation implements SurfaceHolder.Callbac
         }
     }
     private void showAdImg(){
-        mBottomRect = new Rect(0,mSurface.getHeight() - 32,mSurface.getWidth(),mSurface.getBottom());
+        mBottomRect = new Rect(0, (int) (mSurface.getHeight() - CustomApplication.getDimension(R.dimen.size_32)),mSurface.getWidth(),mSurface.getBottom());
         mShowAdImgFut = CustomApplication.scheduleAtFixedRate(showAdImgRunnable,0,50,TimeUnit.MILLISECONDS);
     }
 

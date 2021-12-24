@@ -42,7 +42,7 @@ public final class NormalTransferDetailsAdapter extends AbstractTransferDetailsA
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         final View itemView = View.inflate(mContext,R.layout.transfer_details_content_layout, null);
-        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_40)));
+        itemView.setLayoutParams(new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.height_45)));
         return new MyViewHolder(itemView);
     }
 

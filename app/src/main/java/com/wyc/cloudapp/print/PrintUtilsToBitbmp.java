@@ -9,6 +9,8 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
 
+import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -201,12 +203,12 @@ public final class PrintUtilsToBitbmp {
         paint.setColor(Color.RED);
         paint.setStrokeWidth(2);
         paint.setAntiAlias(true);
-
-        final RectF rectF = new RectF(width- w,height - h,width - 2,height - 2);
+        float size2 = CustomApplication.getDimension(R.dimen.size_2);
+        final RectF rectF = new RectF(width- w,height - h,width - size2,height - size2);
         canvas.drawArc(rectF, 0, 360, false, paint);
         paint.setColor(Color.WHITE);
 
-        int offset = Utils.dpToPx(context,2);
+        int offset = (int) size2;
 
         canvas.drawLine(rectF.left + offset,rectF.top + offset,rectF.right - offset,rectF.bottom - offset,paint);
         canvas.drawLine(rectF.right - offset,rectF.top + offset, rectF.left + offset,rectF.bottom-offset,paint);
