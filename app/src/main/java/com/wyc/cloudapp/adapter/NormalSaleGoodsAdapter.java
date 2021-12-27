@@ -6,11 +6,11 @@ import android.text.Html;
 import android.view.View;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
-import com.wyc.cloudapp.activity.normal.NormalMainActivity;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -25,7 +25,6 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     private GoodsWeighDialog mWeighDialog;
     public NormalSaleGoodsAdapter(final SaleActivity context){
         super(context);
-        if (GoodsWeighDialog.isAutoGetWeigh())mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
     }
 
     @Override
@@ -42,7 +41,10 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     @Override
     protected void setSelectStatus(View v) {
         super.setSelectStatus(v);
-        mContext.updateScalePrice(Utils.getNotKeyAsNumberDefault(Utils.getViewTagValue(v),"price",0.0));
+        final JSONObject goods = Utils.getViewTagValue(v);
+        if (GoodsInfoViewAdapter.isWeighingGoods(goods)){
+            mContext.updateScalePrice(goods.getDoubleValue("price"));
+        }
     }
 
     @Override
@@ -141,13 +143,16 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
             mWeighDialog = null;
         }
         notifyDataSetChanged();
-        mContext.setScaleInfo(AbstractSerialScaleImp.OnReadStatus.STABLE,0.0f);
+        mContext.updateScalePrice(0.0f);
     }
-    public void closeWeigh(){
+    public void closeScale(){
         if (mWeighDialog != null){
             mWeighDialog.stopRead();
             mWeighDialog = null;
         }
+    }
+    public void initScale(){
+        mWeighDialog = new GoodsWeighDialog(mContext,mContext.getString(R.string.goods_i_sz));
     }
     public void rZero(){
         if (mWeighDialog != null)mWeighDialog.rZero();
@@ -156,7 +161,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
         if (mWeighDialog != null)mWeighDialog.tare();
     }
     public boolean hasAutoGetWeigh(){
-        return mWeighDialog != null && GoodsWeighDialog.isAutoGetWeigh();
+        return GoodsWeighDialog.isAutoGetWeigh();
     }
     @Override
     public float getWeigh(){

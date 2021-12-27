@@ -42,18 +42,23 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                                 stringBuilder.delete(0,stringBuilder.length());
                                 break;
                             case 0x03:
-                                statTmp = stringBuilder.indexOf("S") != -1 ? OnReadStatus.STABLE : stringBuilder.indexOf("U") != -1 ? OnReadStatus.NO_STABLE : OnReadStatus.OTHER;
+                                if (mOnReadStatus != null){
+                                    statTmp = stringBuilder.indexOf("S") != 0 ? OnReadStatus.STABLE : stringBuilder.indexOf("U") != 0 ? OnReadStatus.NO_STABLE : OnReadStatus.OTHER;
+                                    if (statTmp == OnReadStatus.STABLE){
+                                        start = stringBuilder.indexOf(" ");
+                                        if (start == -1)start = stringBuilder.indexOf("-");
 
-                                start = stringBuilder.indexOf(" ");
-                                if (start == -1)start = stringBuilder.indexOf("-");
-
-                                end = stringBuilder.indexOf("k");
-                                if ( -1 < start && start < stringBuilder.length() && start <= end && end < stringBuilder.length()){
-                                    tmp_v  = Double.parseDouble(stringBuilder.substring(start,end));
-                                    if (!Utils.equalDouble(value,tmp_v) || stat != statTmp){
-                                        value = tmp_v;
-                                        stat = statTmp;
-                                        if (mOnReadStatus != null)mOnReadStatus.onFinish(stat,value);
+                                        end = stringBuilder.indexOf("k");
+                                        if ( -1 < start && start < stringBuilder.length() && start <= end && end < stringBuilder.length()){
+                                            tmp_v  =Double.parseDouble(stringBuilder.substring(start,end));
+                                            if (!Utils.equalDouble(value,tmp_v)){
+                                                value = tmp_v;
+                                                stat = statTmp;
+                                                mOnReadStatus.onFinish(stat,value);
+                                            }
+                                        }
+                                    }else {
+                                        mOnReadStatus.onFinish(stat,value);
                                     }
                                 }
                                 break;
@@ -63,9 +68,10 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                         }
                     }
                 }
-            } catch (IOException | NumberFormatException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
                 if (mReading && mOnReadStatus != null)mOnReadStatus.onError(e.getMessage());//读过程中发生错误
+            }catch (NumberFormatException ignore){
             }finally {
                 close();
             }

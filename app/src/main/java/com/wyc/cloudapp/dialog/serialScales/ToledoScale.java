@@ -51,11 +51,10 @@ public class ToledoScale extends AbstractSerialScaleImp implements IMtWeighView{
     public ToledoScale(final String port){
         mPort = port;
         mMtWeightService = MtWeighApi.getInstance();
-        mMtWeightService.connectToService(CustomApplication.self(),this);
     }
     @Override
     public void startRead() {
-
+        mMtWeightService.connectToService(CustomApplication.self(),this);
     }
 
     @Override
@@ -92,7 +91,7 @@ public class ToledoScale extends AbstractSerialScaleImp implements IMtWeighView{
                 int result = weInfo.getIntValue(RET_JSON_KEY_STATUS);
                 double net = weInfo.getDoubleValue(RET_JSON_KEY_WEIGHT_NET);//净重
                 mZero = weInfo.getIntValue(RET_JSON_KEY_ZERO) == 1;//毛重零位  1：在 0 位，0：不是 0 位； 毛重零时（卸掉所有载荷后的空秤台），才允许清除测量皮重。
-                mOnReadStatus.onFinish(result == 0 ? 0 : 1,net);
+                mOnReadStatus.onFinish(result == 0 ? AbstractSerialScaleImp.OnReadStatus.STABLE : AbstractSerialScaleImp.OnReadStatus.NO_STABLE,net);
             }catch (JSONException e){
                 e.printStackTrace();
                 MyDialog.toastMessage(e.getMessage());

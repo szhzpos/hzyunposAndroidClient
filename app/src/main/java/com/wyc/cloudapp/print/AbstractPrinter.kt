@@ -1,10 +1,8 @@
 package com.wyc.cloudapp.print
 
 import com.alibaba.fastjson.JSONObject
-import com.wyc.cloudapp.R
-import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import java.lang.reflect.InvocationTargetException
 
@@ -31,9 +29,7 @@ abstract class AbstractPrinter:IPrinter {
                 try {
                     val printerClass = Class.forName("com.wyc.cloudapp.print.$cls_id")
                     val constructor = printerClass.getConstructor()
-                    MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print))
                     (constructor.newInstance() as AbstractPrinter).print(c)
-                    MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print))
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                     MyDialog.toastMessage(e.message)
@@ -63,5 +59,9 @@ abstract class AbstractPrinter:IPrinter {
                 }
             } else false
         }
+    }
+
+    protected fun finalize(){
+        Logger.d("%s has finalized",javaClass.simpleName)
     }
 }

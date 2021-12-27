@@ -9,6 +9,7 @@
     <dimen name="margin_8">@dimen/size_8</dimen>
     <dimen name="margin_12">@dimen/size_12</dimen>
     <dimen name="margin_18">@dimen/size_18</dimen>
+    <dimen name="font_size_10">10sp</dimen>
     <dimen name="font_size_12">12sp</dimen>
     <dimen name="font_size_14">14sp</dimen>
     <dimen name="font_size_16">16sp</dimen>

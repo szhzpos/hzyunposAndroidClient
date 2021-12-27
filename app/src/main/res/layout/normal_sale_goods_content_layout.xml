@@ -84,7 +84,7 @@
         android:maxHeight="@dimen/size_35"
         android:text="某某商品"
         android:textColor="@color/black"
-        android:textSize="@dimen/font_size_14" />
+        android:textSize="@dimen/font_size_16" />
 
     <TextView
         android:id="@+id/symbol_text"
@@ -92,7 +92,7 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/sale_price"
         android:layout_centerHorizontal="false"
-        android:layout_marginStart="@dimen/size_28"
+        android:layout_marginStart="@dimen/size_48"
         android:text="@string/currency_symbol_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14" />

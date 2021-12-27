@@ -22,6 +22,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -34,16 +35,15 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
     private volatile double mValue;
-    private boolean mContinuousWeighing = false;
-    private boolean mStable = false;
+    private volatile boolean mStable = false;
     /**
      * 自动取重
      * */
     private static final boolean mAuto = AbstractSerialScaleImp.hasAutoGetWeigh();
+    private final boolean mContinuousWeighing = false;
 
     public GoodsWeighDialog(@NonNull SaleActivity context, final String title) {
         super(context,title);
-
         read();
     }
     @Override
@@ -211,7 +211,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                             if (mContinuousWeighing){
                                 if (mOnYesClick != null)CustomApplication.runInMainThread(()-> mOnYesClick.onYesClick(num));
                             }else
-                                if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
+                            if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
 
                             mValue = num;
                             mStable = stat == AbstractSerialScaleImp.OnReadStatus.STABLE;

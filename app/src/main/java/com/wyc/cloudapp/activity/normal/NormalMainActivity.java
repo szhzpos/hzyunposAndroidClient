@@ -57,7 +57,6 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
-import com.wyc.cloudapp.customizationView.ScaleView;
 import com.wyc.cloudapp.customizationView.TmpOrderButton;
 import com.wyc.cloudapp.customizationView.WeightInfoView;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -237,6 +236,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     private void initScaleView(){
         if (((NormalSaleGoodsAdapter)mSaleGoodsAdapter).hasAutoGetWeigh()){
+            ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).initScale();
             mWeighView = findViewById(R.id.weighView);
             mWeighView.setVisibility(View.VISIBLE);
             mWeighView.setAction(new WeightInfoView.OnAction() {
@@ -478,7 +478,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
 
     private void clearResource(){
-        ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).closeWeigh();
+        ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).closeScale();
         hideLastOrderInfo();
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
     }

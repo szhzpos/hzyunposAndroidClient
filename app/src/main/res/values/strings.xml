@@ -940,4 +940,10 @@
     <string name="weigh">重量(KG)</string>
     <string name="price_">价格(元)</string>
     <string name="amt_scale">金额(元)</string>
+    <!--Toledo打印机-->
+    <string name="printer_offline">打印机断开连接</string>
+    <string name="printer_out">打印机%1$s被拨出</string>
+    <string name="printer_inserted">打印机%1$s被插入</string>
+    <string name="print_finished">打印完成：%1$s</string>
+    <string name="feedPaperFinished">走纸完成：%1$s</string>
 </resources>

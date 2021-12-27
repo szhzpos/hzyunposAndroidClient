@@ -110,6 +110,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         final View itemView = View.inflate(mContext, R.layout.goods_info_content_layout, null);
         final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,(int)mContext.getResources().getDimension(R.dimen.goods_height));
         itemView.setLayoutParams(lp);
+        itemView.setOnClickListener(this);
         return new MyViewHolder(itemView);
     }
 
@@ -137,11 +138,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             myViewHolder.price.setText(goods_info.getString("price"));
 
             goods_title.setText(goods_info.getString("goods_title"));
-            if(goods_title.getCurrentTextColor() != mContext.getResources().getColor(R.color.good_name_color,null)){
-                goods_title.setTextColor(mContext.getColor(R.color.good_name_color));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
-            }
-
-            myViewHolder.itemView.setOnClickListener(this);
+            goods_title.setTextColor(mContext.getColor(R.color.good_name_color));
         }
     }
 
@@ -307,8 +304,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     "'' brand_id,'' gs_id, '' category_id,'' path,gp_price retail_price,gp_price price,0 tc_rate,0 tc_mode,0 tax_rate,0 ps_price,0 cost_price,0 trade_price,gp_price buying_price,0 yh_mode,0 yh_price,1 metering_id,0 current_goods,1 conversion from goods_group \n" +
                     "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
-        Logger.d(full_sql);
-        Logger.d_json(object);
         if (code){
             makeCommonSaleType(object);
 

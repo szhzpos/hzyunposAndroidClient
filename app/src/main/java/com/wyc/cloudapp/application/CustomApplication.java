@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.annotation.DimenRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -433,6 +434,7 @@ public final class CustomApplication extends Application {
     }
 
     public static void postAtFrontOfQueue(Runnable r){
+        mApplication.myhandler.removeCallbacks(r);
         mApplication.myhandler.postAtFrontOfQueue(r);
     }
 
@@ -443,6 +445,9 @@ public final class CustomApplication extends Application {
 
     public static float getDimension(@DimenRes int id){
         return mApplication.getResources().getDimension(id);
+    }
+    public static String getStringByResId(@StringRes int id,Object... formatArgs){
+        return mApplication.getResources().getString(id,formatArgs);
     }
 
     private static class MyHandler extends Handler {
