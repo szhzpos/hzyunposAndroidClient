@@ -33,6 +33,8 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.printer.AbstractPrinter;
+import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.BufferedOutputStream;
@@ -52,7 +54,7 @@ import static android.content.Context.WINDOW_SERVICE;
 
 public final class Printer {
     private static ImageView mICO;
-    private static final String  CHARACTER_SET = "GB2312";
+    public static final String  CHARACTER_SET = "GB2312";
     public static final String REPLACEMENT = "***";
     public static final byte[][] byteCommands = {
             { 0x1b, 0x4d, 0x00 },// 标准ASCII字体
@@ -126,6 +128,7 @@ public final class Printer {
     public static final byte[] LINE_SPACING_DEFAULT = {0x1b, 0x32};
     public static final byte[] LINE_SPACING_10 = {0x1b,0x33,0x10};
     public static final byte[] LINE_SPACING_16 = {0x1b,0x33,0x16};
+    public static final byte[] LINE_SPACING_48 = {0x1b,0x33,0x48};
     public static final byte[] LINE_SPACING_4 = {0x1b,0x33,0x04};
     public static final byte[] LINE_SPACING_2 = {0x1b,0x33,0x02};
     /**
@@ -162,6 +165,11 @@ public final class Printer {
      * 打印三列时，第一列汉字最多显示几个文字
      */
     private static final int LEFT_TEXT_MAX_LENGTH = 8;
+
+    /**
+     * 换行
+     */
+    public static final byte[] CUT  = {0x1B, 0x6D};
 
     public static void set_line_spacing(OutputStream writer, int n) throws IOException{
         writer.write(new byte[]{0x1B,0x33});
@@ -303,22 +311,24 @@ public final class Printer {
             int status_id = object.getIntValue("id");
             String tmp = Utils.getNullStringAsEmpty(object,"v");
             String[] vals = tmp.split("\t");
-            if (status_id == R.id.innerDriver){
-                AbstractPrinter.printContent(content);
-            }else
-                if (vals.length > 1){
-                    switch (status_id){
-                        case R.id.bluetooth_p:
-                            bluetooth_print(content.getBytes(CHARACTER_SET),vals[1]);
-                            break;
-                        case R.id.usb_p:
-                            usb_print_byte(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content.getBytes(CHARACTER_SET));
-                            break;
-                    }
+            if (vals.length > 1){
+                switch (status_id){
+                    case R.id.bluetooth_p:
+                        bluetooth_print(content.getBytes(CHARACTER_SET),vals[1]);
+                        break;
+                    case R.id.usb_p:
+                        usb_print_byte(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content.getBytes(CHARACTER_SET));
+                        break;
                 }
+            }
         }else {
             MyDialog.ToastMessage("读取打印机设置错误：" + object.getString("info"), null);
         }
+    }
+
+
+    public static void printObj(IReceipts receipts) {
+        AbstractPrinter.printContent(receipts);
     }
 
     public static boolean getPrinterSetting(@NonNull final JSONObject object){

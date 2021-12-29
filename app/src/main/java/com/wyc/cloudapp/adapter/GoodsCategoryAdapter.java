@@ -29,7 +29,9 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     private View mCurrentItemView;//当前选择的类别item
     private GoodsCategoryAdapter mChildGoodsCategoryAdapter;
     private final RecyclerView mSecLevelGoodsCategoryView;
-    private boolean mChildShow = false,mFirstLoad = true,hasShowGroupGoods = BaseParameterFragment.hasShowGroupGoods(null);
+    private boolean mChildShow = false;
+    private boolean mFirstLoad = true;
+    private final boolean hasShowGroupGoods = BaseParameterFragment.hasShowGroupGoods(null);
     private String mCategoryId;
     public GoodsCategoryAdapter(SaleActivity context, RecyclerView v){
         mContext = context;
@@ -67,13 +69,6 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         }
     }
 
-    @Override
-    public void onViewRecycled (MyViewHolder holder){
-        if (holder.itemView == mCurrentItemView){
-            setViewBackgroundColor(mCurrentItemView,false);
-        }
-    }
-
     protected void setViewBackgroundColor(final View view, boolean s){
         TextView name;
         final Resources resources = mContext.getResources();
@@ -82,6 +77,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         if (s){
             text_color = white;
             backgroundColor = blue;
+            if (mCurrentItemView != view)mCurrentItemView = view;
         }else {
             text_color = blue;
             backgroundColor = white;
@@ -89,7 +85,6 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         view.setBackgroundColor(backgroundColor);
         name = view.findViewById(R.id.category_name);
         name.setTextColor(text_color);
-        if (mCurrentItemView != view)mCurrentItemView = view;
     }
 
     @NonNull
@@ -108,15 +103,13 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
-        if (mDatas != null){
+        if (mDatas != null && !mDatas.isEmpty()){
             final JSONObject goods_type_info = mDatas.getJSONObject(i);
 
             final String category_id =Utils.getNullStringAsEmpty(goods_type_info,"category_id");
             myViewHolder.category_id.setText(category_id);
 
-            if (category_id.equals(mCategoryId)){
-                setViewBackgroundColor(myViewHolder.itemView,true);
-            }
+            setViewBackgroundColor(myViewHolder.itemView, category_id.equals(mCategoryId));
 
             myViewHolder.category_name.setText(String.format(Locale.CHINA,"%s-%s",goods_type_info.getString("category_code"),goods_type_info.getString("name")));
             if (i == (hasShowGroupGoods ? 1 : 0) && mFirstLoad && !mContext.containGoods() && (Utils.lessThan7Inches(mContext) || mSecLevelGoodsCategoryView != null)){//一级分类触发第二个类别查询
@@ -143,7 +136,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             mDatas = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where depth = 2 and status = 1 and parent_id='" + parent_id +"' order by category_code",0,0,false,err);
 
         if (mDatas != null){
-            this.notifyDataSetChanged();
+            notifyDataSetChanged();
         }else{
             MyDialog.ToastMessage("加载类别错误：" + err, null);
         }
@@ -202,7 +195,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             mContext.loadGoods(id);
         }
     }
-    public static JSONArray getCategoryAsTreeListData(final Context context){
+    public static JSONArray getCategoryAsTreeListData(){
         final JSONArray categorys = new JSONArray();
         final StringBuilder err = new StringBuilder();
         generateDatas(null,categorys,err);

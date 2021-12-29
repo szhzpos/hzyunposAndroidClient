@@ -82,7 +82,7 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
     private void initCategoryList(){
         final RecyclerView item_list = findViewById(R.id.goods_category_list);
         final TreeListAdapter listAdapter = new TreeListAdapter(mContext,true);
-        final JSONArray array = GoodsCategoryAdapter.getCategoryAsTreeListData(mContext);
+        final JSONArray array = GoodsCategoryAdapter.getCategoryAsTreeListData();
         final JSONObject all = new JSONObject();
         all.put(TreeListBaseAdapter.COL_ID,0);
         all.put(TreeListBaseAdapter.COL_NAME,"所有类别");

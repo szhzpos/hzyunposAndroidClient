@@ -16,12 +16,9 @@
         android:orientation="horizontal"
         android:paddingTop="@dimen/margin_5"
         android:paddingBottom="@dimen/margin_5"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.004">
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/cashier_desk_image"
@@ -200,11 +197,9 @@
         android:background="@drawable/round_shape"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/main_middle_middle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_top"
-        app:layout_constraintVertical_bias="0">
+        app:layout_constraintTop_toBottomOf="@+id/main_top">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -480,10 +475,10 @@
         android:id="@+id/main_middle_middle"
         android:layout_width="@dimen/width_88"
         android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/margin_2"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@id/main_middle_left"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/goods_type_list"
         app:layout_constraintStart_toEndOf="@id/main_middle_left"
         app:layout_constraintTop_toBottomOf="@+id/main_top">
 
@@ -631,8 +626,7 @@
         android:paddingStart="@dimen/margin_2"
         android:paddingEnd="@dimen/margin_1"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@id/goods_info_list"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/main_top"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
         app:layout_constraintTop_toBottomOf="@+id/main_top" />
 

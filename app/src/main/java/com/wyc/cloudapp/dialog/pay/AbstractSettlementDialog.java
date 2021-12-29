@@ -36,7 +36,6 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
 import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
@@ -48,6 +47,10 @@ import com.wyc.cloudapp.dialog.goods.BuyFullGiveXSelectDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
+import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.bean.SaleOrderPrintInfo;
+import com.wyc.cloudapp.print.receipts.CheckReceipts;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -1276,7 +1279,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             if (index == -1){
                 if (mPayStatus){
                     if (mContext.getPrintStatus()){
-                        Printer.print(AbstractSettlementDialog.get_print_content(mContext,order_code,open_cashbox));
+                        //Printer.print(AbstractSettlementDialog.get_print_content(mContext,order_code,open_cashbox));
+                        printObj(mContext,order_code);
                     }
                     paySuccess();
                 }
@@ -1289,6 +1293,10 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         }
 
         if (!mPayStatus && err.length() != 0)payError(err);
+    }
+    public static void printObj(@NonNull MainActivity context,final String order_code){
+        if (context.getPrintStatus())
+            Printer.printObj(new CheckReceipts(order_code));
     }
 
     private void payError(final StringBuilder err){
@@ -1387,14 +1395,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }
         }
     }
-
-    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
+    private static String c_format_58(final Context context, final PrintFormatInfo format_info, final SaleOrderPrintInfo order_info, boolean is_open_cash_box){
 
         final StringBuilder info = new StringBuilder(),out = new StringBuilder();
-        int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
+        int print_count = format_info.getPrintCount(),footer_space = format_info.getFooterSpace();
 
-        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
-                cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
+        final String store_name = format_info.getAliasStoresName(),pos_num = order_info.getPosNum(),
+                cas_name = order_info.getCasName(),footer_c = format_info.getFooterContent(),
                 new_line = "\n",//Printer.commandToStr(Printer.NEW_LINE);
                 new_line_10 = Printer.commandToStr(Printer.LINE_SPACING_10),
                 new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
@@ -1402,7 +1409,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
         if (is_open_cash_box)//开钱箱
             out.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
-
         while (print_count-- > 0) {//打印份数
             if (info.length() > 0){
                 info.append(new_line).append(new_line);
@@ -1411,48 +1417,48 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }
 
             info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(order_info,"stores_name") : store_name).append(Printer.commandToStr(Printer.NORMAL)).append(new_line).append(new_line).
+                    .append(store_name.length() == 0 ? order_info.getStoresName() : store_name).append(Printer.commandToStr(Printer.NORMAL)).append(new_line).append(new_line).
                     append(Printer.commandToStr(Printer.ALIGN_LEFT));
 
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(order_info,"stores_id")),Utils.getNullStringAsEmpty(order_info,"oper_time"))).append(new_line);
+            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(String.valueOf(order_info.getStoresId())),order_info.getOperTime())).append(new_line);
             info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
-            info.append(context.getString(R.string.b_f_order_sz)).append(Utils.getNullStringAsEmpty(order_info,"order_code")).append(new_line).append(new_line);
+            info.append(context.getString(R.string.b_f_order_sz)).append(order_info.getCardCode()).append(new_line).append(new_line);
 
             info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line);
             //商品明细
-            JSONObject info_obj;
+            SaleOrderPrintInfo.SalesDTO info_obj;
             double discount_amt = 0.0, xnum = 0.0,original_order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
             int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
-            final JSONArray sales = Utils.getNullObjectAsEmptyJsonArray(order_info,"sales");
+            final List<SaleOrderPrintInfo.SalesDTO> sales = order_info.getSales();
             for (int i = 0, size = sales.size(); i < size; i++) {
-                info_obj = sales.getJSONObject(i);
+                info_obj = sales.get(i);
                 if (info_obj != null) {
-                    original_order_amt += info_obj.getDoubleValue("original_amt");
-                    actual_amt += info_obj.getDoubleValue("sale_amt");
+                    original_order_amt += info_obj.getOriginalAmt();
+                    actual_amt += info_obj.getSaleAmt();
 
-                    type = info_obj.getIntValue("type");
+                    type = info_obj.getType();
                     if (type == 2) {
                         units_num += 1;
                     } else {
-                        units_num += info_obj.getIntValue("xnum");
+                        units_num += info_obj.getXnum();
                     }
-                    xnum = info_obj.getDoubleValue("xnum");
-                    discount_amt = Utils.formatDouble(info_obj.getDoubleValue("discount_amt"),2);
+                    xnum = info_obj.getXnum();
+                    discount_amt = Utils.formatDouble(info_obj.getDiscountAmt(),2);
 
                     if (i != 0)info.append(new_line_10);
 
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL));
-                    info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
-                            Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("price")),
-                                    type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getDoubleValue("sale_amt"))))).append(new_line);
+                    info.append(Printer.commandToStr(Printer.BOLD)).append(info_obj.getGoodsTitle()).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL));
+                    info.append(Printer.printTwoData(1,info_obj.getBarcode(),
+                            Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getPrice()),
+                                    type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getSaleAmt())))).append(new_line);
 
                     if (Utils.greaterDouble(discount_amt, 0.0)) {
                         sum_dis_amt += discount_amt;
-                        info.append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(Utils.getNullStringAsEmpty(info_obj,"original_price")),
+                        info.append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(String.format(Locale.CHINA,"%.2f",info_obj.getOriginalAmt())),
                                 context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt)))).append(new_line);
                     }
 
-                    final JSONArray goodsPractices = Utils.getNullObjectAsEmptyJsonArray(info_obj,"goodsPractice");
+                    final List<GoodsPracticeInfo> goodsPractices = info_obj.getGoodsPracticeList();
                     if (!goodsPractices.isEmpty()){
                         info.append(String.format("%s:%s",context.getString(R.string.goods_practice), AbstractSaleGoodsAdapter.generateGoodsPracticeInfo(goodsPractices))).append(new_line);
                     }
@@ -1468,30 +1474,29 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     append(new_line_2).append(new_line_2).append(new_line).append(line);
 
             //支付方式
+            SaleOrderPrintInfo.PaysDTO paysDTO;
             double zl = 0.0, pamt = 0.0;
-            final JSONArray pays = Utils.getNullObjectAsEmptyJsonArray(order_info,"pays");
+            final List<SaleOrderPrintInfo.PaysDTO> pays = order_info.getPays();
             for (int i = 0, size = pays.size(); i < size; i++) {
-                info_obj = pays.getJSONObject(i);
-                zl = info_obj.getDoubleValue("pzl");
-                pamt = info_obj.getDoubleValue("pamt");
+                paysDTO = pays.get(i);
+                zl = paysDTO.getPzl();
+                pamt = paysDTO.getPamt();
 
                 if (i != 0)info.append(new_line_10);
 
-                info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"name","")).append("：").append(pamt - zl).append("元").append(new_line).append(new_line_d);
+                info.append(paysDTO.getName()).append("：").append(pamt - zl).append("元").append(new_line).append(new_line_d);
                 info.append(context.getString(R.string.b_f_yus_sz)).append(pamt).append(new_line);
 
                 if (!Utils.equalDouble(zl, 0.0)) {
                     info.append(",").append(context.getString(R.string.b_f_zl_sz)).append(zl).append(new_line);
                 }
-                if (info_obj.containsKey("xnote")) {
-                    final JSONArray xnotes = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info_obj,"xnote","[]"));
-                    if (xnotes != null) {
-                        int length = xnotes.size();
-                        if (length > 0) {
-                            for (int j = 0; j < length; j++) {
-                                if (i > 0 && j + 1 != length)
-                                    info.append(xnotes.getString(j)).append(new_line);
-                            }
+                final List<String> xnote = paysDTO.getXnoteList();
+                if (xnote != null) {
+                    int length = xnote.size();
+                    if (length > 0) {
+                        for (int j = 0; j < length; j++) {
+                            if (i > 0 && j + 1 != length)
+                                info.append(xnote.get(j)).append(new_line);
                         }
                     }
                 }
@@ -1499,12 +1504,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             info.append(line).append(new_line_2).append(new_line).append(new_line_d);
 
             //会员积分信息
-            final JSONObject integral_info = Utils.getNullObjectAsEmptyJson(order_info,"integral_info");
-            if (!integral_info.isEmpty()){
-                if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",integral_info))Logger.d("查询会员参数错误:%s",integral_info.getString("info"));
-                String vip_name = Utils.getNullOrEmptyStringAsDefault(order_info,"vip_name",""),card_code = Utils.getNullOrEmptyStringAsDefault(order_info,"card_code","");
+            final SaleOrderPrintInfo.VipIntegralInfo integral_info = order_info.getIntegralInfoObj();
+            if (integral_info != null){
+                final JSONObject MEMBER_PARAMETER = new JSONObject();
+                if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",MEMBER_PARAMETER))Logger.d("查询会员参数错误:%s",MEMBER_PARAMETER.getString("info"));
+                String vip_name = order_info.getVipName(),card_code = order_info.getCardCode();
 
-                if (Utils.getNotKeyAsNumberDefault(integral_info,"member_secret_protect",0) == 1){
+                if (Utils.getNotKeyAsNumberDefault(MEMBER_PARAMETER,"member_secret_protect",0) == 1){
                     if (vip_name.length() > 2)
                         vip_name = vip_name.replace(vip_name.substring(1),Printer.REPLACEMENT);
                     else {
@@ -1523,77 +1529,48 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 info.append(context.getString(R.string.vip_name_colon_sz)).append(vip_name).append(new_line);
                 info.append(context.getString(R.string.m_vip_colon_sz)).append(card_code).append(new_line);
 
-                double point_num = Utils.getNotKeyAsNumberDefault(integral_info,"point_num",0.0);
+                double point_num = integral_info.getPointNum();
                 info.append(context.getString(R.string.current_vip_integral)).append(point_num).append(new_line);
-                info.append(context.getString(R.string._vip_integral)).append(Utils.getNotKeyAsNumberDefault(integral_info,"points_sum",0.0) + point_num).append(new_line);
+                info.append(context.getString(R.string._vip_integral)).append(integral_info.getPointsSum() + point_num).append(new_line);
 
                 info.append(line).append(new_line_2).append(new_line).append(new_line_d);
             }
 
 
             if (footer_c.isEmpty()){
-                info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
-                info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
+                info.append(context.getString(R.string.b_f_hotline_sz)).append(order_info.getTelphone()).append(new_line);
+                info.append(context.getString(R.string.b_f_stores_address_sz)).append(order_info.getRegion()).append(new_line);
             }else {
                 info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
             }
             for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
         }
         out.append(info);
-
         return out.toString();
     }
     public static String get_print_content(final MainActivity context, final String order_code, boolean is_open_cash_box){
         String content = "";
         if (context.getPrintStatus()){
-            final JSONObject print_format_info = new JSONObject();
-            if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
-                if (print_format_info.getIntValue("f") == R.id.checkout_format){
-                    final JSONObject order_info = new JSONObject();
-                    if (getPrintOrderInfo(order_code,order_info)){
-                        switch (print_format_info.getIntValue("f_z")){
+            final PrintFormatInfo info = PrintFormatInfo.getFormatInfo();
+            if (info != null){
+                if (info.getFormatId() == R.id.checkout_format){
+                    final SaleOrderPrintInfo saleOrderPrintInfo = SaleOrderPrintInfo.getInstance(order_code);
+                    if (saleOrderPrintInfo != null){
+                        switch (info.getFormatSize()){
                             case R.id.f_58:
-                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
+                                content = c_format_58(context,info,saleOrderPrintInfo,is_open_cash_box);
                                 break;
                             case R.id.f_76:
                                 break;
                             case R.id.f_80:
                                 break;
                         }
-                    }else {
-                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context.getWindow()));
                     }
                 }else {
                     context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
                 }
-            }else
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
-        }
-        return content;
-    }
-
-    private static boolean getPrintOrderInfo(final String order_code,final JSONObject order_info) {
-        boolean code = false;
-        if (SQLiteHelper.execSql(order_info, "SELECT a.order_code,a.name vip_name,a.card_code,a.integral_info,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
-                " FROM retail_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
-                "left join shop_stores c on a.stores_id = c.stores_id where a.order_code = '" + order_code + "'")) {
-            final StringBuilder err = new StringBuilder();
-            final String goods_info_sql = "SELECT a.barcode,b.goods_title,b.type,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
-                    "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt,a.goodsPractice FROM retail_order_goods a \n" +
-                    "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,(pre_sale_money - pay_money) pzl,xnote FROM retail_order_pays a \n" +
-                    "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
-
-            final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql, err), pays = SQLiteHelper.getListToJson(pays_info_sql, err);
-            if (sales != null && pays != null) {
-
-                order_info.put("sales", sales);
-                order_info.put("pays", pays);
-
-                code = true;
-            }else {
-                order_info.put("info",err.toString());
             }
         }
-        return code;
+        return content;
     }
 }

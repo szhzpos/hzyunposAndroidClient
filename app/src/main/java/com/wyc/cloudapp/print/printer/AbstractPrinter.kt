@@ -1,8 +1,10 @@
-package com.wyc.cloudapp.print
+package com.wyc.cloudapp.print.printer
 
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.print.Printer
+import com.wyc.cloudapp.print.receipts.IReceipts
 import com.wyc.cloudapp.utils.Utils
 import java.lang.reflect.InvocationTargetException
 
@@ -19,17 +21,17 @@ import java.lang.reflect.InvocationTargetException
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-abstract class AbstractPrinter:IPrinter {
+abstract class AbstractPrinter: IPrinter {
     companion object{
         @JvmStatic
-        fun printContent(c:String) {
+        fun printContent(receipts: IReceipts) {
             val printerParam = JSONObject()
             if (hasPrinter(printerParam)) {
                 val cls_id = Utils.getNullStringAsEmpty(printerParam, "cls_id")
                 try {
-                    val printerClass = Class.forName("com.wyc.cloudapp.print.$cls_id")
+                    val printerClass = Class.forName("com.wyc.cloudapp.print.printer.$cls_id")
                     val constructor = printerClass.getConstructor()
-                    (constructor.newInstance() as AbstractPrinter).print(c)
+                    (constructor.newInstance() as AbstractPrinter).printObj(receipts)
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                     MyDialog.toastMessage(e.message)

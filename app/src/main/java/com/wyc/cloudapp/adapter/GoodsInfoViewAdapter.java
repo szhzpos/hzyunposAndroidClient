@@ -46,6 +46,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     private static final int mPageNum = 40;
     private int mCategoryId = -1;
     private boolean mLoadMore = true;
+    private String mGoodsImgPath = "";
 
     @SuppressLint("NotifyDataSetChanged")
     public GoodsInfoViewAdapter(final SaleActivity context){
@@ -54,6 +55,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
 
         if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
             mShowPic = (Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1);
+            if (mShowPic){
+                mGoodsImgPath = CustomApplication.getGoodsImgSavePath();
+            }
         }else{
             MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"), null);
         }
@@ -123,7 +127,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
             if (mShowPic){
                 final String img_url = Utils.getNullStringAsEmpty(goods_info,"img_url");
                 if (Utils.isNotEmpty(img_url)) {
-                    Glide.with(myViewHolder.goods_img).load(CustomApplication.getGoodsImgSavePath() + img_url.substring(img_url.lastIndexOf("/") + 1)).into(myViewHolder.goods_img);
+                    Glide.with(myViewHolder.goods_img).load(mGoodsImgPath + img_url.substring(img_url.lastIndexOf("/") + 1)).into(myViewHolder.goods_img);
                 } else Glide.with(myViewHolder.goods_img).load(R.drawable.nodish).into(myViewHolder.goods_img);
             }else{
                  if (goods_img.getVisibility() != View.GONE)goods_img.setVisibility(View.GONE);

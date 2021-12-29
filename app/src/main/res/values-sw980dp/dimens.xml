@@ -113,6 +113,7 @@
     <dimen name="size_95">121.41dp</dimen>
     <dimen name="size_336">429.408dp</dimen>
     <dimen name="size_308">393.624dp</dimen>
+    <dimen name="size_300">383.4dp</dimen>
     <dimen name="size_288">368.064dp</dimen>
     <dimen name="size_560">715.68dp</dimen>
     <dimen name="size_908">1160.424dp</dimen>

@@ -7,6 +7,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.view.children
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.R
@@ -315,15 +316,19 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun resetChildLocation(){
-        mChildOffset = 0
-        mIndicatorMoveY = 0
-        mIndicatorMoveX = 0
-        if (hasSlideUp()){
-            scrollToPosition(layoutManager?.itemCount?:0)
-            tailIndicatorFlag(false)
-        }else if (hasSlideDown()) {
-            scrollToPosition(0)
-            headIndicatorFlag(false)
+        if (hasEnterLoad()){
+            mChildOffset = 0
+            mIndicatorMoveY = 0
+            mIndicatorMoveX = 0
+            if (isVerOrientation()){
+                if (hasSlideUp()){
+                    scrollToPosition(layoutManager?.itemCount?:0)
+                    tailIndicatorFlag(false)
+                }else if (hasSlideDown()) {
+                    scrollToPosition(0)
+                    headIndicatorFlag(false)
+                }
+            }
         }
     }
 
@@ -556,8 +561,8 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     private fun calculate(manager: LinearLayoutManager?){
         if (hasNotScrollBar()){
             manager?.apply {
-                val lastVisibility = findLastVisibleItemPosition()
-                val firstVisibility = findFirstVisibleItemPosition()
+                val lastVisibility = findLastCompletelyVisibleItemPosition()
+                val firstVisibility = findFirstCompletelyVisibleItemPosition()
 
                 if (itemCount != 0 && (lastVisibility + 1 != itemCount || firstVisibility != 0)){
                     var xAxis:Float

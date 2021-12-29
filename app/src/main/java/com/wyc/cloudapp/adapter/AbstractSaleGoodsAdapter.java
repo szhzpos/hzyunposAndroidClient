@@ -28,6 +28,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPracticeDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -189,6 +190,14 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         for (int i = 0,size = array.size();i < size;i ++){
             final JSONObject obj = array.getJSONObject(i);
             stringBuilder.append(String.format(Locale.CHINA,"%s(%.2f)",Utils.getNullStringAsEmpty(obj,"kw_name"),Utils.getNotKeyAsNumberDefault(obj,"kw_price",0.0)));
+        }
+        return stringBuilder.toString();
+    }
+    public static String generateGoodsPracticeInfo(@NonNull List<GoodsPracticeInfo> array){
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0,size = array.size();i < size;i ++){
+            final GoodsPracticeInfo obj = array.get(i);
+            stringBuilder.append(String.format(Locale.CHINA,"%s(%.2f)",obj.getKwName(),obj.getKwPrice()));
         }
         return stringBuilder.toString();
     }

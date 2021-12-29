@@ -38,6 +38,9 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.printer.BluetoothPrinter;
+import com.wyc.cloudapp.print.printer.ToledoPrinter;
+import com.wyc.cloudapp.print.printer.USBPrinter;
 import com.wyc.cloudapp.utils.BluetoothUtils;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -414,16 +417,18 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 case R.id.bluetooth_p:
                     id = R.id.bluetooth_p;
                     status = 1;
+                    cls_id = BluetoothPrinter.class.getSimpleName();
                     break;
                 case R.id.usb_p:
                     id = R.id.usb_p;
                     status = 1;
+                    cls_id = USBPrinter.class.getSimpleName();
                     break;
                 case R.id.innerDriver:
                     id = R.id.innerDriver;
                     status = 1;
                     if (ToPrinter.equals(value)){
-                        cls_id = "ToledoPrinter";
+                        cls_id = ToledoPrinter.class.getSimpleName();
                     }
                     break;
             }

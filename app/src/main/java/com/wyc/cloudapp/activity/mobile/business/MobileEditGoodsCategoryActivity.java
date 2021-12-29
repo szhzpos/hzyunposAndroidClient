@@ -13,8 +13,6 @@ import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.dialog.business.EditGoodsCategoryDialog;
 
-import static com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity.TITLE_KEY;
-
 public class MobileEditGoodsCategoryActivity extends AbstractMobileBaseArchiveActivity {
     private TreeListItem mCurrentCategory;
     private EditGoodsCategoryAdapter mAdapter;
@@ -43,7 +41,7 @@ public class MobileEditGoodsCategoryActivity extends AbstractMobileBaseArchiveAc
     private void initCategoryList(){
         final RecyclerView item_list = findViewById(R.id.goods_category_list);
         mAdapter = new EditGoodsCategoryAdapter(this,true);
-        final JSONArray array = GoodsCategoryAdapter.getCategoryAsTreeListData(this);
+        final JSONArray array = GoodsCategoryAdapter.getCategoryAsTreeListData();
         mAdapter.setData(array,null);
         item_list.addItemDecoration(new DividerItemDecoration(this,DividerItemDecoration.VERTICAL));
         item_list.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));

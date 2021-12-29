@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.print;
+package com.wyc.cloudapp.print.printer;
 
 import androidx.annotation.NonNull;
 
@@ -8,10 +8,17 @@ import com.mt.retail.printapi.MtPrintApi;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.PrintItem;
+import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.receipts.IReceipts;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 /**
@@ -95,15 +102,12 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     public static final int RETURN_CODE_PORT_NOT_READY = -14;
 
     private MtPrintApi mtPrintApi;
-    private String mContent = "";
+
+    private PrintFormatInfo mPrintFormatInfo;
+    private List<PrintItem> ItemContent;
+
     public ToledoPrinter(){
         mtPrintApi = MtPrintApi.getInstance();
-    }
-
-    @Override
-    public void print(@NonNull String c) {
-        mContent = c;
-        mtPrintApi.connectToService(CustomApplication.self(),this);
     }
 
     @Override
@@ -135,25 +139,41 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
 
     @Override
     public void onPrinterListChanged(ArrayList<String> printerList) {
-        final MtPrintResult result = new MtPrintResult();
-        if (Utils.isNotEmpty(mContent)){
-            final String[] strings = mContent.split("\n");
-            for (String sz : strings){
-                LockSupport.parkNanos(1000 * 1000 * 10L);
-                if (Utils.isNotEmpty(sz)){
-                    if (!mtPrintApi.printText(sz,result)){
-                        MyDialog.toastMessage(result.getMsg());
-                        break;
-                    }
-                }else {
-                    if (!mtPrintApi.printBlankLine(1,result)){
-                        MyDialog.toastMessage(result.getMsg());
-                        break;
-                    }
+        if (mPrintFormatInfo != null && ItemContent != null && !ItemContent.isEmpty()){
+            final MtPrintResult result = new MtPrintResult();
+            mtPrintApi.setLeftMargin(40,result);
+            int align = 0;
+            for (PrintItem item : ItemContent){
+                int fontSize = 24;
+                if (item.getLineSpacing() == PrintItem.LineSpacing.SPACING_10){
+                    mtPrintApi.setDefaultFontSize(14,result);
+                    mtPrintApi.printBlankLine(1,result);
                 }
+                if (item.isDoubleHigh()){
+                    fontSize = 32;
+                }
+                if (item.isBold()){
+                    fontSize = 28;
+                }
+                switch (item.getAlign()){
+                    case LEFT:
+                        align = 0;
+                        break;
+                    case CENTRE:
+                        align = 1;
+                        break;
+                    case RIGHT:
+                        align = 2;
+                        break;
+                }
+                mtPrintApi.printTextWithFontAndAlignment(item.getContent(),fontSize,align,result);
+                LockSupport.parkNanos(1000 * 1000 * 20L);
             }
+            mtPrintApi.setDefaultFontSize(18,result);
+            mtPrintApi.printBlankLine(mPrintFormatInfo.getFooterSpace(),result);
+
+            MyDialog.toastMessage(getErrorStr(result.getReturnCode()));
         }
-        MyDialog.toastMessage(getErrorStr(result.getReturnCode()));
     }
 
     @Override
@@ -167,8 +187,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
         clear();
     }
 
-    public static String getErrorStr(int err)
-    {
+    public static String getErrorStr(int err) {
         String msg = "";
         switch(err)
         {
@@ -271,5 +290,12 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
             }
             mtPrintApi = null;
         }
+    }
+
+    @Override
+    public void printObj(@NonNull IReceipts receipts) {
+        mPrintFormatInfo = receipts.getPrintFormat();
+        ItemContent = receipts.getPrintItem();
+        mtPrintApi.connectToService(CustomApplication.self(),this);
     }
 }

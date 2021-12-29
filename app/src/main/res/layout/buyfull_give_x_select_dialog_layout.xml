@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
@@ -13,23 +14,17 @@
         android:background="@drawable/round_border_sub_gray"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="@dimen/table_header_height"
             android:background="@color/table_header_color"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:paddingTop="@dimen/margin_8"
-                android:paddingBottom="@dimen/margin_8"
-                android:text="@string/rule_name"
-                android:textColor="@color/white"
-                android:textSize="@dimen/font_size_18" />
-
-        </LinearLayout>
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/rule_name"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18"
+            tools:ignore="TextContrastCheck" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rule_list"
@@ -43,7 +38,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@drawable/round_border_sub_gray"
         android:orientation="vertical">
 
@@ -130,7 +125,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/table_body"
             android:layout_width="match_parent"
-            android:layout_height="300dp" />
+            android:layout_height="@dimen/size_300" />
 
         <LinearLayout
             android:layout_width="match_parent"

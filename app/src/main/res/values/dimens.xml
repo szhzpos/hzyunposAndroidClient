@@ -114,6 +114,7 @@
     <dimen name="size_95">95dp</dimen>
     <dimen name="size_336">336dp</dimen>
     <dimen name="size_308">308dp</dimen>
+    <dimen name="size_300">300dp</dimen>
     <dimen name="size_288">288dp</dimen>
     <dimen name="size_560">560dp</dimen>
     <dimen name="size_908">908dp</dimen>
