@@ -28,6 +28,8 @@ import com.wyc.cloudapp.dialog.pay.AbstractPayDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.receipts.VipRechargeReceipts;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -343,9 +345,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                                                 mHandler.obtainMessage(MessageID.DIS_ERR_INFO_ID,err.toString()).sendToTarget();
                                                             }else {
                                                                 mHandler.obtainMessage(MessageID.VIP_C_SUCCESS_ID,member).sendToTarget();
-                                                                if (mContext.getPrintStatus()){
-                                                                    Printer.print(AbstractVipChargeDialog.get_print_content(mContext,order_code));
-                                                                }
+                                                                VipRechargeReceipts.print(order_code);
                                                             }
                                                         }else {
                                                             Logger.e("服务器返回member：%s,money_order：%s",members,money_orders);

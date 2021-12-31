@@ -28,6 +28,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.receipts.TimeCardReceipts;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -247,26 +248,29 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
         this.vip_openid = vip_openid;
     }
 
+    @NonNull
     public String getVip_card_no() {
-        return vip_card_no;
+        return vip_card_no == null ? "" : vip_card_no;
     }
 
     public void setVip_card_no(String vip_card_no) {
         this.vip_card_no = vip_card_no;
     }
 
+    @NonNull
     @Override
     public String getVip_mobile() {
-        return vip_mobile;
+        return vip_mobile == null ? "" : vip_mobile;
     }
 
     public void setVip_mobile(String vip_mobile) {
         this.vip_mobile = vip_mobile;
     }
 
+    @NonNull
     @Override
     public String getVip_name() {
-        return vip_name;
+        return vip_name == null ? "" : vip_name;
     }
 
     public void setVip_name(String vip_name) {
@@ -431,7 +435,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
 
                             if (allSuccess){
                                 uploadPayInfo(s -> {
-                                    print(activity);
+                                    TimeCardReceipts.print(TimeCardSaleOrder.this,false);
 
                                     activity.setResult(RESULT_OK);
                                     activity.finish();
@@ -449,141 +453,6 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
                         }
                     }
                 });
-    }
-
-
-    public void print(MainActivity context ){
-        CustomApplication.execute(()-> Printer.print(get_print_content(context,this)));
-    }
-
-    private static String get_print_content(final MainActivity context,TimeCardSaleOrder order_info){
-        final JSONObject print_format_info = new JSONObject();
-        String content = "";
-        if (SQLiteHelper.getLocalParameter("t_card_sale",print_format_info)){
-            if (print_format_info.getIntValue("f") == TIME_CARD_SALE_FORMAT_ID){
-                switch (print_format_info.getIntValue("f_z")){
-                    case R.id.f_58:
-                        content = c_format_58(context,print_format_info,order_info);
-                        break;
-                    case R.id.f_76:
-                        break;
-                    case R.id.f_80:
-                        break;
-                }
-            }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
-            }
-        }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
-
-        return content;
-    }
-
-    private static String c_format_58(final MainActivity context, final JSONObject format_info, final TimeCardSaleOrder order_info){
-        final StringBuilder info = new StringBuilder(),out = new StringBuilder();
-
-        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
-        final String new_line =  "\n";
-        final String footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
-
-        int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1);
-        int footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
-
-        final CustomApplication application = CustomApplication.self();
-
-        while (print_count-- > 0) {//打印份数
-            if (info.length() > 0){
-                info.append(new_line).append(new_line);
-                out.append(info);
-                continue;
-            }
-            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? application.getStoreName() : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
-                    append(Printer.commandToStr(Printer.ALIGN_LEFT));
-
-            info.append(context.getString(R.string.store_name_sz).concat(application.getStoreName())).append(new_line);
-            info.append(context.getString(R.string.order_sz).concat(order_info.getOnline_order_no())).append(new_line);
-            info.append(context.getString(R.string.time_card_print_order_time).concat(order_info.getFormatTime())).append(new_line);
-
-            final JSONObject member_parameter = new JSONObject();
-            if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",member_parameter)) Logger.d("查询会员参数错误:%s",member_parameter.getString("info"));
-            String vip_name = order_info.getVip_name(),card_code = order_info.getVip_card_no(),mobile = order_info.getVip_mobile();
-            if (Utils.getNotKeyAsNumberDefault(member_parameter,"member_secret_protect",0) == 1){
-                if (vip_name.length() > 2)
-                    vip_name = vip_name.replace(vip_name.substring(1),Printer.REPLACEMENT);
-                else {
-                    vip_name = vip_name.concat(Printer.REPLACEMENT);
-                }
-                int len = card_code.length();
-                if (len <= 3){
-                    card_code = card_code.concat(Printer.REPLACEMENT);
-                }else if (len <= 7){
-                    card_code = card_code.replace(card_code.substring(3,len - 1),Printer.REPLACEMENT);
-                }else {
-                    card_code = card_code.replace(card_code.substring(3,7),Printer.REPLACEMENT);
-                }
-                int mobile_len = mobile.length();
-                if (mobile_len <= 3){
-                    mobile = mobile.concat(Printer.REPLACEMENT);
-                }else if (len <= 7){
-                    mobile = mobile.replace(mobile.substring(3,len - 1),Printer.REPLACEMENT);
-                }else {
-                    mobile = mobile.replace(mobile.substring(3,7),Printer.REPLACEMENT);
-                }
-            }
-
-            //info.append(context.getString(R.string.oper_sz).concat("：").concat(order_info.getCashierName())).append(new_line);
-            info.append(context.getString(R.string.time_card_print_vip_name).concat(vip_name)).append(new_line);
-            info.append(context.getString(R.string.time_card_print_vip_mobile).concat(mobile)).append(new_line);
-            info.append(context.getString(R.string.time_card_print_vip_card).concat(card_code)).append(new_line);
-            info.append(context.getString(R.string.time_card_print_num).concat(String.valueOf(order_info.getSaleInfo().size()))).append(new_line);
-            info.append(context.getString(R.string.time_card_print_amt).concat(String.format(Locale.CHINA,"%.2f元",order_info.getAmt()))).append(new_line);
-
-            final List<TimeCardPayDetail> payDetails = order_info.getPayInfo();
-            final StringBuilder stringBuilder = new StringBuilder();
-            for (TimeCardPayDetail detail : payDetails){
-                final PayMethod payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(detail.getPay_method_id());
-                if (null == payMethod)continue;
-                if (stringBuilder.length() > 0){
-                    stringBuilder.append(new_line);
-                }
-                stringBuilder.append(payMethod.getName());
-            }
-            info.append(context.getString(R.string.time_card_print_pay_method).concat(stringBuilder.toString())).append(new_line);
-
-            final List<TimeCardSaleInfo> saleInfoList = order_info.getSaleInfo();
-            String line_58 = application.getString(R.string.line_58),space_sz = " ",name;
-            stringBuilder.delete(0,stringBuilder.length());
-            stringBuilder.append(line_58).append(new_line);
-            for(TimeCardSaleInfo saleInfo : saleInfoList){
-                name = saleInfo.getName();
-                int space = 8 - name.length();
-                if (space > 0){
-                    final StringBuilder sb = new StringBuilder(name);
-                    for (int i = 0;i < space;i ++){
-                        sb.append(space_sz);
-                    }
-                    name = sb.toString();
-                }else {
-                    name = name.substring(0,7);
-                }
-                stringBuilder.append(String.format(Locale.CHINA,"%s  %d张 %.2f元%s",name,saleInfo.getNum(),saleInfo.getAmt(),new_line));
-            }
-            stringBuilder.append(line_58);
-            info.append(stringBuilder).append(new_line);
-
-            if (footer_c.isEmpty()){
-                info.append(context.getString(R.string.hotline_sz)).append(application.getStoreTelephone()).append(new_line);
-                info.append(context.getString(R.string.stores_address_sz)).append(application.getStoreRegion()).append(new_line);
-            }else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT));
-            }
-
-            for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
-        }
-        out.append(info);
-
-        return out.toString();
     }
 
     private JSONArray getCards(){

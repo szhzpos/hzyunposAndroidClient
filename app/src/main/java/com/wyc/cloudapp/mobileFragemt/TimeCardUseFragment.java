@@ -26,6 +26,7 @@ import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.print.receipts.TimeCardUseReceipts;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
@@ -265,8 +266,7 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
                                 MyDialog.toastMessage(hint);
                                 if (null != d && !d.isEmpty()){
                                     final VipTimeCardUseOrder order = d.get(0);
-                                    order.print(mContext);
-
+                                    TimeCardUseReceipts.print(order,false);
                                     {
                                         cardInfo.setSale_num(1);
                                         cardInfo.setUsenum(cardInfo.getUsenum() + order.getUseNum());

@@ -114,6 +114,10 @@
     <string name="cancel_load">取消加载</string>
     <string name="selected">确认选择</string>
     <string name="printer_error">读取打印机设置错误:%1$s</string>
+    <string name="print_close_hint">打印功能已关闭!</string>
+    <string name="print_open_hint">打印功能已开启!</string>
+    <string name="save_print_param_error">保存打印状态错误:%1$s</string>
+    <string name="print_content_empty">打印内容为空!</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -934,6 +938,7 @@
     <string name="r_zero">归零</string>
     <string name="tare">去皮</string>
     <string name="get_weight">取重</string>
+    <string name="invalid_weight">_,__</string>
 
     <string name="no_barcode_goods">无码商品录入</string>
     <string name="cur_price_goods">时价商品录入</string>

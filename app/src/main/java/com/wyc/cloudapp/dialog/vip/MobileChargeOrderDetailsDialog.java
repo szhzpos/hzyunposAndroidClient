@@ -15,6 +15,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.VipDepositDetailsPayInfoAdapter;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.receipts.VipRechargeReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -78,7 +79,7 @@ public class MobileChargeOrderDetailsDialog extends AbstractChargeOrderDetailsDi
     @Override
     protected void initReprint() {
         final Button m_print_btn = findViewById(R.id.m_print_btn);
-        if (m_print_btn != null)m_print_btn.setOnClickListener(v -> Printer.print(AbstractVipChargeDialog.get_print_content(mContext,mOrderInfo.getString("order_code"))));
+        if (m_print_btn != null)m_print_btn.setOnClickListener(v -> VipRechargeReceipts.print(mOrderInfo.getString("order_code")));
     }
 
     @Override

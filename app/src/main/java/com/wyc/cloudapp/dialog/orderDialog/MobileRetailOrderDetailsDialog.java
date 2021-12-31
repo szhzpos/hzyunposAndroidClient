@@ -15,7 +15,6 @@ import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.MobileRetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
-import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -90,7 +89,7 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     protected void initReprint() {
         final Button m_print_btn = findViewById(R.id.m_print_btn);
         if (m_print_btn != null)m_print_btn.setOnClickListener(v -> {
-            AbstractSettlementDialog.printObj(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
+            AbstractSettlementDialog.printObj(Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false);
         });
     }
 

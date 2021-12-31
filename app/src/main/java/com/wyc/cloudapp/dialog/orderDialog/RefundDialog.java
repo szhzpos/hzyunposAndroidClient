@@ -31,6 +31,10 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.bean.RefundOrderPrintInfo;
+import com.wyc.cloudapp.print.printer.AbstractPrinter;
+import com.wyc.cloudapp.print.receipts.RefundReceipts;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
@@ -344,7 +348,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                                 mRemarkEt.getText().clear();
                             }
                         });
-                        Printer.print(get_print_content(mContext,mRefundCode,!isRefundCheck));
+                        RefundReceipts.print(mRefundCode,!isRefundCheck);
                     }
                 });
 
@@ -622,137 +626,4 @@ public final class RefundDialog extends AbstractDialogMainActivity {
         }
         return SQLiteHelper.execBatchUpdateSql(update_sqls_list,err);
     }
-    private static String c_format_58(final Context context, final JSONObject format_info, final JSONObject order_info, boolean is_open_cash_box){
-
-        final StringBuilder info = new StringBuilder();
-        int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1),footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
-        final String store_name = Utils.getNullStringAsEmpty(format_info,"s_n"),pos_num = Utils.getNullOrEmptyStringAsDefault(order_info,"pos_num",""),
-                cas_name = Utils.getNullOrEmptyStringAsDefault(order_info,"cas_name",""),footer_c = Utils.getNullStringAsEmpty(format_info,"f_c"),
-                new_line = "\r\n",//Printer.commandToStr(Printer.NEW_LINE);
-                new_line_10 = Printer.commandToStr(Printer.LINE_SPACING_10),
-                new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
-                line = "--------------------------------";
-
-        if (is_open_cash_box)//开钱箱
-            info.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
-
-        while (print_count-- > 0) {//打印份数
-            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(context.getString(R.string.r_b_title_sz)).append(new_line).append(store_name.length() == 0 ? Utils.getNullStringAsEmpty(order_info,"stores_name") : store_name).append(Printer.commandToStr(Printer.NORMAL))
-                    .append(new_line).append(new_line).append(Printer.commandToStr(Printer.ALIGN_LEFT));
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(Utils.getNullStringAsEmpty(order_info,"stores_id")),Utils.getNullStringAsEmpty(order_info,"oper_time"))).append(new_line);
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
-            info.append(context.getString(R.string.b_f_order_sz)).append(Utils.getNullStringAsEmpty(order_info,"ro_code")).append(new_line).append(new_line);
-
-            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line);
-            //商品明细
-            JSONObject info_obj;
-            double refund_num = 0.0,refund_amt = 0.0,refund_sum_amt = 0.0,refund_price;
-            int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
-            final JSONArray sales = Utils.getNullObjectAsEmptyJsonArray(order_info,"sales");
-            for (int i = 0, size = sales.size(); i < size; i++) {
-                info_obj = sales.getJSONObject(i);
-                if (info_obj != null) {
-                    type = info_obj.getIntValue("type");
-                    if (type == 2) {
-                        units_num += 1;
-                    } else {
-                        units_num += info_obj.getIntValue("refund_num");
-                    }
-                    refund_num = info_obj.getDoubleValue("refund_num");
-                    refund_price = info_obj.getDoubleValue("refund_price");
-                    refund_amt = refund_num * refund_price;
-                    refund_sum_amt += refund_amt;
-
-                    if (i != 0)info.append(new_line_10);
-
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(Utils.getNullStringAsEmpty(info_obj,"goods_title")).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL));
-                    info.append(Printer.printTwoData(1,Utils.getNullStringAsEmpty(info_obj,"barcode"),
-                            Printer.printThreeData(16,String.format(Locale.CHINA,"%.2f",refund_price), type == 2 ? String.valueOf(refund_num) : String.valueOf((int) refund_num),String.format(Locale.CHINA,"%.2f",refund_amt)))).append(new_line);;
-
-                }
-            }
-            info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-
-            info.append(Printer.printTwoData(1, context.getString(R.string.refund_amt_sz).concat("：").concat(String.format(Locale.CHINA, "%.2f",Utils.formatDouble(refund_sum_amt,2)))
-                    , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line_2).append(new_line).append(line);
-
-            //支付方式
-            double pamt = 0.0;
-            final JSONArray pays = Utils.getNullObjectAsEmptyJsonArray(order_info,"pays");
-            for (int i = 0, size = pays.size(); i < size; i++) {
-                info_obj = pays.getJSONObject(i);
-
-                if (i != 0)info.append(new_line_10);
-
-                pamt = info_obj.getDoubleValue("pay_money");
-                info.append(Utils.getNullOrEmptyStringAsDefault(info_obj,"pay_method_name","")).append("：").append(pamt).append("元").append(new_line).append(new_line_d);
-            }
-            info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            if (footer_c.isEmpty()){
-                info.append(context.getString(R.string.b_f_hotline_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"telphone","")).append(new_line);
-                info.append(context.getString(R.string.b_f_stores_address_sz)).append(Utils.getNullOrEmptyStringAsDefault(order_info,"region","")).append(new_line);
-            }else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
-            }
-            for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
-
-            if (print_count > 0){
-                info.append(new_line).append(new_line).append(new_line);
-            }
-            info.append(Printer.commandToStr(Printer.RESET));
-        }
-
-        Logger.d(info);
-
-        return info.toString();
-    }
-    static String get_print_content(final MainActivity context,final String refund_code,boolean is_open_cash_box){
-        String content = "";
-        if (context.getPrintStatus()){
-            final JSONObject print_format_info = new JSONObject(),order_info = new JSONObject();
-            if (SQLiteHelper.getLocalParameter("r_f_info",print_format_info)){
-                if (print_format_info.getIntValue("f") == R.id.refund_format){
-                    if (getPrintOrderInfo(refund_code,order_info)){
-                        switch (print_format_info.getIntValue("f_z")){
-                            case R.id.f_58:
-                                content = c_format_58(context,print_format_info,order_info,is_open_cash_box);
-                                break;
-                            case R.id.f_76:
-                                break;
-                            case R.id.f_80:
-                                break;
-                        }
-                    }else {
-                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,order_info.getString("info")), context.getWindow()));
-                    }
-                }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
-                }
-            }else
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
-        }
-        return content;
-    }
-    private static boolean getPrintOrderInfo(final String refund_code,final JSONObject order_info){
-        boolean code = false;
-        if (SQLiteHelper.execSql(order_info,"SELECT a.ro_code,b.cas_name,a.pos_code pos_num,a.stores_id,c.stores_name,datetime(a.addtime, 'unixepoch', 'localtime') oper_time,c.telphone,c.region" +
-                " FROM refund_order a  left join cashier_info b on a.cashier_id = b.cas_id\n" +
-                "left join shop_stores c on a.stores_id = c.stores_id where a.ro_code = '" +refund_code +"'")) {
-
-            final StringBuilder err = new StringBuilder();
-            final String goods_info_sql = "SELECT b.barcode,b.goods_title,b.type,a.refund_num,a.refund_price FROM refund_order_goods a left join barcode_info b on a.barcode_id = b.barcode_id where ro_code = '" + refund_code + "'", pays_info_sql = "SELECT pay_method_name,pay_money FROM refund_order_pays where ro_code = '" + refund_code + "'";
-            final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql, err), pays = SQLiteHelper.getListToJson(pays_info_sql, err);
-            if (sales != null && pays != null) {
-                order_info.put("sales", sales);
-                order_info.put("pays", pays);
-
-                code =true;
-            }else {
-                order_info.put("info",err.toString());
-            }
-        }
-        return code;
-    }
-
 }

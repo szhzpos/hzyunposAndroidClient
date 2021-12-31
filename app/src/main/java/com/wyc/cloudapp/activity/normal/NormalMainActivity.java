@@ -82,6 +82,9 @@ import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.printer.AbstractPrinter;
+import com.wyc.cloudapp.print.printer.IPrinter;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -305,7 +308,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     hideLastOrderInfo();
                     countDownTimer.cancel();
                 });
-                last_reprint_btn.setOnClickListener(v -> Printer.print(AbstractSettlementDialog.get_print_content(this,last_order_code.getText().toString(),false)));
+                last_reprint_btn.setOnClickListener(v -> AbstractSettlementDialog.printObj(last_order_code.getText().toString(),false));
 
                 getWindowManager().addView(constraintLayout,createPopupLayoutParams(mSaleGoodsRecyclerView));
                 countDownTimer.start();
@@ -407,7 +410,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             present();
         }else if (id == R.id.pop_o_cashbox){
             if (verifyOpenCashboxPermissions()){
-                Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
+                AbstractPrinter.openCashDrawer();
             }
         }else if (id == R.id.pop_sale_man_btn){
             final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
@@ -771,50 +774,36 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         final ImageView imageView = findViewById(R.id.printer_status);
         imageView.setOnClickListener(v -> {
             final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-            final Object ps = imageView.getTag();
-            boolean b = false;
-            if (ps instanceof Boolean)b = (boolean)ps;
-            if (b){
-                b = false;
-                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,(int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
-                MyDialog.ToastMessage(imageView,"打印功能已关闭！", getWindow());
-            }else{
-                b = true;
+            final PrinterStatus status = PrinterStatus.getPrinterStatus();
+            int value = PrinterStatus.OPEN;
+            if (status.isOpen()){
+                value = PrinterStatus.CLOSE;
+                imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorToBitmap(printer,(int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
+                MyDialog.ToastMessage(imageView,CustomApplication.getStringByResId(R.string.print_close_hint), getWindow());
+            }else if (status.isClose()){
                 imageView.setImageBitmap(printer);
-                MyDialog.ToastMessage(imageView,"打印功能已开启！", getWindow());
+                MyDialog.ToastMessage(imageView,CustomApplication.getStringByResId(R.string.print_open_hint), getWindow());
+            }else {
+                value = PrinterStatus.ERROR;
+                MyDialog.ToastMessage(imageView,status.getMsg(), getWindow());
             }
-            saveAndShowPrintStatus(b,true);
+            PrinterStatus.savePrinterStatus(value,status.getMsg());
         });
-
-        imageView.setTag(true);
         mPrinterStatusIv = imageView;
-
-        saveAndShowPrintStatus(true,false);
+        showPrintStatus();
     }
-    private void saveAndShowPrintStatus(boolean print_s,boolean type){
-        final JSONObject object = new JSONObject();
-        final StringBuilder err = new StringBuilder();
+    private void showPrintStatus(){
         final ImageView imageView = mPrinterStatusIv;
         if (null != imageView){
-            if (type){
-                object.put("v",print_s);
-                if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
-                    MyDialog.ToastMessage(imageView,"保存打印状态错误:" + err, getWindow());
-                }
+            final PrinterStatus printerStatus = PrinterStatus.getPrinterStatus();
+            final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
+            if (printerStatus.isOpen()){
+                imageView.setImageBitmap(printer);
+            }else if (printerStatus.isClose()){
+                imageView.setImageBitmap(Printer.drawPrintClose(printer));
             }else {
-                if (SQLiteHelper.getLocalParameter("print_s",object)){
-                    if (!object.isEmpty()){
-                        print_s = object.getBooleanValue("v");
-                        final Bitmap printer = BitmapFactory.decodeResource(getResources(),R.drawable.printer);
-                        if (print_s){
-                            imageView.setImageBitmap(printer);
-                        }else {
-                            imageView.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(this,printer,(int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
-                        }
-                    }
-                }
+                imageView.setImageBitmap(Printer.drawPrintWarn(printer));
             }
-            imageView.setTag(print_s);
         }
     }
     private void showPayDialog(){
@@ -894,17 +883,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     @Override
     public void loadGoods(final String id){
         if (mGoodsInfoViewAdapter != null)mGoodsInfoViewAdapter.loadGoodsByCategoryId(id);
-    }
-
-    @Override
-    public boolean getPrintStatus(){
-        if (mPrinterStatusIv != null){
-            final Object o = mPrinterStatusIv.getTag();
-            if (o instanceof Boolean){
-                return (boolean)o;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -1003,6 +981,18 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             case MessageID.SYNC_DIS_INFO_ID://资料同步进度信息
                 if (msg.obj != null)
                     showProgress(msg.obj.toString(),false);
+                break;
+            case MessageID.PRINTER_ERROR:
+                if (msg.obj instanceof String){
+                    PrinterStatus.savePrinterStatus(PrinterStatus.ERROR,msg.obj.toString());
+                    if (mPrinterStatusIv != null)mPrinterStatusIv.setImageBitmap(Printer.drawPrintClose(null));
+                }
+                break;
+            case MessageID.PRINTER_SUCCESS:
+                if (mPrinterStatusIv != null){
+                    PrinterStatus.savePrinterStatus(PrinterStatus.OPEN,"");
+                    mPrinterStatusIv.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.printer));
+                }
                 break;
         }
     }

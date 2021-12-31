@@ -37,6 +37,7 @@ class WeightInfoView(context: Context, attrs: AttributeSet?, defStyleAttr: Int):
     private val mPrice:TextView
     private val mAmt:TextView
     private var mAction:OnAction? = null
+
     init {
         initView()
 
@@ -92,8 +93,9 @@ class WeightInfoView(context: Context, attrs: AttributeSet?, defStyleAttr: Int):
                     }
                 }
             }
-            val n = num / 1000
-            weigh.text = String.format("%.3f",n)
+            val inv =  hasInvalidWeight(num)
+            val n = if (inv) 0.0 else num
+            weigh.text = if (inv) CustomApplication.getStringByResId(R.string.invalid_weight) else String.format("%.3f",n)
             mPrice.text = String.format("%.2f",price)
             mAmt.text = String.format("%.2f",n * price)
         }
@@ -114,5 +116,13 @@ class WeightInfoView(context: Context, attrs: AttributeSet?, defStyleAttr: Int):
     }
     fun setAction(action: OnAction){
         mAction = action
+    }
+    companion object{
+        @JvmField
+        val INVALID = -9999.0
+        @JvmStatic
+        fun hasInvalidWeight(num: Double):Boolean{
+            return Utils.equalDouble(num, INVALID)
+        }
     }
 }

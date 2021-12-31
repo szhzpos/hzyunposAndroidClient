@@ -16,6 +16,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.VipDepositDetailsPayInfoAdapter;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.receipts.VipRechargeReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
 
@@ -97,9 +98,7 @@ public final class VipDepositDetailsDialog extends AbstractChargeOrderDetailsDia
     protected void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> {
-                Printer.print(AbstractVipChargeDialog.get_print_content(mContext,mOrderInfo.getString("order_code")));
-            });
+            reprint_btn.setOnClickListener(v -> VipRechargeReceipts.print(mOrderInfo.getString("order_code")));
         }
     }
 

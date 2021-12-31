@@ -33,6 +33,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
@@ -327,10 +328,6 @@ public final class Printer {
     }
 
 
-    public static void printObj(IReceipts receipts) {
-        AbstractPrinter.printContent(receipts);
-    }
-
     public static boolean getPrinterSetting(@NonNull final JSONObject object){
         return SQLiteHelper.getLocalParameter("printer",object);
     }
@@ -561,12 +558,22 @@ public final class Printer {
     private static void showIco(final MainActivity context){
         final Bitmap printer = BitmapFactory.decodeResource(context.getResources(),R.drawable.printer);
         if (null != mICO && null != printer){
-            if (context.getPrintStatus()){
+            final PrinterStatus status = PrinterStatus.getPrinterStatus();
+            if (status.isOpen()){
                 mICO.setImageBitmap(printer);
-            }else {
-                mICO.setImageBitmap(PrintUtilsToBitbmp.drawErrorSignToBitmap(context,printer, (int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15)));
-            }
+            }else if (status.isClose()){
+                mICO.setImageBitmap(drawPrintClose(printer));
+            }else mICO.setImageBitmap(drawPrintWarn(printer));
         }
     }
-
+    public static Bitmap drawPrintClose(Bitmap printer){
+        if (printer == null)printer = BitmapFactory.decodeResource(CustomApplication.self().getResources(),R.drawable.printer);
+        if (printer == null)return null;
+        return PrintUtilsToBitbmp.drawErrorToBitmap(printer, (int) CustomApplication.getDimension(R.dimen.size_15),(int) CustomApplication.getDimension(R.dimen.size_15));
+    }
+    public static Bitmap drawPrintWarn(Bitmap printer){
+        if (printer == null)printer = BitmapFactory.decodeResource(CustomApplication.self().getResources(),R.drawable.printer);
+        if (printer == null)return null;
+        return PrintUtilsToBitbmp.drawWarnToBitmap(printer);
+    }
 }

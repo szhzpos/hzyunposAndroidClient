@@ -19,6 +19,7 @@ import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.vip.VipDepositOrderDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.printer.AbstractPrinter;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -150,7 +151,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         final Button btn = findViewById(R.id.o_cashbox);
         btn.setOnClickListener(v -> {
             if (mContext.verifyOpenCashboxPermissions())
-                Printer.print(Printer.commandToStr(Printer.OPEN_CASHBOX));
+                AbstractPrinter.openCashDrawer();
         });
     }
 

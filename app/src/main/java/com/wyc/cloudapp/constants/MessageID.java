@@ -47,4 +47,6 @@ public final  class MessageID {
     public static final int SYNC_AUXILIARY_BARCODE_ID = 49;
 
     public static final int GoodsCategory_CHANGE_ID = 50;
+    public static final int PRINTER_ERROR = 51;
+    public static final int PRINTER_SUCCESS = 52;
 }

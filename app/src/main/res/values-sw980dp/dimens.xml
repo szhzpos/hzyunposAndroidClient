@@ -124,6 +124,7 @@
     <dimen name="size_3">3.834dp</dimen>
     <dimen name="size_16">20.448dp</dimen>
     <dimen name="size_382">488.196dp</dimen>
+    <dimen name="size_388">495.864dp</dimen>
     <dimen name="size_480">613.44dp</dimen>
     <dimen name="size_368">470.304dp</dimen>
     <dimen name="size_228">291.384dp</dimen>
@@ -181,7 +182,7 @@
     <dimen name="transfer_list_height">@dimen/size_328</dimen>
     <dimen name="transfer_details_col01_width">@dimen/width_68</dimen>
     <dimen name="transfer_details_col02_width">@dimen/width_118</dimen>
-    <dimen name="mobile_transfer_details_col01_width">108dp</dimen>
+    <dimen name="mobile_transfer_details_col01_width">@dimen/size_108</dimen>
     <dimen name="add_goods_item_h">@dimen/height_45</dimen>
     <dimen name="login_info_w">@dimen/size_532</dimen>
     <dimen name="user_info_w">@dimen/size_278</dimen>

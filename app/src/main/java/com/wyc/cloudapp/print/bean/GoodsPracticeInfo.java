@@ -1,8 +1,12 @@
 package com.wyc.cloudapp.print.bean;
 
+import androidx.annotation.NonNull;
+
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -103,5 +107,14 @@ public class GoodsPracticeInfo implements Serializable {
                 ", kwXnum=" + kwXnum +
                 ", kwPrice=" + kwPrice +
                 '}';
+    }
+
+    public static String generateGoodsPracticeInfo(@NonNull List<GoodsPracticeInfo> array){
+        final StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0,size = array.size();i < size;i ++){
+            final GoodsPracticeInfo obj = array.get(i);
+            stringBuilder.append(String.format(Locale.CHINA,"%s(%.2f)",obj.getKwName(),obj.getKwPrice()));
+        }
+        return stringBuilder.toString();
     }
 }

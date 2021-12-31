@@ -14,6 +14,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -37,101 +38,116 @@ import java.util.concurrent.locks.LockSupport;
  */
 public class BluetoothPrinter extends AbstractPrinter {
     @Override
-    public void printObj(@NonNull IReceipts receipts) {
-        final PrintFormatInfo format_info = receipts.getPrintFormat();
-        final List<PrintItem> items = receipts.getPrintItem();
-        if (format_info != null && items != null && !items.isEmpty()){
-            int count = format_info.getPrintCount();
-            int footerC = format_info.getFooterSpace();
-            while (count-- > 0){
-                bluetooth_print(footerC,items);
-            }
-        }
+    public void printObj(@NonNull IReceipts<PrintFormatInfo> receipts) {
+        bluetooth_print(receipts.getPrintFormat(),receipts.getPrintItem(),receipts.isOpenCashBox());
     }
-    private void bluetooth_print(int footerSpace,@NonNull List<PrintItem> items){
-        final JSONObject object = new JSONObject();
-        if (Printer.getPrinterSetting(object)){
-            int status_id = object.getIntValue("id");
-            String tmp = Utils.getNullStringAsEmpty(object,"v");
-            String[] vals = tmp.split("\t");
-            final String deviceAddr = vals[1];
-            if (R.id.bluetooth_p == status_id && Utils.isNotEmpty(deviceAddr)){
-                MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
-                CustomApplication.execute(()->{
+    private void bluetooth_print(final PrintFormatInfo format_info,List<PrintItem> items,boolean open){
+        boolean hasContent = format_info != null && items != null && !items.isEmpty();
+        if (hasContent || open){
+
+            final JSONObject object = new JSONObject();
+            if (Printer.getPrinterSetting(object)){
+                int status_id = object.getIntValue("id");
+                final String[] vals = Utils.getNullStringAsEmpty(object,"v").split("\t");
+
+                if (vals.length < 2)return;
+
+                final String deviceAddr = vals[1];
+                if (R.id.bluetooth_p == status_id && Utils.isNotEmpty(deviceAddr)){
+                    MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
+                    String errMsg = "";
                     BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                     if (bluetoothAdapter != null){
                         if (bluetoothAdapter.isEnabled()){
                             BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddr);
                             synchronized (BluetoothPrinter.class){
                                 try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                                     BufferedOutputStream outputStream = new BufferedOutputStream(bluetoothSocket.getOutputStream());){
-
+                                     BufferedOutputStream outputStream = new BufferedOutputStream(bluetoothSocket.getOutputStream())){
                                     bluetoothSocket.connect();
 
-                                    for (PrintItem item : items){
-                                        if (item.isBold()){
-                                            outputStream.write(Printer.BOLD);
-                                        }else outputStream.write(Printer.BOLD_CANCEL);
-
-                                        if (item.isDoubleHigh() && item.isDoubleWidth()){
-                                            outputStream.write(Printer.DOUBLE_HEIGHT_WIDTH);
-                                        }else if (item.isDoubleHigh()) {
-                                            outputStream.write(Printer.DOUBLE_HEIGHT);
-                                        }else if (item.isDoubleWidth()){
-                                            outputStream.write(Printer.DOUBLE_WIDTH);
-                                        }else outputStream.write(Printer.NORMAL);
-
-                                        if (item.isNewline()){
-                                            outputStream.write(Printer.NEW_LINE);
-
-                                            switch (item.getLineSpacing()){
-                                                case SPACING_2:
-                                                    outputStream.write(Printer.LINE_SPACING_2);
-                                                    break;
-                                                case SPACING_10:
-                                                    outputStream.write(Printer.LINE_SPACING_10);
-                                                    break;
-                                                case SPACING_DEFAULT:
-                                                    outputStream.write(Printer.LINE_SPACING_DEFAULT);
-                                                    break;
-                                            }
+                                    if (hasContent){
+                                        int footerSpace = format_info.getFooterSpace();
+                                        int count = format_info.getPrintCount();
+                                        while (count-- > 0){
+                                            print(outputStream,items,footerSpace);
                                         }
-
-                                        switch (item.getAlign()){
-                                            case LEFT:
-                                                outputStream.write(Printer.ALIGN_LEFT);
-                                                break;
-                                            case CENTRE:
-                                                outputStream.write(Printer.ALIGN_CENTER);
-                                                break;
-                                            case RIGHT:
-                                                outputStream.write(Printer.ALIGN_RIGHT);
-                                                break;
-                                        }
-
-                                        outputStream.write(item.getContent().getBytes(Printer.CHARACTER_SET));
-                                        outputStream.flush();
-                                        LockSupport.parkNanos(1000 * 1000 * 50L);
+                                        if (open)outputStream.write(Printer.OPEN_CASHBOX);
+                                        printSuccess();
+                                    }else {
+                                        outputStream.write(Printer.OPEN_CASHBOX);
                                     }
-                                    for (int i = 0; i < footerSpace; i++) {
-                                        outputStream.write(Printer.NEW_LINE);
-                                    }
-                                    outputStream.write(Printer.CUT);
-
                                     MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
                                 } catch (IOException e) {
                                     e.printStackTrace();
-                                    MyDialog.toastMessage("打印错误：" + e.getMessage());
+                                    errMsg = "打印错误：" + e.getMessage();
                                 }
                             }
                         }else{
-                            MyDialog.toastMessage("蓝牙已关闭！");
+                            errMsg = "蓝牙已关闭！";
                         }
                     }
-                });
+                    showError(errMsg);
+                }else showError(CustomApplication.getStringByResId(R.string.printer_error,deviceAddr));
+            }else {
+                showError(CustomApplication.getStringByResId(R.string.printer_error,object.getString("info")));
             }
-        }else {
-            MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.printer_error,object.getString("info")));
         }
+    }
+
+    private void print(final BufferedOutputStream outputStream ,List<PrintItem> items,int footerSpace) throws IOException {
+        for (PrintItem item : items){
+            if (item.isBold()){
+                outputStream.write(Printer.BOLD);
+            }else outputStream.write(Printer.BOLD_CANCEL);
+
+            if (item.isDoubleHigh() && item.isDoubleWidth()){
+                outputStream.write(Printer.DOUBLE_HEIGHT_WIDTH);
+            }else if (item.isDoubleHigh()) {
+                outputStream.write(Printer.DOUBLE_HEIGHT);
+            }else if (item.isDoubleWidth()){
+                outputStream.write(Printer.DOUBLE_WIDTH);
+            }else outputStream.write(Printer.NORMAL);
+
+            if (item.isNewline()){
+                outputStream.write(Printer.NEW_LINE);
+
+                switch (item.getLineSpacing()){
+                    case SPACING_2:
+                        outputStream.write(Printer.LINE_SPACING_2);
+                        break;
+                    case SPACING_10:
+                        outputStream.write(Printer.LINE_SPACING_10);
+                        break;
+                    case SPACING_DEFAULT:
+                        outputStream.write(Printer.LINE_SPACING_DEFAULT);
+                        break;
+                }
+            }
+
+            switch (item.getAlign()){
+                case LEFT:
+                    outputStream.write(Printer.ALIGN_LEFT);
+                    break;
+                case CENTRE:
+                    outputStream.write(Printer.ALIGN_CENTER);
+                    break;
+                case RIGHT:
+                    outputStream.write(Printer.ALIGN_RIGHT);
+                    break;
+            }
+
+            outputStream.write(item.getContent().getBytes(Printer.CHARACTER_SET));
+            outputStream.flush();
+            LockSupport.parkNanos(1000 * 1000 * 50L);
+        }
+        for (int i = 0; i < footerSpace; i++) {
+            outputStream.write(Printer.NEW_LINE);
+        }
+        outputStream.write(Printer.CUT);
+    }
+
+    @Override
+    public void openCashBox() {
+        bluetooth_print(null,null,true);
     }
 }

@@ -2,6 +2,8 @@ package com.wyc.cloudapp.print.receipts;
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
+
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
@@ -14,6 +16,7 @@ import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
 import com.wyc.cloudapp.print.bean.PrintFormatInfo;
 import com.wyc.cloudapp.print.bean.SaleOrderPrintInfo;
+import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
@@ -34,19 +37,32 @@ import java.util.Locale;
  */
 public class CheckReceipts extends AbstractReceipts {
 
+    public CheckReceipts(final String orderCode,boolean open){
+        super(formatInfo("c_f_info"),orderCode,open);
+    }
     public CheckReceipts(final String orderCode){
-        super(orderCode);
+        this(orderCode,false);
     }
 
+    public static void print(final String order_code,boolean open){
+        AbstractPrinter.printContent(new CheckReceipts(order_code,open));
+    }
     @Override
     protected int getFormatId() {
         return R.id.checkout_format;
     }
 
+
     @Override
-    protected List<PrintItem> c_format_58(final PrintFormatInfo format_info, final SaleOrderPrintInfo order_info){
-        final Context context = CustomApplication.self();
+    protected List<PrintItem> c_format_58(@NonNull final PrintFormatInfo format_info, @NonNull final String orderCode){
         final List<PrintItem> printItems = new ArrayList<>();
+        final SaleOrderPrintInfo order_info = SaleOrderPrintInfo.getInstance(orderCode);
+        if (order_info == null || order_info.isEmpty()){
+            MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.print_content_empty));
+            return printItems;
+        }
+
+        final Context context = CustomApplication.self();
 
         final String store_name = format_info.getAliasStoresName(),pos_num = order_info.getPosNum(),
                 cas_name = order_info.getCasName(),footer_c = format_info.getFooterContent(),
@@ -96,7 +112,7 @@ public class CheckReceipts extends AbstractReceipts {
 
                 final List<GoodsPracticeInfo> goodsPractices = info_obj.getGoodsPracticeList();
                 if (!goodsPractices.isEmpty()){
-                    printItems.add(new PrintItem.Builder().setContent(String.format("%s:%s",context.getString(R.string.goods_practice), AbstractSaleGoodsAdapter.generateGoodsPracticeInfo(goodsPractices))).build());
+                    printItems.add(new PrintItem.Builder().setContent(String.format("%s:%s",context.getString(R.string.goods_practice), GoodsPracticeInfo.generateGoodsPracticeInfo(goodsPractices))).build());
                 }
             }
         }
@@ -174,12 +190,13 @@ public class CheckReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_76(PrintFormatInfo format_info, SaleOrderPrintInfo order_info) {
+    protected List<PrintItem> c_format_76(@NonNull final PrintFormatInfo format_info,@NonNull final String orderCode) {
         return null;
     }
 
     @Override
-    protected List<PrintItem> c_format_80(PrintFormatInfo format_info, SaleOrderPrintInfo order_info) {
+    protected List<PrintItem> c_format_80(@NonNull final PrintFormatInfo format_info,@NonNull final String orderCode) {
         return null;
     }
+
 }

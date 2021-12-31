@@ -167,6 +167,10 @@ public class SaleOrderPrintInfo implements Serializable {
         this.pays = pays;
     }
 
+    public boolean isEmpty(){
+        return !Utils.isNotEmpty(orderCode);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

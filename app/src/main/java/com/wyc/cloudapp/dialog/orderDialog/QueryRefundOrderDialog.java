@@ -98,9 +98,6 @@ public class QueryRefundOrderDialog extends AbstractQuerySuperDialog {
             if (dialogWindow != null){
                 WindowManager.LayoutParams lp = dialogWindow.getAttributes();
                 dialogWindow.setGravity(Gravity.CENTER);
-
-                Logger.d("屏幕尺寸X:%d,Y:%d",point.x,point.y);
-
                 lp.height = (int)(0.95 * point.y);
                 lp.width = (int)(0.9 * point.x) - 20;
                 dialogWindow.setAttributes(lp);

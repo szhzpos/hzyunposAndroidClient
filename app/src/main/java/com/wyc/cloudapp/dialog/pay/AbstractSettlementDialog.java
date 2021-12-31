@@ -49,6 +49,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
 import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.bean.SaleOrderPrintInfo;
 import com.wyc.cloudapp.print.receipts.CheckReceipts;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
@@ -1278,10 +1279,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             int index = SQLiteHelper.verifyUpdateResult(rows);
             if (index == -1){
                 if (mPayStatus){
-                    if (mContext.getPrintStatus()){
-                        //Printer.print(AbstractSettlementDialog.get_print_content(mContext,order_code,open_cashbox));
-                        printObj(mContext,order_code);
-                    }
+                    printObj(order_code,open_cashbox);
                     paySuccess();
                 }
             } else{
@@ -1294,9 +1292,8 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
         if (!mPayStatus && err.length() != 0)payError(err);
     }
-    public static void printObj(@NonNull MainActivity context,final String order_code){
-        if (context.getPrintStatus())
-            Printer.printObj(new CheckReceipts(order_code));
+    public static void printObj(final String order_code,boolean open){
+        CheckReceipts.print(order_code,open);
     }
 
     private void payError(final StringBuilder err){
@@ -1394,183 +1391,5 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 vip_phone_num_tv.setText(mVip.getString("mobile"));
             }
         }
-    }
-    private static String c_format_58(final Context context, final PrintFormatInfo format_info, final SaleOrderPrintInfo order_info, boolean is_open_cash_box){
-
-        final StringBuilder info = new StringBuilder(),out = new StringBuilder();
-        int print_count = format_info.getPrintCount(),footer_space = format_info.getFooterSpace();
-
-        final String store_name = format_info.getAliasStoresName(),pos_num = order_info.getPosNum(),
-                cas_name = order_info.getCasName(),footer_c = format_info.getFooterContent(),
-                new_line = "\n",//Printer.commandToStr(Printer.NEW_LINE);
-                new_line_10 = Printer.commandToStr(Printer.LINE_SPACING_10),
-                new_line_2 = Printer.commandToStr(Printer.LINE_SPACING_2),new_line_d = Printer.commandToStr(Printer.LINE_SPACING_DEFAULT),
-                line = context.getString(R.string.line_58);
-
-        if (is_open_cash_box)//开钱箱
-            out.append(Printer.commandToStr(Printer.OPEN_CASHBOX));
-        while (print_count-- > 0) {//打印份数
-            if (info.length() > 0){
-                info.append(new_line).append(new_line);
-                out.append(info);
-                continue;
-            }
-
-            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? order_info.getStoresName() : store_name).append(Printer.commandToStr(Printer.NORMAL)).append(new_line).append(new_line).
-                    append(Printer.commandToStr(Printer.ALIGN_LEFT));
-
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_store_id_sz).concat(String.valueOf(order_info.getStoresId())),order_info.getOperTime())).append(new_line);
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_jh_sz).concat(pos_num), context.getString(R.string.b_f_cashier_sz).concat(cas_name))).append(new_line);
-            info.append(context.getString(R.string.b_f_order_sz)).append(order_info.getCardCode()).append(new_line).append(new_line);
-
-            info.append(context.getString(R.string.b_f_header_sz).replace("-"," ")).append(new_line_2).append(new_line).append(line).append(new_line);
-            //商品明细
-            SaleOrderPrintInfo.SalesDTO info_obj;
-            double discount_amt = 0.0, xnum = 0.0,original_order_amt = 0.0,actual_amt = 0.0,sum_dis_amt = 0.0;
-            int units_num = 0, type = 1;//商品属性 1普通 2称重 3用于服装
-            final List<SaleOrderPrintInfo.SalesDTO> sales = order_info.getSales();
-            for (int i = 0, size = sales.size(); i < size; i++) {
-                info_obj = sales.get(i);
-                if (info_obj != null) {
-                    original_order_amt += info_obj.getOriginalAmt();
-                    actual_amt += info_obj.getSaleAmt();
-
-                    type = info_obj.getType();
-                    if (type == 2) {
-                        units_num += 1;
-                    } else {
-                        units_num += info_obj.getXnum();
-                    }
-                    xnum = info_obj.getXnum();
-                    discount_amt = Utils.formatDouble(info_obj.getDiscountAmt(),2);
-
-                    if (i != 0)info.append(new_line_10);
-
-                    info.append(Printer.commandToStr(Printer.BOLD)).append(info_obj.getGoodsTitle()).append(new_line).append(new_line_d).append(Printer.commandToStr(Printer.BOLD_CANCEL));
-                    info.append(Printer.printTwoData(1,info_obj.getBarcode(),
-                            Printer.printThreeData(16,String.format(Locale.CHINA, "%.2f", info_obj.getPrice()),
-                                    type == 2 ? String.valueOf(xnum) : String.valueOf((int) xnum),String.format(Locale.CHINA, "%.2f", info_obj.getSaleAmt())))).append(new_line);
-
-                    if (Utils.greaterDouble(discount_amt, 0.0)) {
-                        sum_dis_amt += discount_amt;
-                        info.append(Printer.printTwoData(1, context.getString(R.string.b_f_ori_price_sz).concat(String.format(Locale.CHINA,"%.2f",info_obj.getOriginalAmt())),
-                                context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", discount_amt)))).append(new_line);
-                    }
-
-                    final List<GoodsPracticeInfo> goodsPractices = info_obj.getGoodsPracticeList();
-                    if (!goodsPractices.isEmpty()){
-                        info.append(String.format("%s:%s",context.getString(R.string.goods_practice), AbstractSaleGoodsAdapter.generateGoodsPracticeInfo(goodsPractices))).append(new_line);
-                    }
-                }
-            }
-            info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_amt_sz).concat(String.format(Locale.CHINA, "%.2f", original_order_amt))
-                    , context.getString(R.string.b_f_units_sz).concat(String.valueOf(units_num)))).append(new_line);
-
-            info.append(Printer.printTwoData(1, context.getString(R.string.b_f_rec_sz).concat(String.format(Locale.CHINA, "%.2f",actual_amt)),
-                    context.getString(R.string.b_f_disco_sz).concat(String.format(Locale.CHINA, "%.2f", sum_dis_amt)))).
-                    append(new_line_2).append(new_line_2).append(new_line).append(line);
-
-            //支付方式
-            SaleOrderPrintInfo.PaysDTO paysDTO;
-            double zl = 0.0, pamt = 0.0;
-            final List<SaleOrderPrintInfo.PaysDTO> pays = order_info.getPays();
-            for (int i = 0, size = pays.size(); i < size; i++) {
-                paysDTO = pays.get(i);
-                zl = paysDTO.getPzl();
-                pamt = paysDTO.getPamt();
-
-                if (i != 0)info.append(new_line_10);
-
-                info.append(paysDTO.getName()).append("：").append(pamt - zl).append("元").append(new_line).append(new_line_d);
-                info.append(context.getString(R.string.b_f_yus_sz)).append(pamt).append(new_line);
-
-                if (!Utils.equalDouble(zl, 0.0)) {
-                    info.append(",").append(context.getString(R.string.b_f_zl_sz)).append(zl).append(new_line);
-                }
-                final List<String> xnote = paysDTO.getXnoteList();
-                if (xnote != null) {
-                    int length = xnote.size();
-                    if (length > 0) {
-                        for (int j = 0; j < length; j++) {
-                            if (i > 0 && j + 1 != length)
-                                info.append(xnote.get(j)).append(new_line);
-                        }
-                    }
-                }
-            }
-            info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-
-            //会员积分信息
-            final SaleOrderPrintInfo.VipIntegralInfo integral_info = order_info.getIntegralInfoObj();
-            if (integral_info != null){
-                final JSONObject MEMBER_PARAMETER = new JSONObject();
-                if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",MEMBER_PARAMETER))Logger.d("查询会员参数错误:%s",MEMBER_PARAMETER.getString("info"));
-                String vip_name = order_info.getVipName(),card_code = order_info.getCardCode();
-
-                if (Utils.getNotKeyAsNumberDefault(MEMBER_PARAMETER,"member_secret_protect",0) == 1){
-                    if (vip_name.length() > 2)
-                        vip_name = vip_name.replace(vip_name.substring(1),Printer.REPLACEMENT);
-                    else {
-                        vip_name = vip_name.concat(Printer.REPLACEMENT);
-                    }
-                    int len = card_code.length();
-                    if (len <= 3){
-                        card_code = card_code.concat(Printer.REPLACEMENT);
-                    }else if (len <= 7){
-                        card_code = card_code.replace(card_code.substring(3,len - 1),"***");
-                    }else {
-                        card_code = card_code.replace(card_code.substring(3,7),"***");
-                    }
-                }
-
-                info.append(context.getString(R.string.vip_name_colon_sz)).append(vip_name).append(new_line);
-                info.append(context.getString(R.string.m_vip_colon_sz)).append(card_code).append(new_line);
-
-                double point_num = integral_info.getPointNum();
-                info.append(context.getString(R.string.current_vip_integral)).append(point_num).append(new_line);
-                info.append(context.getString(R.string._vip_integral)).append(integral_info.getPointsSum() + point_num).append(new_line);
-
-                info.append(line).append(new_line_2).append(new_line).append(new_line_d);
-            }
-
-
-            if (footer_c.isEmpty()){
-                info.append(context.getString(R.string.b_f_hotline_sz)).append(order_info.getTelphone()).append(new_line);
-                info.append(context.getString(R.string.b_f_stores_address_sz)).append(order_info.getRegion()).append(new_line);
-            }else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c);
-            }
-            for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
-        }
-        out.append(info);
-        return out.toString();
-    }
-    public static String get_print_content(final MainActivity context, final String order_code, boolean is_open_cash_box){
-        String content = "";
-        if (context.getPrintStatus()){
-            final PrintFormatInfo info = PrintFormatInfo.getFormatInfo();
-            if (info != null){
-                if (info.getFormatId() == R.id.checkout_format){
-                    final SaleOrderPrintInfo saleOrderPrintInfo = SaleOrderPrintInfo.getInstance(order_code);
-                    if (saleOrderPrintInfo != null){
-                        switch (info.getFormatSize()){
-                            case R.id.f_58:
-                                content = c_format_58(context,info,saleOrderPrintInfo,is_open_cash_box);
-                                break;
-                            case R.id.f_76:
-                                break;
-                            case R.id.f_80:
-                                break;
-                        }
-                    }
-                }else {
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
-                }
-            }
-        }
-        return content;
     }
 }

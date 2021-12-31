@@ -195,7 +195,7 @@ public final class PrintUtilsToBitbmp {
     }
 
     //在bitmap画错误标志<红圈白×>
-    public static Bitmap drawErrorSignToBitmap(final Context context, final Bitmap in, int w, int h){
+    public static Bitmap drawErrorToBitmap(final Bitmap in, int w, int h){
         final Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
         int width = bitmap.getWidth(),height = bitmap.getHeight();
         final Canvas canvas = new Canvas(bitmap);
@@ -212,6 +212,30 @@ public final class PrintUtilsToBitbmp {
 
         canvas.drawLine(rectF.left + offset,rectF.top + offset,rectF.right - offset,rectF.bottom - offset,paint);
         canvas.drawLine(rectF.right - offset,rectF.top + offset, rectF.left + offset,rectF.bottom-offset,paint);
+
+        return bitmap;
+    }
+    //在bitmap画警告标志<红色！>
+    public static Bitmap drawWarnToBitmap(final Bitmap in){
+        final Bitmap bitmap = in.copy(Bitmap.Config.ARGB_8888, true);
+        int width = bitmap.getWidth(),height = bitmap.getHeight();
+        final Canvas canvas = new Canvas(bitmap);
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
+        paint.setStrokeWidth(2);
+        paint.setAntiAlias(true);
+        float w = width / 5.0f;
+        float h = w * 3;
+
+        float left = width - w;
+        float top = height - h;
+
+        final RectF rectF = new RectF(left / 2f  ,top - w,left / 2f + w,height - w);
+
+        canvas.drawOval(rectF,paint);
+        float radius = w / 2;
+        canvas.drawCircle(left / 2f + radius, height - w + radius,radius,paint);
+
 
         return bitmap;
     }

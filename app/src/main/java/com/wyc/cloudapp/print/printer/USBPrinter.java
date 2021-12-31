@@ -18,10 +18,12 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,28 +41,21 @@ import java.util.List;
  */
 public class USBPrinter  extends AbstractPrinter {
     @Override
-    public void printObj(@NonNull IReceipts receipts) {
-        final PrintFormatInfo format_info = receipts.getPrintFormat();
-        final List<PrintItem> items = receipts.getPrintItem();
-        if (format_info != null && items != null && !items.isEmpty()){
-            int count = format_info.getPrintCount();
-            int footerC = format_info.getFooterSpace();
-            while (count-- > 0){
-                usb_print_byte(footerC,items);
-            }
-        }
+    public void printObj(@NonNull IReceipts<PrintFormatInfo> receipts) {
+        usb_print_byte(receipts.getPrintFormat(),receipts.getPrintItem(),receipts.isOpenCashBox());
     }
-    private static void usb_print_byte(int footerSpace,@NonNull List<PrintItem> items){
-        MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
-        final JSONObject object = new JSONObject();
-        if (Printer.getPrinterSetting(object)){
-            int type_id = object.getIntValue("id");
-            String tmp = Utils.getNullStringAsEmpty(object,"v");
-            String[] vals = tmp.split("\t");
-            if (type_id == R.id.usb_p && vals.length > 1){
-                final String vid = vals[0].substring(vals[0].indexOf(":") + 1);
-                final String pid = vals[1].substring(vals[1].indexOf(":") + 1);
-                CustomApplication.execute(()->{
+    private void usb_print_byte(final PrintFormatInfo format_info,List<PrintItem> items,boolean open){
+        boolean hasContent = format_info != null && items != null && !items.isEmpty();
+        if (hasContent || open){
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
+            final JSONObject object = new JSONObject();
+            if (Printer.getPrinterSetting(object)){
+                int type_id = object.getIntValue("id");
+                String tmp = Utils.getNullStringAsEmpty(object,"v");
+                String[] vals = tmp.split("\t");
+                if (type_id == R.id.usb_p && vals.length > 1){
+                    final String vid = vals[0].substring(vals[0].indexOf(":") + 1);
+                    final String pid = vals[1].substring(vals[1].indexOf(":") + 1);
                     synchronized (USBPrinter.class){
                         UsbDevice device = null;
                         UsbInterface usbInterface = null;
@@ -68,6 +63,8 @@ public class USBPrinter  extends AbstractPrinter {
                         UsbDeviceConnection connection = null;
                         UsbManager manager = (UsbManager)CustomApplication.self().getSystemService(Context.USB_SERVICE);
                         if (manager != null){
+                            String msg = "";
+
                             HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
                             for(String sz:deviceList.keySet()){
                                 device = deviceList.get(sz);
@@ -96,79 +93,97 @@ public class USBPrinter  extends AbstractPrinter {
                                             try {
                                                 connection.bulkTransfer(usbOutEndpoint,Printer.RESET,Printer.RESET.length, 100);
 
-                                                for (PrintItem item : items){
-
-                                                    if (item.isBold()){
-                                                        connection.bulkTransfer(usbOutEndpoint,Printer.BOLD,Printer.BOLD.length, 100);
-                                                    }else connection.bulkTransfer(usbOutEndpoint,Printer.BOLD_CANCEL,Printer.BOLD_CANCEL.length, 100);
-
-                                                    if (item.isDoubleHigh() && item.isDoubleWidth()){
-                                                        connection.bulkTransfer(usbOutEndpoint,Printer.DOUBLE_HEIGHT_WIDTH,Printer.DOUBLE_HEIGHT_WIDTH.length, 100);
-                                                    }else if (item.isDoubleHigh()) {
-                                                        connection.bulkTransfer(usbOutEndpoint,Printer.DOUBLE_HEIGHT,Printer.DOUBLE_HEIGHT.length, 100);
-                                                    }else if (item.isDoubleWidth()){
-                                                        connection.bulkTransfer(usbOutEndpoint,Printer.DOUBLE_WIDTH,Printer.DOUBLE_WIDTH.length, 100);
-                                                    }else connection.bulkTransfer(usbOutEndpoint,Printer.NORMAL,Printer.NORMAL.length, 100);
-
-                                                    if (item.isNewline()){
-                                                        switch (item.getLineSpacing()){
-                                                            case SPACING_2:
-                                                            case SPACING_DEFAULT:
-                                                                connection.bulkTransfer(usbOutEndpoint,Printer.LINE_SPACING_DEFAULT,Printer.LINE_SPACING_DEFAULT.length, 100);
-                                                                break;
-                                                            case SPACING_10:
-                                                                connection.bulkTransfer(usbOutEndpoint,Printer.LINE_SPACING_48,Printer.LINE_SPACING_48.length, 100);
-                                                                break;
-                                                        }
-
-                                                        connection.bulkTransfer(usbOutEndpoint,Printer.NEW_LINE,Printer.NEW_LINE.length, 100);
+                                                if (hasContent){
+                                                    int footerSpace = format_info.getFooterSpace();
+                                                    int count = format_info.getPrintCount();
+                                                    while (count -- > 0){
+                                                        print(connection,usbOutEndpoint,items,footerSpace);
                                                     }
-
-                                                    switch (item.getAlign()){
-                                                        case LEFT:
-                                                            connection.bulkTransfer(usbOutEndpoint,Printer.ALIGN_LEFT,Printer.ALIGN_LEFT.length, 100);
-                                                            break;
-                                                        case CENTRE:
-                                                            connection.bulkTransfer(usbOutEndpoint,Printer.ALIGN_CENTER,Printer.ALIGN_CENTER.length, 100);
-                                                            break;
-                                                        case RIGHT:
-                                                            connection.bulkTransfer(usbOutEndpoint,Printer.ALIGN_RIGHT,Printer.ALIGN_RIGHT.length, 100);
-                                                            break;
-                                                    }
-
-                                                    final byte[] content = item.getContent().getBytes(Printer.CHARACTER_SET);
-                                                    connection.bulkTransfer(usbOutEndpoint,content,content.length, 100);
+                                                    printSuccess();
+                                                    if (open)connection.bulkTransfer(usbOutEndpoint,Printer.OPEN_CASHBOX,Printer.OPEN_CASHBOX.length, 100);
+                                                }else {
+                                                    connection.bulkTransfer(usbOutEndpoint,Printer.OPEN_CASHBOX,Printer.OPEN_CASHBOX.length, 100);
                                                 }
-                                                for (int i = 0; i < footerSpace; i++) {
-                                                    connection.bulkTransfer(usbOutEndpoint,Printer.NEW_LINE,Printer.NEW_LINE.length, 100);
-                                                }
-                                                connection.bulkTransfer(usbOutEndpoint,Printer.CUT,Printer.CUT.length, 100);
-
                                                 MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
                                             } catch (UnsupportedEncodingException e) {
-                                                MyDialog.toastMessage(e.getMessage());
+                                                msg = e.getMessage();
                                             } finally {
                                                 connection.releaseInterface(usbInterface);
                                                 connection.close();
                                             }
                                         }else{
-                                            MyDialog.toastMessage("独占访问打印机错误！");
+                                            msg = "独占访问打印机错误！";
                                         }
                                     }else{
-                                        MyDialog.toastMessage("打开打印机连接错误！");
+                                        msg = "打开打印机连接错误！";
                                     }
                                 }else{
-                                    MyDialog.toastMessage("未找到USB输出端口！");
+                                    msg = "未找到USB输出端口！";
                                 }
                             }else{
-                                MyDialog.toastMessage("未找到打印机设备！");
+                                msg = "未找到打印机设备！";
                             }
+                            showError(msg);
                         }
                     }
-                });
+                }else showError(CustomApplication.getStringByResId(R.string.printer_error, Arrays.toString(vals)));
+            }else {
+                showError(CustomApplication.getStringByResId(R.string.printer_error,object.getString("info")));
             }
-         }else {
-            MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.printer_error,object.getString("info")));
         }
+    }
+    private void print(UsbDeviceConnection connection,UsbEndpoint usbOutEndpoint,List<PrintItem> items,int footerSpace) throws UnsupportedEncodingException {
+        for (PrintItem item : items){
+
+            if (item.isBold()){
+                connection.bulkTransfer(usbOutEndpoint,Printer.BOLD,Printer.BOLD.length, 100);
+            }else connection.bulkTransfer(usbOutEndpoint,Printer.BOLD_CANCEL,Printer.BOLD_CANCEL.length, 100);
+
+            if (item.isDoubleHigh() && item.isDoubleWidth()){
+                connection.bulkTransfer(usbOutEndpoint,Printer.DOUBLE_HEIGHT_WIDTH,Printer.DOUBLE_HEIGHT_WIDTH.length, 100);
+            }else if (item.isDoubleHigh()) {
+                connection.bulkTransfer(usbOutEndpoint,Printer.DOUBLE_HEIGHT,Printer.DOUBLE_HEIGHT.length, 100);
+            }else if (item.isDoubleWidth()){
+                connection.bulkTransfer(usbOutEndpoint,Printer.DOUBLE_WIDTH,Printer.DOUBLE_WIDTH.length, 100);
+            }else connection.bulkTransfer(usbOutEndpoint,Printer.NORMAL,Printer.NORMAL.length, 100);
+
+            if (item.isNewline()){
+                switch (item.getLineSpacing()){
+                    case SPACING_2:
+                    case SPACING_DEFAULT:
+                        connection.bulkTransfer(usbOutEndpoint,Printer.LINE_SPACING_DEFAULT,Printer.LINE_SPACING_DEFAULT.length, 100);
+                        break;
+                    case SPACING_10:
+                        connection.bulkTransfer(usbOutEndpoint,Printer.LINE_SPACING_48,Printer.LINE_SPACING_48.length, 100);
+                        break;
+                }
+
+                connection.bulkTransfer(usbOutEndpoint,Printer.NEW_LINE,Printer.NEW_LINE.length, 100);
+            }
+
+            switch (item.getAlign()){
+                case LEFT:
+                    connection.bulkTransfer(usbOutEndpoint,Printer.ALIGN_LEFT,Printer.ALIGN_LEFT.length, 100);
+                    break;
+                case CENTRE:
+                    connection.bulkTransfer(usbOutEndpoint,Printer.ALIGN_CENTER,Printer.ALIGN_CENTER.length, 100);
+                    break;
+                case RIGHT:
+                    connection.bulkTransfer(usbOutEndpoint,Printer.ALIGN_RIGHT,Printer.ALIGN_RIGHT.length, 100);
+                    break;
+            }
+
+            final byte[] content = item.getContent().getBytes(Printer.CHARACTER_SET);
+            connection.bulkTransfer(usbOutEndpoint,content,content.length, 100);
+        }
+        for (int i = 0; i < footerSpace; i++) {
+            connection.bulkTransfer(usbOutEndpoint,Printer.NEW_LINE,Printer.NEW_LINE.length, 100);
+        }
+        connection.bulkTransfer(usbOutEndpoint,Printer.CUT,Printer.CUT.length, 100);
+    }
+
+    @Override
+    public void openCashBox() {
+        usb_print_byte(null,null,true);
     }
 }

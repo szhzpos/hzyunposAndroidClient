@@ -22,6 +22,7 @@ import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.print.receipts.TimeCardReceipts;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -98,7 +99,7 @@ public class TimeCardOrderDetailActivity extends AbstractDefinedTitleActivity {
 
     @OnClick(R.id.m_print_btn)
     public void print(){
-        mOrder.print(this);
+        TimeCardReceipts.print(mOrder,false);
     }
 
     private void initOrder(){

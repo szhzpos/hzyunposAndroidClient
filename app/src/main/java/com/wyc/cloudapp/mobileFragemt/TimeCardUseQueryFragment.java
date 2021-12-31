@@ -17,6 +17,7 @@ import com.wyc.cloudapp.bean.QueryCondition;
 import com.wyc.cloudapp.bean.VipTimeCardUseOrder;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.print.receipts.TimeCardUseReceipts;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback;
@@ -94,7 +95,7 @@ public class TimeCardUseQueryFragment extends AbstractTimeCardQueryFragment {
         public void onClick(View v) {
             final Object o = v.getTag();
             if (o instanceof VipTimeCardUseOrder){
-                ((VipTimeCardUseOrder)o).print(mContext);
+                TimeCardUseReceipts.print((VipTimeCardUseOrder)o,false);
             }
         }
 

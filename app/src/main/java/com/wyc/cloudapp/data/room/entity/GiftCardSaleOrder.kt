@@ -28,6 +28,8 @@ import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.fragment.PrintFormatFragment
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.print.Printer
+import com.wyc.cloudapp.print.printer.AbstractPrinter
+import com.wyc.cloudapp.print.receipts.GiftCardReceipts
 import com.wyc.cloudapp.utils.FormatDateTimeUtils
 import com.wyc.cloudapp.utils.Utils
 import com.wyc.cloudapp.utils.http.HttpRequest
@@ -149,7 +151,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
         }
         @JvmStatic
         fun getOrderList(start: Long, end: Long, order_no: String):List<GiftCardSaleOrder>{
-            val where_sql = java.lang.StringBuilder("select * from GiftCardSaleOrder where time between $start and $end")
+            val where_sql = java.lang.StringBuilder("select * from GiftCardSaleOrder where store_id = "+ CustomApplication.self().storeId +" and time between $start and $end")
             if (Utils.isNotEmpty(order_no)){
                 where_sql.append(" and online_order_no like '%").append(order_no).append("'")
             }
@@ -354,7 +356,7 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
 
                                 if (allSuccess) {
                                     uploadPayInfo(it.orderMoney, {
-                                        print(activity)
+                                        print()
 
                                         activity.setResult(Activity.RESULT_OK)
                                         activity.finish()
@@ -374,87 +376,10 @@ class GiftCardSaleOrder():ICardPay<GiftCardSaleDetail> {
                 })
     }
 
-    public fun print(activity: MainActivity){
-        CustomApplication.execute { Printer.print(get_print_content(activity)) }
-    }
-    private fun get_print_content(context: MainActivity): String {
-        var content = ""
-        val print_format_info = JSONObject()
-        if (SQLiteHelper.getLocalParameter("g_card_sale", print_format_info)) {
-            if (print_format_info.getIntValue("f") == PrintFormatFragment.GIFT_CARD_SALE_FORMAT_ID) {
-                when (print_format_info.getIntValue("f_z")) {
-                    R.id.f_58 -> {
-                        content = c_format_58(context, print_format_info, this)
-                    }
-                    R.id.f_76 -> {
-                    }
-                    R.id.f_80 -> {
-                    }
-                }
-            } else {
-                context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.window) }
-            }
-        } else context.runOnUiThread { MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz, print_format_info.getString("info")), context.window) }
-        return content
+    fun print(){
+        AbstractPrinter.printContent(GiftCardReceipts(this,false))
     }
 
-    private fun c_format_58(context: MainActivity, format_info: JSONObject, order_info: GiftCardSaleOrder): String {
-        val info = StringBuilder()
-        val out = StringBuilder()
-        val store_name = Utils.getNullStringAsEmpty(format_info, "s_n")
-        val new_line = "\n"
-        val footer_c = Utils.getNullStringAsEmpty(format_info, "f_c")
-        var print_count = Utils.getNotKeyAsNumberDefault(format_info, "p_c", 1)
-        val footer_space = Utils.getNotKeyAsNumberDefault(format_info, "f_s", 5)
-        val application = CustomApplication.self()
-        while (print_count-- > 0) { //打印份数
-            if (info.isNotEmpty()) {
-                info.append(new_line).append(new_line)
-                out.append(info)
-                continue
-            }
-            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(if (store_name.length == 0) application.storeName else store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).append(Printer.commandToStr(Printer.ALIGN_LEFT))
-            info.append(context.getString(R.string.store_name_sz) + application.storeName).append(new_line)
-            info.append(context.getString(R.string.order_sz) + order_info.online_order_no).append(new_line)
-            info.append(context.getString(R.string.order_time_colon) + order_info.getFormatTime()).append(new_line)
-
-
-            val stringBuilder = StringBuilder()
-            val saleInfoList = order_info.getSaleInfo()
-            val line_58 = application.getString(R.string.line_58)
-            stringBuilder.append(line_58).append(Printer.commandToStr(Printer.LINE_SPACING_2)).append("名称  卡号      面额       售价")
-                    .append(Printer.commandToStr(Printer.LINE_SPACING_2)).append(new_line).append(line_58).append(new_line)
-            for (saleInfo in saleInfoList) {
-                stringBuilder.append(String.format(Locale.CHINA, "%s\n     %s     %.2f元   %.2f元\n", saleInfo.getName(), saleInfo.getGift_card_code(), saleInfo.getFace_value(), saleInfo.getPrice(), new_line))
-            }
-            stringBuilder.append(line_58).append(new_line)
-            info.append(stringBuilder)
-            info.append(context.getString(R.string.gift_card_sale_num_print) + order_info.getSaleInfo().size.toString()).append(new_line)
-            info.append(context.getString(R.string.order_amt_colon) + String.format(Locale.CHINA, "%.2f元", order_info.getAmt())).append(new_line)
-
-            stringBuilder.delete(0, stringBuilder.length)
-            val payDetails = order_info.payInfo
-            for (detail in payDetails) {
-                val payMethod = AppDatabase.getInstance().PayMethodDao().getPayMethodById(detail.pay_method_id) ?: continue
-                if (stringBuilder.isNotEmpty()) {
-                    stringBuilder.append(new_line)
-                }
-                stringBuilder.append(payMethod.name)
-            }
-            info.append(context.getString(R.string.pay_method_name_colon_sz) + stringBuilder.toString()).append(new_line).append(line_58).append(new_line)
-
-            if (footer_c.isEmpty()) {
-                info.append(context.getString(R.string.hotline_sz)).append(application.storeTelephone).append(new_line)
-                info.append(context.getString(R.string.stores_address_sz)).append(application.storeRegion).append(new_line)
-            } else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT))
-            }
-            for (i in 0 until footer_space) info.append(" ").append(new_line)
-        }
-        out.append(info)
-        return out.toString()
-    }
 
     private fun uploadPayInfo(amt: Double, suc: androidx.core.util.Consumer<String>, failure: androidx.core.util.Consumer<String>){
         if (payInfo.isEmpty()) {

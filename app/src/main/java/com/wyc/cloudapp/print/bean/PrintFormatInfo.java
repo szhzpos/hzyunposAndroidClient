@@ -9,6 +9,8 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 
+import java.io.Serializable;
+
 /**
  * @ProjectName: AndroidClient
  * @Package: com.wyc.cloudapp.print.bean
@@ -21,7 +23,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class PrintFormatInfo {
+public class PrintFormatInfo implements Serializable {
     @JSONField(name = "s_n")
     private String aliasStoresName;
     @JSONField(name = "f_s")
@@ -94,12 +96,5 @@ public class PrintFormatInfo {
                 ", printCount='" + printCount + '\'' +
                 ", formatSize=" + formatSize +
                 '}';
-    }
-    public static PrintFormatInfo getFormatInfo(){
-        final JSONObject print_format_info = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("c_f_info",print_format_info)){
-            return print_format_info.toJavaObject(PrintFormatInfo.class);
-        }else MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")));
-        return null;
     }
 }

@@ -19,6 +19,8 @@ import com.wyc.cloudapp.adapter.RefundDetailsPayInfoAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.RefundOrderPrintInfo;
+import com.wyc.cloudapp.print.receipts.RefundReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -58,7 +60,7 @@ public class RefundOrderDetailsDialog extends AbstractDialogMainActivity {
     private void initReprint(){
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
-            reprint_btn.setOnClickListener(v -> Printer.print(RefundDialog.get_print_content(mContext, mRefundOrderCode,false)));
+            reprint_btn.setOnClickListener(v -> RefundReceipts.print(mRefundOrderCode,false));
         }
     }
     private void showOrderInfo(){

@@ -125,6 +125,7 @@
     <dimen name="size_3">3dp</dimen>
     <dimen name="size_16">16dp</dimen>
     <dimen name="size_382">382dp</dimen>
+    <dimen name="size_388">388dp</dimen>
     <dimen name="size_368">368dp</dimen>
     <dimen name="size_228">228dp</dimen>
     <dimen name="size_480">480dp</dimen>

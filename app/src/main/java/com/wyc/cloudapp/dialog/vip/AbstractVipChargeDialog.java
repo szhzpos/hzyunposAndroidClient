@@ -32,6 +32,9 @@ import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.bean.VipChargeOrderPrintInfo;
+import com.wyc.cloudapp.print.receipts.VipRechargeReceipts;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -487,7 +490,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
     private void initPrintSwitch(){
         final Switch mobile_print_switch = findViewById(R.id.mobile_print_switch);
-        mobile_print_switch.setChecked(mContext.getPrintStatus());
+        mobile_print_switch.setChecked(PrinterStatus.printerIsNotClose());
         mobile_print_switch.setOnClickListener(v -> mContext.switchPrintStatus());
     }
 
@@ -806,9 +809,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                                                             showPayError(err.toString());
                                                         }else {
                                                             chargeSuccess(member.toJavaObject(VipInfo.class));
-                                                            if (mContext.getPrintStatus()){
-                                                                Printer.print(get_print_content(mContext,order_code));
-                                                            }
+                                                            VipRechargeReceipts.print(order_code);
                                                         }
                                                     }else {
                                                         Logger.e("服务器返回member：%s,money_order：%s",members,money_orders);
@@ -828,134 +829,6 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                 }
             });
         }
-    }
-
-    private static String c_format_58(final MainActivity context,final JSONObject format_info,final JSONObject order_info){
-        final JSONArray welfare = Utils.getNullObjectAsEmptyJsonArray(order_info,"welfare"),money_orders = Utils.getNullObjectAsEmptyJsonArray(order_info,"money_order"),
-                members = Utils.getNullObjectAsEmptyJsonArray(order_info,"member");
-
-        if (money_orders.isEmpty() || members.isEmpty())return "";//打印内容为空直接返回空
-
-
-        final StringBuilder info = new StringBuilder(),out = new StringBuilder();
-        final String new_line =  "\n";
-        final String footer_c = Utils.getNullStringAsEmpty(format_info,"f_c");
-
-        int print_count = Utils.getNotKeyAsNumberDefault(format_info,"p_c",1);
-        int footer_space = Utils.getNotKeyAsNumberDefault(format_info,"f_s",5);
-
-        final JSONObject money_order = money_orders.getJSONObject(0),member = members.getJSONObject(0);
-
-        String store_name = Utils.getNullStringAsEmpty(format_info,"s_n");
-
-        while (print_count-- > 0) {//打印份数
-            if (info.length() > 0){
-                info.append(new_line).append(new_line);
-                out.append(info);
-                continue;
-            }
-            info.append(Printer.commandToStr(Printer.DOUBLE_HEIGHT)).append(Printer.commandToStr(Printer.ALIGN_CENTER))
-                    .append(store_name.length() == 0 ? (store_name = CustomApplication.self().getStoreName()) : store_name).append(new_line).append(new_line).append(Printer.commandToStr(Printer.NORMAL)).
-                    append(Printer.commandToStr(Printer.ALIGN_LEFT));
-
-            store_name = CustomApplication.self().getStoreName();
-
-            info.append(context.getString(R.string.store_name_sz).concat(store_name)).append(new_line);
-            info.append(context.getString(R.string.order_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_code"))).append(new_line);
-
-            final String origin_order_code = Utils.getNullStringAsEmpty(money_order,"source_order_code");
-            if (!"".equals(origin_order_code))
-                info.append(context.getString(R.string.origin_order_code_sz).concat("：").concat(origin_order_code)).append(new_line);
-
-            final JSONObject vip_member = new JSONObject();
-            if (!SQLiteHelper.getLocalParameter("MEMBER_PARAMETER",vip_member))Logger.d("查询会员参数错误:%s",vip_member.getString("info"));
-            String vip_name = Utils.getNullStringAsEmpty(member,"name"),card_code = Utils.getNullStringAsEmpty(member,"card_code"),mobile = Utils.getNullStringAsEmpty(member,"mobile");
-            if (Utils.getNotKeyAsNumberDefault(vip_member,"member_secret_protect",0) == 1){
-                if (vip_name.length() > 2)
-                    vip_name = vip_name.replace(vip_name.substring(1),Printer.REPLACEMENT);
-                else {
-                    vip_name = vip_name.concat(Printer.REPLACEMENT);
-                }
-                int len = card_code.length();
-                if (len <= 3){
-                    card_code = card_code.concat(Printer.REPLACEMENT);
-                }else if (len <= 7){
-                    card_code = card_code.replace(card_code.substring(3,len - 1),Printer.REPLACEMENT);
-                }else {
-                    card_code = card_code.replace(card_code.substring(3,7),Printer.REPLACEMENT);
-                }
-                int mobile_len = mobile.length();
-                if (mobile_len <= 3){
-                    mobile = mobile.concat(Printer.REPLACEMENT);
-                }else if (len <= 7){
-                    mobile = mobile.replace(mobile.substring(3,len - 1),Printer.REPLACEMENT);
-                }else {
-                    mobile = mobile.replace(mobile.substring(3,7),Printer.REPLACEMENT);
-                }
-            }
-
-            info.append(context.getString(R.string.oper_sz).concat("：").concat(CustomApplication.self().getCashierName())).append(new_line);
-            info.append(context.getString(R.string.vip_card_id_sz).concat(card_code)).append(new_line);
-            info.append("会员姓名：".concat(vip_name)).append(new_line);
-            info.append("支付方式：".concat(Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).append(new_line);
-            info.append(context.getString(R.string.charge_amt_colon_sz).concat(Utils.getNullStringAsEmpty(money_order,"order_money"))).append(new_line);
-            info.append(context.getString(R.string.give_amt).concat("：").concat(Utils.getNullOrEmptyStringAsDefault(money_order,"give_money","0.00"))).append(new_line);
-            info.append("会员余额：".concat(Utils.getNullStringAsEmpty(member,"money_sum"))).append(new_line);
-            info.append("会员积分：".concat(Utils.getNullStringAsEmpty(member,"points_sum"))).append(new_line);
-            info.append("会员电话：".concat(mobile)).append(new_line);
-
-            info.append("时    间：".concat(new SimpleDateFormat(FormatDateTimeUtils.YYYY_MM_DD_1, Locale.CHINA).format(money_order.getLongValue("addtime") * 1000))).append(new_line);
-            if (welfare.size() != 0){
-                for (int i = 0,size = welfare.size();i < size;i++){
-                    if (i == 0)info.append("优惠信息").append(new_line);
-                    info.append("  ").append(welfare.getString(i)).append(new_line);
-                }
-            }
-            if (footer_c.isEmpty()){
-                info.append(new_line).append(context.getString(R.string.hotline_sz)).append(CustomApplication.self().getStoreTelephone()).append(new_line);
-                info.append(context.getString(R.string.stores_address_sz)).append(CustomApplication.self().getStoreRegion()).append(new_line);
-            }else {
-                info.append(Printer.commandToStr(Printer.ALIGN_CENTER)).append(footer_c).append(Printer.commandToStr(Printer.ALIGN_LEFT));
-            }
-
-            for (int i = 0; i < footer_space; i++) info.append(" ").append(new_line);
-        }
-        out.append(info);
-
-        return out.toString();
-    }
-
-    static String get_print_content(final MainActivity context,final String order_code){
-        final JSONObject print_format_info = new JSONObject();
-        String content = "";
-        if (SQLiteHelper.getLocalParameter("v_f_info",print_format_info)){
-            if (print_format_info.getIntValue("f") == R.id.vip_c_format){
-                final JSONObject xnote = new JSONObject();
-                if (SQLiteHelper.execSql(xnote,"SELECT xnote FROM member_order_info where order_code = '" + order_code + "'")){
-                    try {
-                        final JSONObject order_info = JSON.parseObject(xnote.getString("xnote"));
-                        switch (print_format_info.getIntValue("f_z")){
-                            case R.id.f_58:
-                                content = c_format_58(context,print_format_info,order_info);
-                                break;
-                            case R.id.f_76:
-                                break;
-                            case R.id.f_80:
-                                break;
-                        }
-                    }catch (JSONException e){
-                        e.printStackTrace();
-                        context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,e.getLocalizedMessage()), context.getWindow()));
-                    }
-                }else
-                    context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_c_err_hint_sz,xnote.getString("info")), context.getWindow()));
-            }else {
-                context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.f_not_sz), context.getWindow()));
-            }
-        }else
-            context.runOnUiThread(()->MyDialog.ToastMessage(context.getString(R.string.l_p_f_err_hint_sz,print_format_info.getString("info")), context.getWindow()));
-
-        return content;
     }
 
     public static void vipRefundAmt(final MainActivity context,final String order_id){
@@ -1163,9 +1036,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
                     }else{
                         int index = SQLiteHelper.verifyUpdateResult(rows);
                         if (index == -1){
-                            if (context.getPrintStatus()){
-                                Printer.print(get_print_content(context,origin_order_code));
-                            }
+                            VipRechargeReceipts.print(origin_order_code);
                             object.put("info",info_json.getString("info"));
                             return true;
                         } else{

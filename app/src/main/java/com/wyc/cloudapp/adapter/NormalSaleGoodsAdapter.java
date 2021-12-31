@@ -138,15 +138,15 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     @Override
     public void clearGoods(){
         super.clearGoods();
-        if (mWeighDialog != null && !GoodsWeighDialog.isAutoGetWeigh()){
-            mWeighDialog.stopRead();
-            mWeighDialog = null;
+        if (!GoodsWeighDialog.isAutoGetWeigh()){
+            closeScale();
         }
         notifyDataSetChanged();
         mContext.updateScalePrice(0.0f);
     }
     public void closeScale(){
         if (mWeighDialog != null){
+            mWeighDialog.dismiss();
             mWeighDialog.stopRead();
             mWeighDialog = null;
         }

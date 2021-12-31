@@ -37,7 +37,7 @@ class GiftCardOrderDetailActivity : AbsBindingActivity() {
 
     @OnClick(R.id.m_print_btn)
     fun print(){
-        mBinding?.giftCardSaleOrder?.print(this)
+        mBinding?.giftCardSaleOrder?.print()
     }
 
     private fun initOrder(){

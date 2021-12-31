@@ -19,6 +19,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.customizationView.WeightInfoView;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
@@ -207,11 +208,12 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(int stat,double num) {
-                            mContext.setScaleInfo(stat,(float) num * 1000);
+                            mContext.setScaleInfo(stat,(float) num);
+                            boolean invalid = WeightInfoView.hasInvalidWeight(num);
                             if (mContinuousWeighing){
-                                if (mOnYesClick != null)CustomApplication.runInMainThread(()-> mOnYesClick.onYesClick(num));
+                                if (mOnYesClick != null)CustomApplication.runInMainThread(()-> mOnYesClick.onYesClick(invalid ? 0.0 : num));
                             }else
-                            if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(String.format(Locale.CHINA,"%.3f",num)));
+                            if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(invalid? CustomApplication.getStringByResId(R.string.invalid_weight) : String.format(Locale.CHINA,"%.3f",num)));
 
                             mValue = num;
                             mStable = stat == AbstractSerialScaleImp.OnReadStatus.STABLE;

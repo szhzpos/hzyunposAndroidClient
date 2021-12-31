@@ -193,15 +193,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         }
         return stringBuilder.toString();
     }
-    public static String generateGoodsPracticeInfo(@NonNull List<GoodsPracticeInfo> array){
-        final StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0,size = array.size();i < size;i ++){
-            final GoodsPracticeInfo obj = array.get(i);
-            stringBuilder.append(String.format(Locale.CHINA,"%s(%.2f)",obj.getKwName(),obj.getKwPrice()));
-        }
-        return stringBuilder.toString();
-    }
-
 
     public interface OnDataChange{
         void onChange(double num,double sale_amt,double discount_amt);

@@ -17,7 +17,6 @@ import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.RetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
-import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -113,7 +112,7 @@ public class NormalRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
         final Button reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
             reprint_btn.setOnClickListener(v -> {
-                AbstractSettlementDialog.printObj(mContext, Utils.getNullStringAsEmpty(mOrderInfo,"order_code"));
+                AbstractSettlementDialog.printObj(Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false);
             });
         }
     }

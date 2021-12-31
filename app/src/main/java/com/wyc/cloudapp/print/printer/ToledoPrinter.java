@@ -8,6 +8,7 @@ import com.mt.retail.printapi.MtPrintApi;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.serialScales.ToledoScale;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
@@ -105,6 +106,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
 
     private PrintFormatInfo mPrintFormatInfo;
     private List<PrintItem> ItemContent;
+    private boolean mOpenCashBox = false;
 
     public ToledoPrinter(){
         mtPrintApi = MtPrintApi.getInstance();
@@ -117,7 +119,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
 
     @Override
     public void onMtPrintServiceDisconnected() {
-        MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.printer_offline));
+        showError(CustomApplication.getStringByResId(R.string.printer_offline));
     }
 
     /**
@@ -129,7 +131,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     public void onPlugEvent(String printer, int iEvent) {
         switch (iEvent){
             case 0:
-                MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.printer_out,printer));
+                showError(CustomApplication.getStringByResId(R.string.printer_out,printer));
                 break;
             case 1:
                 MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.printer_inserted,printer));
@@ -140,39 +142,51 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     @Override
     public void onPrinterListChanged(ArrayList<String> printerList) {
         if (mPrintFormatInfo != null && ItemContent != null && !ItemContent.isEmpty()){
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
+
             final MtPrintResult result = new MtPrintResult();
             mtPrintApi.setLeftMargin(40,result);
             int align = 0;
-            for (PrintItem item : ItemContent){
-                int fontSize = 24;
-                if (item.getLineSpacing() == PrintItem.LineSpacing.SPACING_10){
-                    mtPrintApi.setDefaultFontSize(14,result);
-                    mtPrintApi.printBlankLine(1,result);
-                }
-                if (item.isDoubleHigh()){
-                    fontSize = 32;
-                }
-                if (item.isBold()){
-                    fontSize = 28;
-                }
-                switch (item.getAlign()){
-                    case LEFT:
-                        align = 0;
-                        break;
-                    case CENTRE:
-                        align = 1;
-                        break;
-                    case RIGHT:
-                        align = 2;
-                        break;
-                }
-                mtPrintApi.printTextWithFontAndAlignment(item.getContent(),fontSize,align,result);
-                LockSupport.parkNanos(1000 * 1000 * 20L);
-            }
-            mtPrintApi.setDefaultFontSize(18,result);
-            mtPrintApi.printBlankLine(mPrintFormatInfo.getFooterSpace(),result);
 
-            MyDialog.toastMessage(getErrorStr(result.getReturnCode()));
+            int count = mPrintFormatInfo.getPrintCount();
+            while (count-- > 0){
+                for (PrintItem item : ItemContent){
+                    int fontSize = 24;
+                    if (item.getLineSpacing() == PrintItem.LineSpacing.SPACING_10){
+                        mtPrintApi.setDefaultFontSize(12,result);
+                        mtPrintApi.printBlankLine(1,result);
+                    }
+                    if (item.isDoubleHigh()){
+                        fontSize = 32;
+                    }
+                    if (item.isBold()){
+                        fontSize = 28;
+                    }
+                    switch (item.getAlign()){
+                        case LEFT:
+                            align = 0;
+                            break;
+                        case CENTRE:
+                            align = 1;
+                            break;
+                        case RIGHT:
+                            align = 2;
+                            break;
+                    }
+                    boolean ret = mtPrintApi.printTextWithFontAndAlignment(item.getContent(),fontSize,align,result);
+                    if (!ret){
+                        showError(result.getMsg());
+                        return;
+                    }
+                    LockSupport.parkNanos(1000 * 1000 * 20L);
+                }
+                mtPrintApi.setDefaultFontSize(18,result);
+                mtPrintApi.printBlankLine(mPrintFormatInfo.getFooterSpace(),result);
+            }
+            printSuccess();
+            if (mOpenCashBox){
+                openCashBox();
+            }
         }
     }
 
@@ -293,9 +307,15 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     }
 
     @Override
-    public void printObj(@NonNull IReceipts receipts) {
+    public void printObj(@NonNull IReceipts<PrintFormatInfo> receipts) {
         mPrintFormatInfo = receipts.getPrintFormat();
         ItemContent = receipts.getPrintItem();
+        mOpenCashBox = receipts.isOpenCashBox();
         mtPrintApi.connectToService(CustomApplication.self(),this);
+    }
+
+    @Override
+    public void openCashBox() {
+        ToledoScale.openCashBox();
     }
 }

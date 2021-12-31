@@ -14,6 +14,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.VerifyPermissionDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -228,30 +229,8 @@ public class MainActivity extends BaseActivity {
 
     //业务公共方法
     public void switchPrintStatus(){
-        final StringBuilder err = new StringBuilder();
-        final JSONObject object = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("print_s",object)){
-
-            boolean print_s = object.getBooleanValue("v");
-            if (print_s){
-                MyDialog.toastMessage("打印功能已关闭！");
-            }else MyDialog.toastMessage("打印功能已开启！");
-
-            object.put("v",!print_s);
-            if (!SQLiteHelper.saveLocalParameter("print_s",object,"打印开关",err)){
-                MyDialog.ToastMessage("保存打印状态错误:" + err, getWindow());
-            }
-        }
+        PrinterStatus.switchPrintStatus();
     }
-
-    public boolean getPrintStatus(){
-        final JSONObject object = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("print_s",object)){
-            return object.getBooleanValue("v");
-        }
-        return false;
-    }
-
 
     public void disposeHangBill(){}
 

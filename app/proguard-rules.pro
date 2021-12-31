@@ -178,6 +178,10 @@
 -keep class com.wyc.cloudapp.dialog.barcodeScales.* { *; }
 -keep class com.wyc.cloudapp.bean.*{ *; }
 
+-keep class com.wyc.cloudapp.print.bean.* { *; }
+-keep class com.wyc.cloudapp.print.printer.* { *; }
+-keep class com.wyc.cloudapp.print.receipts.*{ *; }
+
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
 -keep class **$$ViewBinder { *; }

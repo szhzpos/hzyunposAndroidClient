@@ -38,6 +38,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.printer.BluetoothPrinter;
 import com.wyc.cloudapp.print.printer.ToledoPrinter;
 import com.wyc.cloudapp.print.printer.USBPrinter;
@@ -91,7 +92,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 MyDialog.ToastMessage(null,mContext.getString(R.string.save_hint), null);
                 if (mContext instanceof MainActivity){
                     final MainActivity mainActivity = (MainActivity) mContext;
-                    if (!mainActivity.getPrintStatus()){
+                    if (!PrinterStatus.printerIsNotClose()){
                         mainActivity.switchPrintStatus();
                     }
                 }
@@ -353,7 +354,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             content.put("parameter_desc","次卡购买小票");
             array.add(content);
 
-            //次卡购买小票
+            //次卡使用小票
             object = new JSONObject();
             object.put("f",TIME_CARD_USE_FORMAT_ID);
             object.put("f_z",size_id);
