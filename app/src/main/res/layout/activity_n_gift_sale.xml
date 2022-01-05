@@ -140,6 +140,21 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
+            android:id="@+id/_del"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="@dimen/fun_button_width_size"
+            android:layout_height="@dimen/fun_button_height_size"
+            android:layout_gravity="center"
+            android:layout_marginTop="@dimen/margin_2"
+            android:background="@drawable/button_green"
+            android:text="@string/delete_sz"
+            android:textColor="@color/black_white"
+            android:textSize="@dimen/fun_button_font_size_16"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/_clear_btn" />
+
+        <Button
             android:id="@+id/sale_man_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/fun_button_width_size"
@@ -152,7 +167,7 @@
             android:textSize="@dimen/fun_button_font_size_16"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/_clear_btn" />
+            app:layout_constraintTop_toBottomOf="@id/_del" />
 
         <Button
             android:id="@+id/checkout_btn"
@@ -203,7 +218,7 @@
 
         <com.wyc.cloudapp.customizationView.KeyboardView
             android:id="@+id/keyboard_view"
-            android:layout_width="388dp"
+            android:layout_width="@dimen/size_388"
             android:layout_height="wrap_content"
             android:keyboardLayout="@layout/keyboard_layout"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -432,12 +447,12 @@
         <Button
             android:id="@+id/select_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="388dp"
+            android:layout_width="@dimen/size_388"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_8"
             android:layout_marginEnd="@dimen/margin_8"
             android:background="@drawable/round_shape_main_color"
-            android:text="@string/selected"
+            android:text="@string/okSelected"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16"
             app:layout_constraintBottom_toBottomOf="@id/keyboard_view"

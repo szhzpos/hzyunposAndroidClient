@@ -31,10 +31,13 @@ public abstract class AbstractDataAdapterForList<E,T extends AbstractDataAdapter
         return mData;
     }
     protected final E getItem(int index){
-        if (index >= 0 && index < getItemCount() && !isEmpty()){
+        if (hasValidIndex(index) && !isEmpty()){
             return mData.get(index);
         }
         return null;
+    }
+    protected boolean hasValidIndex(int index){
+        return index >= 0 && index < getItemCount();
     }
     public final void clear(){
         if (mData != null){

@@ -9,12 +9,14 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleDetail;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,13 +33,13 @@ import butterknife.ButterKnife;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class MobileGiftCardSaleAdapter extends AbstractSelectAdapter<GiftCardSaleDetail,MobileGiftCardSaleAdapter.MyViewHolder>  {
+public class GiftCardSaleAdapter extends AbstractSelectAdapter<GiftCardSaleDetail, GiftCardSaleAdapter.MyViewHolder>  {
 
     private final MainActivity mContext;
     private View mCurrentItemView;
     private int mCurrentIndex;
 
-    public MobileGiftCardSaleAdapter(MainActivity activity){
+    public GiftCardSaleAdapter(MainActivity activity){
         mContext = activity;
         mData = new ArrayList<>();
     }
@@ -120,6 +122,16 @@ public class MobileGiftCardSaleAdapter extends AbstractSelectAdapter<GiftCardSal
         }
         mCurrentIndex = index;
         notifyDataSetChanged();
+    }
+
+    public void delCurGiftGard(){
+        if (hasValidIndex(mCurrentIndex)){
+            final GiftCardSaleDetail detail = getItem(mCurrentIndex);
+            if (MyDialog.showMessageToModalDialog(mContext, CustomApplication.getStringByResId(R.string.del_hint, detail == null ? "" : detail.getName())) == 1){
+                mData.remove(mCurrentIndex);
+                notifyDataSetChanged();
+            }
+        }
     }
 
 }

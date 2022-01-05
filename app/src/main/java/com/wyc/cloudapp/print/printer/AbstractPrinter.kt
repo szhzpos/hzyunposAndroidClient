@@ -1,12 +1,12 @@
 package com.wyc.cloudapp.print.printer
 
-import androidx.compose.foundation.shape.CutCornerShape
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.print.Printer
-import com.wyc.cloudapp.print.bean.PrintFormatInfo
 import com.wyc.cloudapp.print.bean.PrinterStatus
+import com.wyc.cloudapp.print.parameter.IParameter
+import com.wyc.cloudapp.print.receipts.GiftCardReceipts
 import com.wyc.cloudapp.print.receipts.IReceipts
 import com.wyc.cloudapp.utils.Utils
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +27,7 @@ import java.lang.reflect.InvocationTargetException
  * @UpdateRemark:   更新说明
  * @Version:        1.0
  */
-abstract class AbstractPrinter: IPrinter<PrintFormatInfo> {
+abstract class AbstractPrinter : IPrinter{
     protected fun showError(msg: String?) {
         if (Utils.isNotEmpty(msg)) {
             CoroutineScope(Dispatchers.IO).launch {
@@ -45,7 +45,7 @@ abstract class AbstractPrinter: IPrinter<PrintFormatInfo> {
     }
     companion object{
         @JvmStatic
-        fun printContent(receipts: IReceipts<PrintFormatInfo>) {
+        fun printContent(receipts: IReceipts<out IParameter>) {
             if (PrinterStatus.printerIsNotClose()){
                 CoroutineScope(Dispatchers.IO).launch {
                     getInstance()?.apply {
@@ -61,14 +61,14 @@ abstract class AbstractPrinter: IPrinter<PrintFormatInfo> {
             }
         }
         @JvmStatic
-        private fun getInstance():AbstractPrinter?{
+        private fun getInstance():IPrinter?{
             val printerParam = JSONObject()
             if (hasPrinter(printerParam)) {
                 val cls_id = Utils.getNullStringAsEmpty(printerParam, "cls_id")
                 try {
                     val printerClass = Class.forName("com.wyc.cloudapp.print.printer.$cls_id")
                     val constructor = printerClass.getConstructor()
-                    return (constructor.newInstance() as AbstractPrinter)
+                    return (constructor.newInstance() as IPrinter)
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                     MyDialog.toastMessage(e.message)

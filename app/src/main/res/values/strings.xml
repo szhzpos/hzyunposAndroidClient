@@ -112,13 +112,18 @@
     <string name="select_practice">选择做法</string>
     <string name="no_more_data">最后一页</string>
     <string name="cancel_load">取消加载</string>
-    <string name="selected">确认选择</string>
+    <string name="okSelected">确认选择</string>
     <string name="printer_error">读取打印机设置错误:%1$s</string>
     <string name="print_close_hint">打印功能已关闭!</string>
     <string name="print_open_hint">打印功能已开启!</string>
     <string name="save_print_param_error">保存打印状态错误:%1$s</string>
     <string name="print_content_empty">打印内容为空!</string>
-
+    <string name="del_hint">是否删除:%1$s?</string>
+    <string name="clear_hint">是否清空?</string>
+    <string name="testPrint">测试打印</string>
+    <string name="orderIdNotEmptyHint">打印单号不能为空!</string>
+    <string name="IllegalOrderSize">非法单据规格!</string>
+    <string name="exist_goods_hint">存在已选商品,请先处理!</string>
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
     <string name="vip_search_hint_sz">请输入会员手机号</string>
@@ -952,4 +957,5 @@
     <string name="printer_inserted">打印机%1$s被插入</string>
     <string name="print_finished">打印完成：%1$s</string>
     <string name="feedPaperFinished">走纸完成：%1$s</string>
+
 </resources>

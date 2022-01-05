@@ -1,9 +1,8 @@
 package com.wyc.cloudapp.print.receipts;
 
 import com.wyc.cloudapp.print.PrintItem;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.parameter.IParameter;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -18,8 +17,8 @@ import java.util.List;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public interface IReceipts<T> extends Serializable {
-    T getPrintFormat();
+public interface IReceipts<T extends IParameter> {
+    T getPrintParameter();
     List<PrintItem> getPrintItem();
     boolean isOpenCashBox();
 }

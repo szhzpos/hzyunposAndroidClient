@@ -13,7 +13,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.bean.VipChargeOrderPrintInfo;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
@@ -44,7 +44,7 @@ public class VipRechargeReceipts extends AbstractReceipts {
         AbstractPrinter.printContent(new VipRechargeReceipts(orderCode,false));
     }
     @Override
-    protected List<PrintItem> c_format_58(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_58(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
 
         final JSONObject order_info = VipChargeOrderPrintInfo.getInstance(orderCode);
         final JSONArray welfare = Utils.getNullObjectAsEmptyJsonArray(order_info,"welfare"),money_orders = Utils.getNullObjectAsEmptyJsonArray(order_info,"money_order"),
@@ -108,7 +108,7 @@ public class VipRechargeReceipts extends AbstractReceipts {
         printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%s","会员姓名：",vip_name)).build());
         printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%s","支付方式：",Utils.getNullStringAsEmpty(money_order,"pay_method_name"))).build());
         printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%s",context.getString(R.string.charge_amt_colon_sz),Utils.getNullStringAsEmpty(money_order,"order_money"))).build());
-        printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s:%s",context.getString(R.string.give_amt),Utils.getNullOrEmptyStringAsDefault(money_order,"give_money","0.00"))).build());
+        printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s：%s",context.getString(R.string.give_amt),Utils.getNullOrEmptyStringAsDefault(money_order,"give_money","0.00"))).build());
         printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%s","会员余额：",Utils.getNullStringAsEmpty(member,"money_sum"))).build());
         printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%s","会员积分：",Utils.getNullStringAsEmpty(member,"points_sum"))).build());
         printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%s","会员电话：",mobile)).build());
@@ -130,12 +130,12 @@ public class VipRechargeReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_76(@NonNull PrintFormatInfo mPrintFormatInfo, @NonNull String orderCOde) {
+    protected List<PrintItem> c_format_76(@NonNull SalePrintParameter mPrintFormatInfo, @NonNull String orderCOde) {
         return null;
     }
 
     @Override
-    protected List<PrintItem> c_format_80(@NonNull PrintFormatInfo mPrintFormatInfo, @NonNull String orderCOde) {
+    protected List<PrintItem> c_format_80(@NonNull SalePrintParameter mPrintFormatInfo, @NonNull String orderCOde) {
         return null;
     }
 

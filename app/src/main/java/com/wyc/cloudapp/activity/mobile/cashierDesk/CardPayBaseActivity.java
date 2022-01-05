@@ -53,6 +53,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
     private PayDetailViewAdapter mPayDetailViewAdapter;
     private PayMethod mPayMethod;
     private T mOrder;
+    private boolean mPaying = false;
 
     private double mPay_balance,mPay_amt,mCashAmt,mOrder_amt,mDiscount_amt,mActual_amt,mZlAmt,mAmt_received;
 
@@ -159,12 +160,14 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
                 refreshContent();
 
                 Logger.d("amt:%f - zl_amt:%f = %f,mActual_amt:%f,mAmt_received:%f",pay_amt,zl_amt,pay_amt - zl_amt,mActual_amt,mAmt_received);
-                double sale_amt = Utils.formatDouble(getSaleAmt(),2);
-                double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
-                if (Utils.equalDouble(sale_amt,rec_pay_amt)){//证销售金额以及付款金额是否相等
-                    save();
-                }else{
-                    MyDialog.displayErrorMessage(CardPayBaseActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
+                if (mPaying){
+                    double sale_amt = Utils.formatDouble(getSaleAmt(),2);
+                    double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
+                    if (Utils.equalDouble(sale_amt,rec_pay_amt)){//证销售金额以及付款金额是否相等
+                        save();
+                    }else{
+                        MyDialog.displayErrorMessage(CardPayBaseActivity.this, String.format(Locale.CHINA,"销售金额:%f  不等于 付款金额:%f",sale_amt,rec_pay_amt));
+                    }
                 }
             }
         });
@@ -234,9 +237,11 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
             if (!mPayDetailViewAdapter.isEmpty()){
                 final JSONObject method = mPayDetailViewAdapter.getDatas().getJSONObject(0);
                 if (object.getPay_method_id() == method.getIntValue("pay_method_id")){
+                    mPaying = false;
                     mPayDetailViewAdapter.clear();
                 }else
                     if (MyDialog.showMessageToModalDialog(this,getString(R.string.pay_method_exist_hints,method.getString("name"))) == 1){
+                        mPaying = false;
                         mPayDetailViewAdapter.clear();
                     }else return;
             }
@@ -253,6 +258,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
                         detail.put("pamt",mCashAmt);
                         detail.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
                         detail.put("v_num","");
+                        mPaying = true;
                         mPayDetailViewAdapter.addPayDetail(detail);
                     } else {
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(payMethodId) == null) {//剩余金额为零，同时不存在此付款方式的记录。
@@ -269,6 +275,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
                             final int code = payMethodDialogImp.exec();
                             if (code == 1){
                                 final JSONObject jsonObject = payMethodDialogImp.getContent();
+                                mPaying = true;
                                 mPayDetailViewAdapter.addPayDetail(jsonObject);
                             }else {
                                 mPayMethodViewAdapter.showDefaultPayMethod();

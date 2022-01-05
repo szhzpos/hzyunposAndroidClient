@@ -30,7 +30,7 @@ import java.util.Objects;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class SaleOrderPrintInfo implements Serializable {
+public class SaleOrderPrintInfo{
 
     @JSONField(name = "sales")
     private List<SalesDTO> sales;

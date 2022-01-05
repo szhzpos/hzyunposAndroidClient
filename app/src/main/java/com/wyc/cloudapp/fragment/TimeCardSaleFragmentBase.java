@@ -109,7 +109,7 @@ abstract public class TimeCardSaleFragmentBase extends AbstractMobileFragment {
     }
 
     protected void clearData(){
-        if (!mSaleAdapter.isEmpty() && MyDialog.showMessageToModalDialog(mContext,"是否清空?") == 1){
+        if (!mSaleAdapter.isEmpty() && MyDialog.showMessageToModalDialog(mContext,getString(R.string.clear_hint)) == 1){
             mSaleAdapter.clear();
         }
     }

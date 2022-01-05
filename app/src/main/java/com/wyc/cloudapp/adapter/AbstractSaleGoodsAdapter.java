@@ -221,6 +221,10 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         }else MyDialog.toastMessage(mContext.getNotEmptyHintsString(mContext.getString(R.string.goods_i_sz)));
     }
 
+    public void delCurSaleGoods(){
+        addCurrentGoods(-Utils.getNotKeyAsNumberDefault(getCurrentContent(),"xnum",0.0));
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     protected final void showGoodsPractice(JSONObject goods){
         final JSONArray oldGoodsPractices = Utils.getNullObjectAsEmptyJsonArray(goods,"goodsPractice");

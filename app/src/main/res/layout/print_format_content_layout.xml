@@ -87,13 +87,24 @@
             <Spinner
                 android:id="@+id/printer_id"
                 style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="@dimen/height_40"
                 android:layout_marginEnd="@dimen/margin_2"
+                android:layout_weight="1"
                 android:dropDownWidth="wrap_content"
                 android:foreground="@drawable/spinner_style"
                 android:minWidth="@dimen/width_88"
                 android:overlapAnchor="false" />
+
+            <Button
+                android:id="@+id/test"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_40"
+                android:layout_margin="@dimen/margin_2"
+                android:background="@drawable/button_blue"
+                android:text="@string/testPrint"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/font_size_16" />
 
         </LinearLayout>
 

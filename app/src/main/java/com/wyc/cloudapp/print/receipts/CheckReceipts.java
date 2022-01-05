@@ -6,15 +6,15 @@ import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.fragment.PrintFormatFragment;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.bean.SaleOrderPrintInfo;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.Utils;
@@ -49,12 +49,12 @@ public class CheckReceipts extends AbstractReceipts {
     }
     @Override
     protected int getFormatId() {
-        return R.id.checkout_format;
+        return PrintFormatFragment.CHECKOUt_FORMAT_ID;
     }
 
 
     @Override
-    protected List<PrintItem> c_format_58(@NonNull final PrintFormatInfo format_info, @NonNull final String orderCode){
+    protected List<PrintItem> c_format_58(@NonNull final SalePrintParameter format_info, @NonNull final String orderCode){
         final List<PrintItem> printItems = new ArrayList<>();
         final SaleOrderPrintInfo order_info = SaleOrderPrintInfo.getInstance(orderCode);
         if (order_info == null || order_info.isEmpty()){
@@ -190,12 +190,12 @@ public class CheckReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_76(@NonNull final PrintFormatInfo format_info,@NonNull final String orderCode) {
+    protected List<PrintItem> c_format_76(@NonNull final SalePrintParameter format_info, @NonNull final String orderCode) {
         return null;
     }
 
     @Override
-    protected List<PrintItem> c_format_80(@NonNull final PrintFormatInfo format_info,@NonNull final String orderCode) {
+    protected List<PrintItem> c_format_80(@NonNull final SalePrintParameter format_info, @NonNull final String orderCode) {
         return null;
     }
 

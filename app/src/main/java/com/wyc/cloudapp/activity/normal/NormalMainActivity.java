@@ -341,8 +341,14 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private void initFunctionBtn(){
         final Button minus_num_btn = findViewById(R.id.minus_num),add_num_btn = findViewById(R.id.add_num),num_btn = findViewById(R.id.num),
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
-                vip_btn = findViewById(R.id.vip);
+                vip_btn = findViewById(R.id.vip),del = findViewById(R.id.del);
 
+        if (null != del)del.setOnClickListener(v -> {
+            final JSONObject goods = mSaleGoodsAdapter.getCurrentContent();
+            if (!goods.isEmpty() && MyDialog.showMessageToModalDialog(this,getString(R.string.del_hint,goods.getString("goods_title"))) == 1){
+                mSaleGoodsAdapter.delCurSaleGoods();
+            }
+        });
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> minusOneGoods());//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
         if (num_btn != null)num_btn.setOnClickListener(view -> alterGoodsNumber());//数量
@@ -470,13 +476,14 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private void initCloseMainWindow(){
         mCloseBtn = findViewById(R.id.close);
         mCloseBtn.setOnClickListener((View V)->{
-            MyDialog.displayAskMessage(this, "是否退出收银？", (MyDialog myDialog)->{
-                myDialog.dismiss();
-                /*Intent intent = new Intent(this,LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                startActivity(intent);*/
-                this.finish();
-            }, Dialog::dismiss);
+            if (mSaleGoodsAdapter.isEmpty()){
+                MyDialog.displayAskMessage(this, "是否退出收银？", (MyDialog myDialog)->{
+                    myDialog.dismiss();
+                    this.finish();
+                }, Dialog::dismiss);
+            }else {
+                MyDialog.toastMessage(getString(R.string.exist_goods_hint));
+            }
         });
     }
 
@@ -985,7 +992,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             case MessageID.PRINTER_ERROR:
                 if (msg.obj instanceof String){
                     PrinterStatus.savePrinterStatus(PrinterStatus.ERROR,msg.obj.toString());
-                    if (mPrinterStatusIv != null)mPrinterStatusIv.setImageBitmap(Printer.drawPrintClose(null));
+                    if (mPrinterStatusIv != null)mPrinterStatusIv.setImageBitmap(Printer.drawPrintWarn(null));
                 }
                 break;
             case MessageID.PRINTER_SUCCESS:

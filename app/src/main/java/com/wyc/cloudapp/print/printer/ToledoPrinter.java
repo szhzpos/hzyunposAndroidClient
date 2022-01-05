@@ -11,14 +11,13 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.ToledoScale;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
-import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.parameter.IParameter;
+import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
@@ -104,7 +103,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
 
     private MtPrintApi mtPrintApi;
 
-    private PrintFormatInfo mPrintFormatInfo;
+    private IParameter mPrintFormatInfo;
     private List<PrintItem> ItemContent;
     private boolean mOpenCashBox = false;
 
@@ -307,11 +306,12 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     }
 
     @Override
-    public void printObj(@NonNull IReceipts<PrintFormatInfo> receipts) {
-        mPrintFormatInfo = receipts.getPrintFormat();
+    public void printObj(@NonNull IReceipts<? extends IParameter> receipts) {
+        mPrintFormatInfo = receipts.getPrintParameter();
         ItemContent = receipts.getPrintItem();
         mOpenCashBox = receipts.isOpenCashBox();
         mtPrintApi.connectToService(CustomApplication.self(),this);
+        Logger.d("mPrintFormatInfo:%s,ItemContent:%s",mPrintFormatInfo,ItemContent);
     }
 
     @Override

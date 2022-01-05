@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.print.bean;
+package com.wyc.cloudapp.print.parameter;
 
 import androidx.annotation.NonNull;
 
@@ -23,7 +23,7 @@ import java.io.Serializable;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class PrintFormatInfo implements Serializable {
+public class SalePrintParameter implements IParameter {
     @JSONField(name = "s_n")
     private String aliasStoresName;
     @JSONField(name = "f_s")
@@ -45,7 +45,8 @@ public class PrintFormatInfo implements Serializable {
         this.aliasStoresName = aliasStoresName;
     }
 
-    public Integer getFooterSpace() {
+    @Override
+    public int getFooterSpace() {
         return footerSpace == null ? 5 : footerSpace;
     }
 
@@ -69,7 +70,8 @@ public class PrintFormatInfo implements Serializable {
         this.formatId = formatId;
     }
 
-    public Integer getPrintCount() {
+    @Override
+    public int getPrintCount() {
         return printCount == null ? 1 : printCount;
     }
 

@@ -19,7 +19,7 @@ import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.AbsBindingActivity
 import com.wyc.cloudapp.activity.mobile.cashierDesk.CardPayBaseActivity
 import com.wyc.cloudapp.activity.mobile.cashierDesk.GiftCardPayActivity
-import com.wyc.cloudapp.adapter.MobileGiftCardSaleAdapter
+import com.wyc.cloudapp.adapter.GiftCardSaleAdapter
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.GiftCardInfo
@@ -34,7 +34,7 @@ import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog
 import com.wyc.cloudapp.utils.Utils
 
 class NGiftSaleActivity : AbsBindingActivity() {
-    private lateinit var mSaleAdapter: MobileGiftCardSaleAdapter
+    private lateinit var mSaleAdapter: GiftCardSaleAdapter
 
     @BindView(R.id.search_content)
     lateinit var search_content: EditText
@@ -86,7 +86,7 @@ class NGiftSaleActivity : AbsBindingActivity() {
 
     @OnClick(R.id._clear_btn)
     fun clear(){
-        if (!mSaleAdapter.isEmpty && MyDialog.showMessageToModalDialog(this,"是否清空?") == 1){
+        if (!mSaleAdapter.isEmpty && MyDialog.showMessageToModalDialog(this,getString(R.string.clear_hint)) == 1){
             mSaleAdapter.clear()
         }
     }
@@ -101,8 +101,10 @@ class NGiftSaleActivity : AbsBindingActivity() {
         getBindingData<ActivityNGiftSaleBinding>()?.giftCardInfo?.let {
             if (it.isSale){
                 MyDialog.toastMessage("已出售...")
-            }else
+            }else if (it.isValidity){
                 add(it)
+            }else
+                MyDialog.toastMessage(String.format("当前%s%s,请在有效期内使用!",CustomApplication.getStringByResId(R.string.valid_date),it.validity))
         }
     }
 
@@ -114,10 +116,14 @@ class NGiftSaleActivity : AbsBindingActivity() {
         return GiftCardSaleOrder.Builder().amt(sale_amt_tv.text.toString().toDouble()).
         saleman(getSaleManId()).cas_id(cashierId).saleInfo(mSaleAdapter.list).build()
     }
+    @OnClick(R.id._del)
+    fun del(){
+        mSaleAdapter.delCurGiftGard()
+    }
 
     private fun initSaleList() {
         val list = findViewById<RecyclerView>(R.id.sale_gift_card_list)
-        mSaleAdapter = MobileGiftCardSaleAdapter(this)
+        mSaleAdapter = GiftCardSaleAdapter(this)
         mSaleAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 var num = 0

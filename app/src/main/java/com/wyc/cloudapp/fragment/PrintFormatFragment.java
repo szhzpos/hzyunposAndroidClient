@@ -42,6 +42,7 @@ import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.printer.BluetoothPrinter;
 import com.wyc.cloudapp.print.printer.ToledoPrinter;
 import com.wyc.cloudapp.print.printer.USBPrinter;
+import com.wyc.cloudapp.print.receipts.TestReceipts;
 import com.wyc.cloudapp.utils.BluetoothUtils;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -55,6 +56,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     public static final int TIME_CARD_SALE_FORMAT_ID = 100;
     public static final int TIME_CARD_USE_FORMAT_ID = 101;
     public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
+    public static final int CHECKOUt_FORMAT_ID = 103;
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
 
     private static final String mTitle = CustomApplication.self().getString(R.string.print_setting);
@@ -114,10 +116,11 @@ public class PrintFormatFragment extends AbstractParameterFragment {
 
     @Override
     protected void viewCreated() {
-        final Button save_btn = findViewById(R.id.save);
+        final Button save_btn = findViewById(R.id.save),testBtn = findViewById(R.id.test);
         initPrinterId();
         //保存参数
-        save_btn.setOnClickListener(v->saveContent());
+        if (null != save_btn)save_btn.setOnClickListener(v->saveContent());
+        if (null != testBtn)testBtn.setOnClickListener(v -> TestReceipts.print());
     }
 
     @Override
@@ -286,7 +289,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                     footer_space = footer_space_et.getText().toString();
 
             //结账单
-            object.put("f",R.id.checkout_format);
+            object.put("f",CHECKOUt_FORMAT_ID);
             object.put("f_z",size_id);
             object.put("s_n",stores_name);
             object.put("f_c",footer_c);

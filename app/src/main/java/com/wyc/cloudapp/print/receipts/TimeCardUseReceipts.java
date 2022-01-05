@@ -12,7 +12,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -44,7 +44,7 @@ public class TimeCardUseReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_58(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_58(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
         final List<PrintItem> printItems = new ArrayList<>();
 
         final String store_name = formatInfo.getAliasStoresName();
@@ -117,12 +117,12 @@ public class TimeCardUseReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_76(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_76(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
         return null;
     }
 
     @Override
-    protected List<PrintItem> c_format_80(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_80(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
         return null;
     }
 

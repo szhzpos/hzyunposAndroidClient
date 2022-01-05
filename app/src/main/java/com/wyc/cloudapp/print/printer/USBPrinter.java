@@ -17,8 +17,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
-import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.parameter.IParameter;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -41,10 +40,11 @@ import java.util.List;
  */
 public class USBPrinter  extends AbstractPrinter {
     @Override
-    public void printObj(@NonNull IReceipts<PrintFormatInfo> receipts) {
-        usb_print_byte(receipts.getPrintFormat(),receipts.getPrintItem(),receipts.isOpenCashBox());
+    public void printObj(@NonNull IReceipts<? extends IParameter> receipts) {
+        usb_print_byte(receipts.getPrintParameter(),receipts.getPrintItem(),receipts.isOpenCashBox());
     }
-    private void usb_print_byte(final PrintFormatInfo format_info,List<PrintItem> items,boolean open){
+    private void usb_print_byte(final IParameter format_info, List<PrintItem> items, boolean open){
+        Logger.d("mPrintFormatInfo:%s,ItemContent:%s",format_info,items);
         boolean hasContent = format_info != null && items != null && !items.isEmpty();
         if (hasContent || open){
             MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));

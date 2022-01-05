@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.dialog.pay;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.Html;
@@ -25,9 +24,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.base.SaleActivity;
-import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.FullReduceRulesAdapter;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
@@ -47,10 +44,6 @@ import com.wyc.cloudapp.dialog.goods.BuyFullGiveXSelectDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
-import com.wyc.cloudapp.print.bean.PrinterStatus;
-import com.wyc.cloudapp.print.bean.SaleOrderPrintInfo;
 import com.wyc.cloudapp.print.receipts.CheckReceipts;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;

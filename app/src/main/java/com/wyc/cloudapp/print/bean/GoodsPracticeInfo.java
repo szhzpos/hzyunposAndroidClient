@@ -21,7 +21,7 @@ import java.util.Objects;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class GoodsPracticeInfo implements Serializable {
+public class GoodsPracticeInfo{
 
     @JSONField(name = "barcode_id")
     private String barcodeId;

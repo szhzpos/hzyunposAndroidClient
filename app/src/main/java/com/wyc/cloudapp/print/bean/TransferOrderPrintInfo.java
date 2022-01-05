@@ -30,7 +30,7 @@ import java.util.Objects;
  * @Version: 1.0
  */
 
-public class TransferOrderPrintInfo implements Serializable {
+public class TransferOrderPrintInfo{
 
     @JSONField(name = "cards_money")
     private Double cardsMoney;

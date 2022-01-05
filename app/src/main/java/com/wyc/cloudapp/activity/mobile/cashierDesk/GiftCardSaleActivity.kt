@@ -18,7 +18,7 @@ import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.customizationView.BasketView
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
-import com.wyc.cloudapp.adapter.MobileGiftCardSaleAdapter
+import com.wyc.cloudapp.adapter.GiftCardSaleAdapter
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.GiftCardInfo
@@ -35,7 +35,7 @@ import com.wyc.cloudapp.utils.http.HttpUtils
 import com.wyc.cloudapp.utils.http.callback.ArrayCallback
 
 open class GiftCardSaleActivity : AbstractDefinedTitleActivity() {
-    private lateinit var mSaleAdapter: MobileGiftCardSaleAdapter
+    private lateinit var mSaleAdapter: GiftCardSaleAdapter
     @BindView(R.id._search_content)
     lateinit var search_content: EditText
 
@@ -93,7 +93,7 @@ open class GiftCardSaleActivity : AbstractDefinedTitleActivity() {
         if (_clear_btn.visibility == View.GONE) {
             _clear_btn.visibility = View.VISIBLE
             if (!_clear_btn.hasOnClickListeners()) _clear_btn.setOnClickListener {
-                if (!mSaleAdapter.isEmpty && MyDialog.showMessageToModalDialog(this,"是否清空?") == 1){
+                if (!mSaleAdapter.isEmpty && MyDialog.showMessageToModalDialog(this,getString(R.string.clear_hint)) == 1){
                     mSaleAdapter.clear()
                 }
             }
@@ -102,7 +102,7 @@ open class GiftCardSaleActivity : AbstractDefinedTitleActivity() {
 
     private fun initSaleList() {
         val list = findViewById<RecyclerView>(R.id.sale_gift_card_list)
-        mSaleAdapter = MobileGiftCardSaleAdapter(this)
+        mSaleAdapter = GiftCardSaleAdapter(this)
         mSaleAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 var num = 0

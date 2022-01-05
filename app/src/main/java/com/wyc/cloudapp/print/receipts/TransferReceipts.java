@@ -9,7 +9,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
+import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.bean.TransferOrderPrintInfo;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.Utils;
@@ -42,7 +42,7 @@ public class TransferReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_58(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_58(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
         final TransferOrderPrintInfo order_info = TransferOrderPrintInfo.getInstance(orderCode);
         if (order_info == null || order_info.isEmpty()){
             MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.print_content_empty));
@@ -193,12 +193,12 @@ public class TransferReceipts extends AbstractReceipts {
     }
 
     @Override
-    protected List<PrintItem> c_format_76(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_76(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
         return null;
     }
 
     @Override
-    protected List<PrintItem> c_format_80(@NonNull PrintFormatInfo formatInfo, @NonNull String orderCode) {
+    protected List<PrintItem> c_format_80(@NonNull SalePrintParameter formatInfo, @NonNull String orderCode) {
         return null;
     }
 

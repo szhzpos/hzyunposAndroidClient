@@ -168,7 +168,7 @@ public final class Printer {
     private static final int LEFT_TEXT_MAX_LENGTH = 8;
 
     /**
-     * 换行
+     * 切纸
      */
     public static final byte[] CUT  = {0x1B, 0x6D};
 
@@ -296,38 +296,6 @@ public final class Printer {
         return new String(bytes, StandardCharsets.US_ASCII);
     }
 
-    public static void print(@NonNull final String content){
-        if (content.isEmpty())return;
-        try {
-            printInner(content);
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void printInner(@NonNull final String content) throws UnsupportedEncodingException {
-        if (content.isEmpty())return;
-        final JSONObject object = new JSONObject();
-        if (getPrinterSetting(object)){
-            int status_id = object.getIntValue("id");
-            String tmp = Utils.getNullStringAsEmpty(object,"v");
-            String[] vals = tmp.split("\t");
-            if (vals.length > 1){
-                switch (status_id){
-                    case R.id.bluetooth_p:
-                        bluetooth_print(content.getBytes(CHARACTER_SET),vals[1]);
-                        break;
-                    case R.id.usb_p:
-                        usb_print_byte(vals[0].substring(vals[0].indexOf(":") + 1),vals[1].substring(vals[1].indexOf(":") + 1),content.getBytes(CHARACTER_SET));
-                        break;
-                }
-            }
-        }else {
-            MyDialog.ToastMessage("读取打印机设置错误：" + object.getString("info"), null);
-        }
-    }
-
-
     public static boolean getPrinterSetting(@NonNull final JSONObject object){
         return SQLiteHelper.getLocalParameter("printer",object);
     }
@@ -393,88 +361,6 @@ public final class Printer {
                 }
             });
         }
-    }
-
-    private static void usb_print_byte(final String vid, final String pid, final byte[] in_bytes){
-        MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
-        CustomApplication.execute(()->{
-            UsbDevice device = null;
-            UsbInterface usbInterface = null;
-            UsbEndpoint usbOutEndpoint = null,usbInEndpoint = null,tmpEndpoint;
-            UsbDeviceConnection connection = null;
-            UsbManager manager = (UsbManager)CustomApplication.self().getSystemService(Context.USB_SERVICE);
-            if (manager != null){
-                HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
-                for(String sz:deviceList.keySet()){
-                    device = deviceList.get(sz);
-                    if (device != null){
-                        Logger.d("name:%s,--vid:%s,--pid:%s",device.getDeviceName(),vid,pid);
-                        Logger.d("name:%s,vid:%d,pid:%d",device.getDeviceName(),device.getVendorId(),device.getProductId());
-                        if (String.valueOf(device.getVendorId()).equals(vid) && String.valueOf(device.getProductId()).equals(pid)){
-                            break;
-                        }
-                    }
-                }
-                if (null != device){
-                    usbInterface = device.getInterface(0);
-                    for(int i = 0,size = usbInterface.getEndpointCount();i < size; i++){
-                        tmpEndpoint = usbInterface.getEndpoint(i);
-                        if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_OUT){
-                            usbOutEndpoint = tmpEndpoint;
-                        }else if (tmpEndpoint.getDirection() == UsbConstants.USB_DIR_IN){
-                            usbInEndpoint =tmpEndpoint;
-                        }
-                    }
-                    if (usbOutEndpoint != null){
-                        connection = manager.openDevice(device);
-                        if (null != connection){
-                            if (connection.claimInterface(usbInterface, true)){
-                                try {
-
-                                    byte[] tmpBytes;
-                                    int length = in_bytes.length,max_length = 4096;
-                                    int count = length / max_length,tmp_c = 0,ret_c = 0,mod_length = 0;
-
-                                    synchronized (Printer.class){
-                                       connection.bulkTransfer(usbOutEndpoint,RESET,RESET.length, 100);
-
-                                        if (count == 0){
-                                            ret_c = connection.bulkTransfer(usbOutEndpoint,in_bytes,length, 30000);
-                                        }else{
-                                            if ((mod_length = length % max_length) > 0)count += 1;
-
-                                            while (tmp_c < count){
-                                                if (tmp_c + 1 == count){
-                                                    tmpBytes = Arrays.copyOfRange(in_bytes,tmp_c * max_length,tmp_c * max_length + mod_length);
-                                                }else
-                                                    tmpBytes = Arrays.copyOfRange(in_bytes,tmp_c * max_length,tmp_c * max_length + max_length);
-
-                                                ret_c += connection.bulkTransfer(usbOutEndpoint,tmpBytes,tmpBytes.length, 30000);
-                                                tmp_c++;
-                                            }
-
-                                        }
-                                        MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
-                                        Logger.d("ret_c:%d,bytes.length:%d",ret_c,length);
-                                    }
-                                } finally {
-                                    connection.releaseInterface(usbInterface);
-                                    connection.close();
-                                }
-                            }else{
-                                CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("独占访问打印机错误！", null));
-                            }
-                        }else{
-                            CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("打开打印机连接错误！", null));
-                        }
-                    }else{
-                        CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("未找到USB输出端口！", null));
-                    }
-                }else{
-                    CustomApplication.postAtFrontOfQueue(()->MyDialog.ToastMessage("未找到打印机设备！", null));
-                }
-            }
-        });
     }
 
     public static void updatePrintIcon(final MainActivity activity,final int x,final int y){

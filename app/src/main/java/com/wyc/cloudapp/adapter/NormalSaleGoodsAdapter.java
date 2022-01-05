@@ -35,7 +35,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
 
     private final ClickListener onTouchListener = new ClickListener(v -> {
         setCurrentItemIndexAndItemView(v);
-        addCurrentGoods(-Utils.getNotKeyAsNumberDefault(getCurrentContent(),"xnum",0.0));
+        delCurSaleGoods();
     }, this::setSelectStatus);
 
     @Override

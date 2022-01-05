@@ -13,8 +13,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.print.bean.PrintFormatInfo;
-import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.parameter.IParameter;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -38,10 +37,11 @@ import java.util.concurrent.locks.LockSupport;
  */
 public class BluetoothPrinter extends AbstractPrinter {
     @Override
-    public void printObj(@NonNull IReceipts<PrintFormatInfo> receipts) {
-        bluetooth_print(receipts.getPrintFormat(),receipts.getPrintItem(),receipts.isOpenCashBox());
+    public void printObj(@NonNull IReceipts<? extends IParameter> receipts) {
+        bluetooth_print(receipts.getPrintParameter(),receipts.getPrintItem(),receipts.isOpenCashBox());
     }
-    private void bluetooth_print(final PrintFormatInfo format_info,List<PrintItem> items,boolean open){
+    private void bluetooth_print(final IParameter format_info,List<PrintItem> items,boolean open){
+        Logger.d("mPrintFormatInfo:%s,ItemContent:%s",format_info,items);
         boolean hasContent = format_info != null && items != null && !items.isEmpty();
         if (hasContent || open){
 

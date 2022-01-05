@@ -9,7 +9,7 @@ import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.dialog.MyDialog
 import java.io.Serializable
 
-data class PrinterStatus(private var value:Int,private var msg:String?):Serializable{
+data class PrinterStatus(private var value:Int,private var msg:String?){
     constructor() : this(0,"")
 
     fun isOpen():Boolean{

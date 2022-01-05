@@ -25,9 +25,7 @@ import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.data.room.dao.GiftCardSaleOrderDao
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.fragment.PrintFormatFragment
 import com.wyc.cloudapp.logger.Logger
-import com.wyc.cloudapp.print.Printer
 import com.wyc.cloudapp.print.printer.AbstractPrinter
 import com.wyc.cloudapp.print.receipts.GiftCardReceipts
 import com.wyc.cloudapp.utils.FormatDateTimeUtils

@@ -9,6 +9,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -281,6 +282,12 @@ public final class GiftCardInfo implements Parcelable {
     public String getValidity(){
        return String.format("%s至%s", FormatDateTimeUtils.formatDate(startTime * 1000), FormatDateTimeUtils.formatDate(endTime * 1000));
     }
+
+    public boolean isValidity(){
+        long cur = new Date().getTime() / 1000;
+        return startTime <= cur && cur <= endTime;
+    }
+
     public String getMadeTime(){
         return FormatDateTimeUtils.formatTimeWithTimestamp(addtime * 1000);
     }
