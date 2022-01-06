@@ -101,14 +101,26 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     public static final int RETURN_CODE_UNKNOWN_ERROR = -13;
     public static final int RETURN_CODE_PORT_NOT_READY = -14;
 
-    private MtPrintApi mtPrintApi;
+    private volatile MtPrintApi mtPrintApi;
 
-    private IParameter mPrintFormatInfo;
-    private List<PrintItem> ItemContent;
-    private boolean mOpenCashBox = false;
+    private volatile boolean isConnected = false;
 
-    public ToledoPrinter(){
+    private ToledoPrinter() throws IllegalAccessException {
+        if (sPrinter != null) throw new IllegalAccessException("ToledoPrinter can have only one instance");
         mtPrintApi = MtPrintApi.getInstance();
+        mtPrintApi.connectToService(CustomApplication.self(),this);
+    }
+
+    private volatile static ToledoPrinter sPrinter = null;
+    public static ToledoPrinter getInstance() throws IllegalAccessException {
+        if (sPrinter == null) {
+            synchronized (ToledoPrinter.class) {
+                if (sPrinter == null) {
+                    sPrinter = new ToledoPrinter();
+                }
+            }
+        }
+        return sPrinter;
     }
 
     @Override
@@ -119,6 +131,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     @Override
     public void onMtPrintServiceDisconnected() {
         showError(CustomApplication.getStringByResId(R.string.printer_offline));
+        isConnected = false;
     }
 
     /**
@@ -140,53 +153,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
 
     @Override
     public void onPrinterListChanged(ArrayList<String> printerList) {
-        if (mPrintFormatInfo != null && ItemContent != null && !ItemContent.isEmpty()){
-            MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
-
-            final MtPrintResult result = new MtPrintResult();
-            mtPrintApi.setLeftMargin(40,result);
-            int align = 0;
-
-            int count = mPrintFormatInfo.getPrintCount();
-            while (count-- > 0){
-                for (PrintItem item : ItemContent){
-                    int fontSize = 24;
-                    if (item.getLineSpacing() == PrintItem.LineSpacing.SPACING_10){
-                        mtPrintApi.setDefaultFontSize(12,result);
-                        mtPrintApi.printBlankLine(1,result);
-                    }
-                    if (item.isDoubleHigh()){
-                        fontSize = 32;
-                    }
-                    if (item.isBold()){
-                        fontSize = 28;
-                    }
-                    switch (item.getAlign()){
-                        case LEFT:
-                            align = 0;
-                            break;
-                        case CENTRE:
-                            align = 1;
-                            break;
-                        case RIGHT:
-                            align = 2;
-                            break;
-                    }
-                    boolean ret = mtPrintApi.printTextWithFontAndAlignment(item.getContent(),fontSize,align,result);
-                    if (!ret){
-                        showError(result.getMsg());
-                        return;
-                    }
-                    LockSupport.parkNanos(1000 * 1000 * 20L);
-                }
-                mtPrintApi.setDefaultFontSize(18,result);
-                mtPrintApi.printBlankLine(mPrintFormatInfo.getFooterSpace(),result);
-            }
-            printSuccess();
-            if (mOpenCashBox){
-                openCashBox();
-            }
-        }
+        isConnected = true;
     }
 
     @Override
@@ -197,7 +164,6 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
     @Override
     public void onPrintFinished(int retCode) {
         MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.print_finished,getErrorStr(retCode)));
-        clear();
     }
 
     public static String getErrorStr(int err) {
@@ -291,7 +257,10 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
         return msg;
     }
 
-    private void clear(){
+    @Override
+    public void clear(){
+        isConnected  = false;
+        sPrinter = null;
         if (mtPrintApi != null){
             mtPrintApi.disconnectService(CustomApplication.self());
             try {
@@ -305,13 +274,94 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
         }
     }
 
+    private void checkConnectService(){
+        if (!isConnected){
+            try{
+                int tryCount = 0;
+                if (mtPrintApi == null){
+                    mtPrintApi = MtPrintApi.getInstance();
+                }
+                mtPrintApi.connectToService(CustomApplication.self(), this);
+                Thread.sleep(2000);
+                while(!isConnected && !Thread.currentThread().isInterrupted())
+                {
+                    Thread.sleep(200);
+                    if(!isConnected)
+                    {
+                        tryCount++;
+                        if(tryCount >= 30) // 6 seconds timeout.
+                        {
+                            break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                MyDialog.toastMessage(e.getMessage());
+            }
+        }
+    }
+
     @Override
     public void printObj(@NonNull IReceipts<? extends IParameter> receipts) {
-        mPrintFormatInfo = receipts.getPrintParameter();
-        ItemContent = receipts.getPrintItem();
-        mOpenCashBox = receipts.isOpenCashBox();
-        mtPrintApi.connectToService(CustomApplication.self(),this);
-        Logger.d("mPrintFormatInfo:%s,ItemContent:%s",mPrintFormatInfo,ItemContent);
+        synchronized (ToledoPrinter.class){
+            checkConnectService();
+            if (!isConnected){
+                MyDialog.toastMessage(getErrorStr(RETURN_CODE_NOT_CONNECTED));
+                return;
+            }
+            final IParameter mPrintFormatInfo = receipts.getPrintParameter();
+            final List<PrintItem> ItemContent = receipts.getPrintItem();
+            boolean openCashBox = receipts.isOpenCashBox();
+
+            if (ItemContent != null && !ItemContent.isEmpty() && mPrintFormatInfo != null){
+                MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
+
+                final MtPrintResult result = new MtPrintResult();
+                mtPrintApi.setLeftMargin(40,result);
+                int align = 0;
+
+                int count = mPrintFormatInfo.getPrintCount();
+                while (count-- > 0){
+                    for (PrintItem item : ItemContent){
+                        int fontSize = 24;
+                        if (item.getLineSpacing() == PrintItem.LineSpacing.SPACING_10){
+                            mtPrintApi.setDefaultFontSize(12,result);
+                            mtPrintApi.printBlankLine(1,result);
+                        }
+                        if (item.isDoubleHigh()){
+                            fontSize = 32;
+                        }
+                        if (item.isBold()){
+                            fontSize = 28;
+                        }
+                        switch (item.getAlign()){
+                            case LEFT:
+                                align = 0;
+                                break;
+                            case CENTRE:
+                                align = 1;
+                                break;
+                            case RIGHT:
+                                align = 2;
+                                break;
+                        }
+                        boolean ret = mtPrintApi.printTextWithFontAndAlignment(item.getContent(),fontSize,align,result);
+                        if (!ret){
+                            showError(result.getMsg());
+                            return;
+                        }
+                        LockSupport.parkNanos(1000 * 1000 * 20L);
+                    }
+                    mtPrintApi.setDefaultFontSize(18,result);
+                    mtPrintApi.printBlankLine(mPrintFormatInfo.getFooterSpace(),result);
+                }
+                printSuccess();
+                if (openCashBox){
+                    openCashBox();
+                }
+            }
+        }
     }
 
     @Override

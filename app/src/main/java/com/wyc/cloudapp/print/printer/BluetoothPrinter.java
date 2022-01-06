@@ -150,4 +150,9 @@ public class BluetoothPrinter extends AbstractPrinter {
     public void openCashBox() {
         bluetooth_print(null,null,true);
     }
+
+    @Override
+    public void clear() {
+
+    }
 }

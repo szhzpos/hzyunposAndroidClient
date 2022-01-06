@@ -39,6 +39,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.print.printer.BluetoothPrinter;
 import com.wyc.cloudapp.print.printer.ToledoPrinter;
 import com.wyc.cloudapp.print.printer.USBPrinter;
@@ -216,6 +217,9 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             mPrinterId.setOnTouchListener((v, event) -> {
                 v.performClick();
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
+                    if (mPrintIdAdapter != null && mPrintIdAdapter.getCount() != 0){
+                        mPrintIdAdapter.clear();
+                    }
                     startFindDevice();
                 }
                 return false;
@@ -440,6 +444,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             object.put("s",status);
             object.put("cls_id",cls_id);
             object.put("v",value);
+            AbstractPrinter.resetPrinter(cls_id);
         }else{
             if (Printer.getPrinterSetting(object)){
                 String printer_info = Utils.getNullStringAsEmpty(object,"v");
@@ -521,9 +526,6 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                             mProgressDialog.setMessage(getString(R.string.searching_bluetooth)).refreshMessage();
                             if (!mProgressDialog.isShowing())mProgressDialog.show();
                         }
-                        if (mPrintIdAdapter != null && mPrintIdAdapter.getCount() != 0){
-                            mPrintIdAdapter.clear();
-                        }
                         break;
                     case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
                         if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
@@ -594,6 +596,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     }
 
     private void innerDriver(){
+        mPrintIdAdapter.remove(ToPrinter);
         mPrintIdAdapter.add(ToPrinter);
     }
 

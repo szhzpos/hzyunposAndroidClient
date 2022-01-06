@@ -186,4 +186,9 @@ public class USBPrinter  extends AbstractPrinter {
     public void openCashBox() {
         usb_print_byte(null,null,true);
     }
+
+    @Override
+    public void clear() {
+
+    }
 }

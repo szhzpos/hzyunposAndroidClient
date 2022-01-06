@@ -28,6 +28,7 @@ import java.lang.reflect.InvocationTargetException
  * @Version:        1.0
  */
 abstract class AbstractPrinter : IPrinter{
+
     protected fun showError(msg: String?) {
         if (Utils.isNotEmpty(msg)) {
             CoroutineScope(Dispatchers.IO).launch {
@@ -44,6 +45,9 @@ abstract class AbstractPrinter : IPrinter{
         }
     }
     companion object{
+        @Volatile
+        private var sPrinter: IPrinter? = null
+
         @JvmStatic
         fun printContent(receipts: IReceipts<out IParameter>) {
             if (PrinterStatus.printerIsNotClose()){
@@ -66,9 +70,18 @@ abstract class AbstractPrinter : IPrinter{
             if (hasPrinter(printerParam)) {
                 val cls_id = Utils.getNullStringAsEmpty(printerParam, "cls_id")
                 try {
-                    val printerClass = Class.forName("com.wyc.cloudapp.print.printer.$cls_id")
-                    val constructor = printerClass.getConstructor()
-                    return (constructor.newInstance() as IPrinter)
+                    if (sPrinter == null){
+                        synchronized(AbstractPrinter::class){
+                            if (sPrinter == null){
+                                val printerClass = Class.forName("com.wyc.cloudapp.print.printer.$cls_id")
+                                sPrinter = if (ToledoPrinter::class.java.simpleName.equals(cls_id)){
+                                    printerClass.getMethod("getInstance").invoke(null) as IPrinter
+                                }else{
+                                    printerClass.getConstructor().newInstance() as IPrinter
+                                }
+                            }
+                        }
+                    }
                 } catch (e: ClassNotFoundException) {
                     e.printStackTrace()
                     MyDialog.toastMessage(e.message)
@@ -87,7 +100,7 @@ abstract class AbstractPrinter : IPrinter{
                 }
             }else MyDialog.toastMessage(printerParam.getString("info"))
 
-           return null
+           return sPrinter
         }
         @JvmStatic
         fun hasPrinter(oriObj: JSONObject?): Boolean {
@@ -99,6 +112,25 @@ abstract class AbstractPrinter : IPrinter{
                     false
                 }
             } else false
+        }
+        @JvmStatic
+        fun clearResource(){
+            synchronized(AbstractPrinter::class){
+                sPrinter?.apply {
+                    clear()
+                    sPrinter = null
+                }
+            }
+        }
+        @JvmStatic
+        fun resetPrinter(printerCls:String?){
+            synchronized(AbstractPrinter::class){
+                sPrinter?.apply {
+                    if (!javaClass.simpleName.equals(printerCls)){
+                        clearResource();
+                    }
+                }
+            }
         }
     }
 
