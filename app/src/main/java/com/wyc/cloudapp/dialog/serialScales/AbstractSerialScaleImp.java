@@ -30,7 +30,9 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
             mSerialPort = null;
         }
     }
-
+    /**
+     * @return -1 初始化错误 0 初始化成功 1称参数未设置
+     * */
     public static int readWeight(final JSONObject object){
         int code = -1;
         if (hasSettingSerialPortScale(object)){

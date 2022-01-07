@@ -35,8 +35,9 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
     private AbstractSerialScaleImp mSerialScale;
+    private boolean hasWeigh = true;
+    private volatile int mStableFlag = AbstractSerialScaleImp.OnReadStatus.NO_STABLE;
     private volatile double mValue;
-    private volatile boolean mStable = false;
     /**
      * 自动取重
      * */
@@ -89,7 +90,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
 
     @Override
     public void show() {
-        if (mStable && mAuto){
+        if ((mStableFlag == AbstractSerialScaleImp.OnReadStatus.STABLE) && mAuto){
             getWeigh();
         }else
             super.show();
@@ -116,9 +117,9 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                 double v = 0.0,price = 0.0;
                 try {
                     if (s.length() != 0)
-                        v = Double.valueOf(s.toString());
+                        v = Double.parseDouble(s.toString());
 
-                    price =Double.valueOf(mPriceTv.getText().toString());
+                    price = mPriceTv.length() == 0 ? 0.0 : Double.parseDouble(mPriceTv.getText().toString());
                 }catch (NumberFormatException e){
                     e.printStackTrace();
                     v = 0.0;
@@ -128,18 +129,23 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                 mAmtTv.setText(String.format(Locale.CHINA,"%.2f",v * price));
             }
         });
+        if (hasWeigh){
+            mWvalueEt.setEnabled(false);
+        }
     }
 
     private void initKeyboardView(){
         final KeyboardView view = findViewById(R.id.keyboard_view);
         view.layout(R.layout.change_price_keyboard_layout);
-        view.setCurrentFocusListener(() -> {
-            final View focus = getCurrentFocus();
-            if (focus instanceof EditText){
-                return (EditText) focus;
-            }
-            return null;
-        });
+        if (!hasWeigh){
+            view.setCurrentFocusListener(() -> {
+                final View focus = getCurrentFocus();
+                if (focus instanceof EditText && focus.isEnabled()){
+                    return (EditText) focus;
+                }
+                return null;
+            });
+        }
         view.setCancelListener(v -> closeWindow());
         view.setOkListener(v -> getWeigh());
     }
@@ -181,7 +187,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     }else{
                         imageView.setImageDrawable(mContext.getDrawable(R.drawable.nodish));
                     }
-                    mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",1.0));
+                    mWvalueEt.setText(String.format(Locale.CHINA,"%.2f",0.0));
                 }else {
                     MyDialog.ToastMessage("查询促销信息错误：" +object.getString("info"), getWindow());
                 }
@@ -208,24 +214,30 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                     mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(int stat,double num) {
-                            mContext.setScaleInfo(stat,(float) num);
-                            boolean invalid = WeightInfoView.hasInvalidWeight(num);
-                            if (mContinuousWeighing){
-                                if (mOnYesClick != null)CustomApplication.runInMainThread(()-> mOnYesClick.onYesClick(invalid ? 0.0 : num));
-                            }else
-                            if (null != mWvalueEt)CustomApplication.runInMainThread(()-> mWvalueEt.setText(invalid? CustomApplication.getStringByResId(R.string.invalid_weight) : String.format(Locale.CHINA,"%.3f",num)));
+                            if (mStableFlag != stat || !Utils.equalDouble(num,mValue)){
 
-                            mValue = num;
-                            mStable = stat == AbstractSerialScaleImp.OnReadStatus.STABLE;
+                                Logger.d("stat:%d,num:%f",stat,num);
+
+                                mContext.setScaleInfo(stat,(float) num);
+                                boolean invalid = WeightInfoView.hasInvalidWeight(num);
+                                if (mContinuousWeighing){
+                                    if (mOnYesClick != null)CustomApplication.postAtFrontOfQueue(()-> mOnYesClick.onYesClick(invalid ? 0.0 : num));
+                                }else
+                                if (null != mWvalueEt)CustomApplication.postAtFrontOfQueue(()-> mWvalueEt.setText(invalid? CustomApplication.getStringByResId(R.string.invalid_weight) : String.format(Locale.CHINA,"%.3f",num)));
+
+                                mValue = num;
+                                mStableFlag = stat;
+                            }
                         }
                         @Override
                         public void onError(String err) {
-                            CustomApplication.runInMainThread(()-> MyDialog.ToastMessage("读数量错误：" + err, getWindow()));
+                            MyDialog.toastMessage(String.format(Locale.CHINA,"读数量错误：%s",err));
                         }
                     }).startRead();
                 }
+                hasWeigh = code != 1;
             }else{
-                MyDialog.ToastMessage("称初始化错误：" + Utils.getNullStringAsEmpty(object,"info"), getWindow());
+                MyDialog.toastMessage(String.format(Locale.CHINA,"称初始化错误：%s",Utils.getNullStringAsEmpty(object,"info")));
             }
         }
     }

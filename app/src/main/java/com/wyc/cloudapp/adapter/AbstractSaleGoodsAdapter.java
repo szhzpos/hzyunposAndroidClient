@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.FullReduceRule;
 import com.wyc.cloudapp.bean.PromotionRule;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -946,30 +947,35 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         return copy;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void deleteSaleGoods(int index){
-        int size = mData.size();
+        final int size = mData.size();
         if (0 <= index && index < size){
-            if (GoodsInfoViewAdapter.isBuyXGiveX(getCurrentContent()))return;//买X送X的商品不能删除
-            if (verifyDeletePermissions()){
-                JSONObject goods;
-                goods = (JSONObject) mData.remove(index);
-                if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
-                    if (index == size - 1){
-                        mCurrentItemIndex--;
-                    }else{
-                        mCurrentItemIndex =  mData.size() - 1;
-                    }
-                    mCurrentItemView = null;
-                }
-                //处理买X送X
-                index = findBuyXGiveGoodsWithBuyId(Utils.getNullStringAsEmpty(goods,"barcode_id"));
-                if (verifyIndex(index)){
-                    mData.remove(index);
-                }
-            }else
-                return;
+            final JSONObject curGoods = getCurrentContent();
+            if (GoodsInfoViewAdapter.isBuyXGiveX(curGoods))return;//买X送X的商品不能删除
+            if (verifyDeletePermissions()) {
+                MyDialog.displayAskMessage(mContext, CustomApplication.getStringByResId(R.string.del_hint, Utils.getNullStringAsEmpty(curGoods, "goods_title")),
+                        myDialog -> {
+                            JSONObject goods;
+                            goods = (JSONObject) mData.remove(index);
+                            if (mCurrentItemIndex == index) {//如果删除的是当前选择的item则重置当前index以及View
+                                if (index == size - 1) {
+                                    mCurrentItemIndex--;
+                                } else {
+                                    mCurrentItemIndex = mData.size() - 1;
+                                }
+                                mCurrentItemView = null;
+                            }
+                            //处理买X送X
+                            int i = findBuyXGiveGoodsWithBuyId(Utils.getNullStringAsEmpty(goods, "barcode_id"));
+                            if (verifyIndex(i)) {
+                                mData.remove(i);
+                            }
+                            notifyDataSetChanged();
+                            myDialog.dismiss();
+                        }, MyDialog::dismiss);
+            }
 
-            notifyDataSetChanged();
         }
     }
     public void updateSaleGoodsDialog(final short type){//type 0 修改数量 1修改价格 2打折
@@ -1128,9 +1134,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                     content = content / price * 10;
             }
             return !mContext.verifyDiscountPermissions(content / 10, null);
-        } else  if (0 == type && Utils.equalDouble(content,0.0))
-            return !verifyDeletePermissions();
-
+        }
         return false;
     }
 

@@ -343,12 +343,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
                 vip_btn = findViewById(R.id.vip),del = findViewById(R.id.del);
 
-        if (null != del)del.setOnClickListener(v -> {
-            final JSONObject goods = mSaleGoodsAdapter.getCurrentContent();
-            if (!goods.isEmpty() && MyDialog.showMessageToModalDialog(this,getString(R.string.del_hint,goods.getString("goods_title"))) == 1){
-                mSaleGoodsAdapter.delCurSaleGoods();
-            }
-        });
+        if (null != del)del.setOnClickListener(v -> delSingleGoods());
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> minusOneGoods());//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
         if (num_btn != null)num_btn.setOnClickListener(view -> alterGoodsNumber());//数量

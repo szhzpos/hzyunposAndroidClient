@@ -178,6 +178,12 @@ public class SaleActivity extends MainActivity{
         }
         return code;
     }
+    protected void delSingleGoods(){
+        final JSONObject goods = mSaleGoodsAdapter.getCurrentContent();
+        if (!goods.isEmpty()){
+            mSaleGoodsAdapter.delCurSaleGoods();
+        }
+    }
     @CallSuper
     public void showVipInfo(final JSONObject vip){
         mVipInfo = vip;

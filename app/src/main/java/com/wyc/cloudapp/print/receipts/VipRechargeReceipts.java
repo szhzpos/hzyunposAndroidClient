@@ -36,7 +36,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class VipRechargeReceipts extends AbstractReceipts {
+public final class VipRechargeReceipts extends AbstractReceipts {
     public VipRechargeReceipts(String orderCode, boolean open) {
         super(formatInfo("v_f_info"), orderCode, open);
     }

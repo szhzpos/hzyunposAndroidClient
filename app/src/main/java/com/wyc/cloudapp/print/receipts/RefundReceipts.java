@@ -30,7 +30,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class RefundReceipts extends AbstractReceipts {
+public final class RefundReceipts extends AbstractReceipts {
     public RefundReceipts(String orderCode,boolean open) {
         super(formatInfo("r_f_info"),orderCode, open);
     }

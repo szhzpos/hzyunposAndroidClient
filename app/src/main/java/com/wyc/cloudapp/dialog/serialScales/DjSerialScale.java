@@ -43,21 +43,18 @@ public class DjSerialScale extends AbstractSerialScaleImp {
                                 break;
                             case 0x03:
                                 if (mOnReadStatus != null){
-                                    statTmp = stringBuilder.indexOf("S") != 0 ? OnReadStatus.STABLE : stringBuilder.indexOf("U") != 0 ? OnReadStatus.NO_STABLE : OnReadStatus.OTHER;
-                                    if (statTmp == OnReadStatus.STABLE){
-                                        start = stringBuilder.indexOf(" ");
-                                        if (start == -1)start = stringBuilder.indexOf("-");
+                                    statTmp = stringBuilder.indexOf("S") == 0 ? OnReadStatus.STABLE : stringBuilder.indexOf("U") == 0 ? OnReadStatus.NO_STABLE : OnReadStatus.OTHER;
 
-                                        end = stringBuilder.indexOf("k");
-                                        if ( -1 < start && start < stringBuilder.length() && start <= end && end < stringBuilder.length()){
-                                            tmp_v  =Double.parseDouble(stringBuilder.substring(start,end));
-                                            if (!Utils.equalDouble(value,tmp_v)){
-                                                value = tmp_v;
-                                                stat = statTmp;
-                                                mOnReadStatus.onFinish(stat,value);
-                                            }
-                                        }
-                                    }else {
+                                    start = stringBuilder.indexOf(" ");
+                                    if (start == -1)start = stringBuilder.indexOf("-");
+                                    end = stringBuilder.indexOf("k");
+                                    if ( -1 < start && start < stringBuilder.length() && start <= end && end < stringBuilder.length()){
+                                        tmp_v  =Double.parseDouble(stringBuilder.substring(start,end));
+                                    }
+
+                                    if (stat != statTmp || !Utils.equalDouble(value,tmp_v)){
+                                        stat = statTmp;
+                                        value = tmp_v;
                                         mOnReadStatus.onFinish(stat,value);
                                     }
                                 }

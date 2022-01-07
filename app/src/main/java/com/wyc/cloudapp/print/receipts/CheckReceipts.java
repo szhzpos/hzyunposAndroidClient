@@ -35,7 +35,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class CheckReceipts extends AbstractReceipts {
+public final class CheckReceipts extends AbstractReceipts {
 
     public CheckReceipts(final String orderCode,boolean open){
         super(formatInfo("c_f_info"),orderCode,open);

@@ -30,7 +30,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TransferReceipts extends AbstractReceipts {
+public final class TransferReceipts extends AbstractReceipts {
     private final boolean mTransferAmtNotVisible;
     protected TransferReceipts(String orderCode,boolean visible, boolean open) {
         super(formatInfo("t_f_info"), orderCode, open);

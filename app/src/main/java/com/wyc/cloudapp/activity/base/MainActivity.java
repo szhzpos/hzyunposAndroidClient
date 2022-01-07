@@ -36,6 +36,10 @@ public class MainActivity extends BaseActivity {
         return verifyPermissions("26",null);
     }
 
+    protected boolean verifyDelSingleGoods(){
+        return verifyPermissions("1",null);
+    }
+
     protected boolean verifyClearPermissions(){
         return verifyPermissions("2",null);
     }

@@ -219,6 +219,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 if (event.getAction() == MotionEvent.ACTION_DOWN){
                     if (mPrintIdAdapter != null && mPrintIdAdapter.getCount() != 0){
                         mPrintIdAdapter.clear();
+                        mPrintIdAdapter.add(mContext.getString(R.string.select_printer_hint));
                     }
                     startFindDevice();
                 }
@@ -419,37 +420,46 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         String cls_id = "";//驱动调用对应的实现类名
         JSONObject object = new JSONObject();
         RadioGroup radioGroup = findViewById(R.id.print_way);
-        final String value = mPrinterId.getSelectedItem().toString();
         if (way){
-            switch (radioGroup.getCheckedRadioButtonId()){
-                case R.id.bluetooth_p:
-                    id = R.id.bluetooth_p;
-                    status = 1;
-                    cls_id = BluetoothPrinter.class.getSimpleName();
-                    break;
-                case R.id.usb_p:
-                    id = R.id.usb_p;
-                    status = 1;
-                    cls_id = USBPrinter.class.getSimpleName();
-                    break;
-                case R.id.innerDriver:
-                    id = R.id.innerDriver;
-                    status = 1;
-                    if (ToPrinter.equals(value)){
-                        cls_id = ToledoPrinter.class.getSimpleName();
-                    }
-                    break;
+            if (checkPrinter()){
+                final String value = mPrinterId.getSelectedItem().toString();
+                switch (radioGroup.getCheckedRadioButtonId()){
+                    case R.id.bluetooth_p:
+                        id = R.id.bluetooth_p;
+                        status = 1;
+                        cls_id = BluetoothPrinter.class.getSimpleName();
+                        break;
+                    case R.id.usb_p:
+                        id = R.id.usb_p;
+                        status = 1;
+                        cls_id = USBPrinter.class.getSimpleName();
+                        break;
+                    case R.id.innerDriver:
+                        id = R.id.innerDriver;
+                        status = 1;
+                        if (ToPrinter.equals(value)){
+                            cls_id = ToledoPrinter.class.getSimpleName();
+                        }
+                        break;
+                }
+                object.put("id",id);
+                object.put("s",status);
+                object.put("cls_id",cls_id);
+                object.put("v",value);
+                AbstractPrinter.resetPrinter(cls_id);
+            }else {
+                MyDialog.toastMessage(mContext.getString(R.string.select_printer_hint));
             }
-            object.put("id",id);
-            object.put("s",status);
-            object.put("cls_id",cls_id);
-            object.put("v",value);
-            AbstractPrinter.resetPrinter(cls_id);
         }else{
             if (Printer.getPrinterSetting(object)){
                 String printer_info = Utils.getNullStringAsEmpty(object,"v");
                 int status_id = object.getIntValue("id");
                 String[] vals = printer_info.split("\t");
+
+                if (Utils.isNotEmpty(printer_info)){
+                    mPrintIdAdapter.clear();
+                    mPrintIdAdapter.add(printer_info);
+                }
 
                 if (status_id == R.id.innerDriver){
                     //咱不处理
@@ -468,10 +478,6 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                     }else  status_id = R.id.usb_p;//默认usb
                 }
                 radioGroup.check(status_id);
-                if (Utils.isNotEmpty(printer_info)){
-                    mPrintIdAdapter.clear();
-                    mPrintIdAdapter.add(printer_info);
-                }
             }else
                 MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"), null);
         }
@@ -487,7 +493,6 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                 switch (szAction){
                     case BluetoothDevice.ACTION_FOUND:
                         int device_style = 0;
-                        Logger.d("ACTION_FOUND");
                         BluetoothDevice bluetoothDevice_find = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                         if (bluetoothDevice_find != null){
                             device_style = bluetoothDevice_find.getBluetoothClass().getMajorDeviceClass();

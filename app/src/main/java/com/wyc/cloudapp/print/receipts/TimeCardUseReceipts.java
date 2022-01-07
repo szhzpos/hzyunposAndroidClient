@@ -32,7 +32,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TimeCardUseReceipts extends AbstractReceipts {
+public final class TimeCardUseReceipts extends AbstractReceipts {
     final VipTimeCardUseOrder mOrderInfo;
     protected TimeCardUseReceipts(@NonNull VipTimeCardUseOrder order, boolean open) {
         super(formatInfo("t_card_use"), order.getOrderCode(), open);

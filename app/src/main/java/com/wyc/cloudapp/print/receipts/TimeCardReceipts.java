@@ -36,7 +36,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class TimeCardReceipts extends AbstractReceipts {
+public final class TimeCardReceipts extends AbstractReceipts {
     private final TimeCardSaleOrder order_info;
     protected TimeCardReceipts(final TimeCardSaleOrder order_info,boolean open) {
         super(formatInfo("t_card_sale"), order_info.getOrder_no(), open);
