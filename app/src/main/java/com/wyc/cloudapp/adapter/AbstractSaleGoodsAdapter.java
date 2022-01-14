@@ -28,8 +28,8 @@ import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPracticeDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
+import com.wyc.cloudapp.fragment.BaseParameterFragment;
 import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -50,6 +50,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     private final JSONArray mDiscountRecords;
     private int mOrderType = 1;//订单类型 1线下 2线上
     private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
+    private final boolean mCumulative = BaseParameterFragment.hasCumulative(null);
     private JSONObject mFullReduceDescription;
 
     private double mTotalSaleAmt,mTotalSaleNum;
@@ -279,7 +280,10 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
         boolean exist = false,isPromotion = GoodsInfoViewAdapter.isSpecialPromotion(goods);
         JSONObject tmp_obj;
 
-        if (!GoodsInfoViewAdapter.isNoBarcodeGoods(goods))
+        /*
+        *无码商品与累加参数无关
+        * */
+        if (mCumulative && !GoodsInfoViewAdapter.isNoBarcodeGoods(goods)){
             for (int i = 0, length = mData.size(); i < length; i++){
                 tmp_obj = mData.getJSONObject(i);
 
@@ -320,6 +324,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                     break;
                 }
             }
+        }
 
         if (!exist){
             original_price = goods.getDoubleValue("retail_price");

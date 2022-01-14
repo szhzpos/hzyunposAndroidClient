@@ -1,10 +1,12 @@
 package com.wyc.cloudapp.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -39,6 +41,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         get_or_show_secLevelCategorySetting(false);
         get_or_show_goodsGroupSetting(false);
         get_or_show_autoMol(false);
+        get_or_show_cumulative(false);
          return null;
     }
 
@@ -70,6 +73,12 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         content.put(p_id_key,"sec_l_c_show");
         content.put(p_c_key, get_or_show_secLevelCategorySetting(true));
         content.put(p_desc_key,"二级类别显示设置");
+        array.add(content);
+
+        content = new JSONObject();
+        content.put(p_id_key,"cumulative");
+        content.put(p_c_key, get_or_show_cumulative(true));
+        content.put(p_desc_key,"商品累加");
         array.add(content);
 
         content = new JSONObject();
@@ -254,6 +263,16 @@ public class BaseParameterFragment extends AbstractParameterFragment {
 
         return value_obj;
     }
+    public static boolean hasPic(){
+        final JSONObject jsonObject = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
+            return Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1;
+        }else{
+            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"), null);
+        }
+        return false;
+    }
+
     private JSONObject get_or_show_secLevelCategorySetting(boolean b){
         JSONObject value_obj = new JSONObject();
         Switch sh = findViewById(R.id._sec_level_category_show);
@@ -272,6 +291,34 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         }
         return value_obj;
     }
+
+    private JSONObject get_or_show_cumulative(boolean b){
+        final JSONObject value_obj = new JSONObject();
+        @SuppressLint("UseSwitchCompatOrMaterialCode")
+        final Switch sh = findViewById(R.id.cumulative);
+        if (sh != null){
+            int status = 0;
+            if (b){
+                if (sh.isChecked()){
+                    status = 1;
+                }
+                value_obj.put("s",status);
+            }else{
+                sh.setChecked(hasCumulative(value_obj));
+            }
+        }
+        return value_obj;
+    }
+    public static boolean hasCumulative(JSONObject value_obj){
+        if (value_obj == null)value_obj = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("cumulative",value_obj)){
+            return Utils.getNotKeyAsNumberDefault(value_obj,"s",1) == 1;
+        }else{
+            MyDialog.ToastMessage("加载商品累加参数错误：" + value_obj.getString("info"), null);
+        }
+        return false;
+    }
+
     private JSONObject get_or_show_goodsGroupSetting(boolean b){
         JSONObject value_obj = new JSONObject();
         Switch sh = findViewById(R.id.goods_group_show_switch);

@@ -57,6 +57,7 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.util.Locale;
 
 import okhttp3.Call;
@@ -496,6 +497,10 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
             public void onResponse(@NonNull Call call,@NonNull Response response) {
                 JSONObject cashier_json, info_json, jsonLogin, store_info;
 
+                if (response.code() != HttpURLConnection.HTTP_OK){
+                    CustomApplication.sendMessage(MessageID.DIS_ERR_INFO_ID,String.format(Locale.CHINA,"状态码:%d,消息:%s",response.code(),response.message()));
+                    return;
+                }
                 final ResponseBody responseBody = response.body();
                 if (responseBody == null)return;
 

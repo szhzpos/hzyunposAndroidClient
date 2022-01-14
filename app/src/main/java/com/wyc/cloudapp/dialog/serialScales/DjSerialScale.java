@@ -1,23 +1,15 @@
 package com.wyc.cloudapp.dialog.serialScales;
 
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import android_serialport_api.SerialPort;
 
-public class DjSerialScale extends AbstractSerialScaleImp {
+public class DjSerialScale extends AbstractWeightedScaleImp {
     public DjSerialScale(final String port){
         mPort = port;
     }

@@ -17,8 +17,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
-import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
+import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
@@ -40,7 +39,7 @@ public class CurPriceDialog extends AbstractDialogSaleActivity {
     private TextView mAmtTv,mNumTv;
     private double mNum = 1.0,mPrice;
     private final String mGoodsName;
-    private AbstractSerialScaleImp mSerialScale;
+    private AbstractWeightedScaleImp mSerialScale;
 
     public CurPriceDialog(@NonNull SaleActivity context,final String name,int type) {
         super(context,type == 0 ? context.getString(R.string.no_barcode_goods) : context.getString(R.string.cur_price_goods));
@@ -65,7 +64,7 @@ public class CurPriceDialog extends AbstractDialogSaleActivity {
     }
 
     private void initGetWeigh(){
-        if (AbstractSerialScaleImp.hasSettingSerialPortScale(null)){
+        if (AbstractWeightedScaleImp.hasSettingSerialPortScale(null)){
             final Button btn = findViewById(R.id.weight_btn);
             btn.setVisibility(View.VISIBLE);
             btn.setOnClickListener(v -> read());
@@ -155,16 +154,16 @@ public class CurPriceDialog extends AbstractDialogSaleActivity {
     }
 
     public void read(){
-        if (AbstractSerialScaleImp.hasAutoGetWeigh()){
+        if (AbstractWeightedScaleImp.hasAutoGetWeigh()){
             mNumTv.setText(String.format(Locale.CHINA,"%.3f",mContext.getWeigh()));
         }else
             if (mSerialScale == null){
                 final JSONObject object = new JSONObject();
-                int code = AbstractSerialScaleImp.readWeight(object);
+                int code = AbstractWeightedScaleImp.readWeight(object);
                 if (code >= 0){
-                    mSerialScale = (AbstractSerialScaleImp) object.get("info");
+                    mSerialScale = (AbstractWeightedScaleImp) object.get("info");
                     if (mSerialScale != null){
-                        mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
+                        mSerialScale.setOnReadListener(new AbstractWeightedScaleImp.OnReadStatus() {
                             @Override
                             public void onFinish(int stat,double num) {
                                 if (null != mNumTv)CustomApplication.runInMainThread(()-> mNumTv.setText(String.format(Locale.CHINA,"%.3f",num)));

@@ -34,14 +34,14 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     private OnYesOnclickListener mOnYesClick;
     private EditText mWvalueEt;
     private TextView mPriceTv,mAmtTv;
-    private AbstractSerialScaleImp mSerialScale;
+    private AbstractWeightedScaleImp mSerialScale;
     private boolean hasWeigh = true;
-    private volatile int mStableFlag = AbstractSerialScaleImp.OnReadStatus.NO_STABLE;
+    private volatile int mStableFlag = AbstractWeightedScaleImp.OnReadStatus.NO_STABLE;
     private volatile double mValue;
     /**
      * 自动取重
      * */
-    private static final boolean mAuto = AbstractSerialScaleImp.hasAutoGetWeigh();
+    private static final boolean mAuto = AbstractWeightedScaleImp.hasAutoGetWeigh();
     private final boolean mContinuousWeighing = false;
 
     public GoodsWeighDialog(@NonNull SaleActivity context, final String title) {
@@ -90,7 +90,7 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
 
     @Override
     public void show() {
-        if ((mStableFlag == AbstractSerialScaleImp.OnReadStatus.STABLE) && mAuto){
+        if ((mStableFlag == AbstractWeightedScaleImp.OnReadStatus.STABLE) && mAuto){
             getWeigh();
         }else
             super.show();
@@ -207,11 +207,11 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
     public void read(){
         if (mSerialScale == null){
             final JSONObject object = new JSONObject();
-            int code = AbstractSerialScaleImp.readWeight(object);
+            int code = AbstractWeightedScaleImp.readWeight(object);
             if (code >= 0){
-                mSerialScale = (AbstractSerialScaleImp) object.get("info");
+                mSerialScale = (AbstractWeightedScaleImp) object.get("info");
                 if (mSerialScale != null){
-                    mSerialScale.setOnReadListener(new AbstractSerialScaleImp.OnReadStatus() {
+                    mSerialScale.setOnReadListener(new AbstractWeightedScaleImp.OnReadStatus() {
                         @Override
                         public void onFinish(int stat,double num) {
                             if (mStableFlag != stat || !Utils.equalDouble(num,mValue)){
@@ -222,8 +222,10 @@ public class GoodsWeighDialog extends AbstractDialogSaleActivity {
                                 boolean invalid = WeightInfoView.hasInvalidWeight(num);
                                 if (mContinuousWeighing){
                                     if (mOnYesClick != null)CustomApplication.postAtFrontOfQueue(()-> mOnYesClick.onYesClick(invalid ? 0.0 : num));
-                                }else
-                                if (null != mWvalueEt)CustomApplication.postAtFrontOfQueue(()-> mWvalueEt.setText(invalid? CustomApplication.getStringByResId(R.string.invalid_weight) : String.format(Locale.CHINA,"%.3f",num)));
+                                }else{
+                                    if (null != mWvalueEt)
+                                        CustomApplication.postAtFrontOfQueue(()-> mWvalueEt.setText(invalid? CustomApplication.getStringByResId(R.string.invalid_weight) : String.format(Locale.CHINA,"%.3f",num)));
+                                }
 
                                 mValue = num;
                                 mStableFlag = stat;

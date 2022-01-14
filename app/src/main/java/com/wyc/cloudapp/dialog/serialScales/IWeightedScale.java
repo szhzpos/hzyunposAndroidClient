@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import android_serialport_api.SerialPort;
 
-public interface ISerialScale {
+public interface IWeightedScale {
     void startRead();
     void stopRead();
     void close();

@@ -6,14 +6,10 @@ import com.wyc.cloudapp.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import android_serialport_api.SerialPort;
 
-public class DhSerialScale extends AbstractSerialScaleImp {
+public class DhSerialScale extends AbstractWeightedScaleImp {
     public DhSerialScale(final String port){
         mPort = port;
     }

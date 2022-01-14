@@ -37,10 +37,12 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/goods_title"
         android:layout_marginStart="@dimen/margin_1"
+        android:layout_marginTop="@dimen/margin_5"
         android:layout_marginEnd="@dimen/margin_1"
         android:layout_marginBottom="@dimen/margin_2"
         android:layout_toEndOf="@id/g_img"
         android:singleLine="true"
+        android:text="89797897897889"
         android:textColor="@color/black"
         android:textSize="@dimen/font_size_10" />
 
@@ -56,7 +58,7 @@
         android:minWidth="@dimen/width_108"
         android:text="某某商品"
         android:textColor="@color/good_name_color"
-        android:textSize="@dimen/font_size_14" />
+        android:textSize="@dimen/font_size_16" />
 
     <TextView
         android:id="@+id/symbol_text"

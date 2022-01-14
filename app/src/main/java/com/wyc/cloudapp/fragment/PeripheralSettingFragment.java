@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.RadioButton;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
@@ -18,8 +17,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import android_serialport_api.SerialPortFinder;
@@ -119,7 +117,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         });
 
         //协议类型
-        mProTypes = AbstractSerialScaleImp.generateProductType();
+        mProTypes = AbstractWeightedScaleImp.generateProductType();
         JSONObject tmp_obj;
         for (int i = 0,size = mProTypes.size();i < size;i++){
             tmp_obj = mProTypes.getJSONObject(i);

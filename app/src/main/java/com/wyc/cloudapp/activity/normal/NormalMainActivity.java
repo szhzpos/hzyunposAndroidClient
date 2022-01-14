@@ -19,7 +19,6 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.ReplacementTransformationMethod;
 import android.view.Gravity;
 import android.view.MotionEvent;
@@ -76,7 +75,7 @@ import com.wyc.cloudapp.dialog.orderDialog.QueryRetailOrderDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
+import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -84,7 +83,6 @@ import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
-import com.wyc.cloudapp.print.printer.IPrinter;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
@@ -253,7 +251,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).tare();
                 }
             });
-            mWeighView.updateInfo(AbstractSerialScaleImp.OnReadStatus.STABLE,getWeigh(),Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"price",0.000));
+            mWeighView.updateInfo(AbstractWeightedScaleImp.OnReadStatus.STABLE,getWeigh(),Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"price",0.000));
         }
     }
 
@@ -596,24 +594,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             }
         });
         search.setOnTouchListener(new View.OnTouchListener() {
-            private final TextWatcher textWatcher = new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-                    if (s.length() != 0){
-                        mGoodsInfoViewAdapter.fuzzy_search_goods(s.toString(),false);
-                    }
-                }
-            };
             private final View.OnClickListener mKeyboardListener = new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -631,7 +611,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString(),true);
                         }
                     }else if(v_id == R.id.hide){
-                        search.removeTextChangedListener(textWatcher);
                         mKeyboard.setVisibility(View.GONE);
                     }else {
                         if (search.getSelectionStart() != search.getSelectionEnd()){
@@ -639,6 +618,10 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             search.setSelection(editable.length());
                         }else
                             editable.append(((Button)view).getText());
+
+                        if (editable.length() != 0){
+                            mGoodsInfoViewAdapter.fuzzy_search_goods(editable.toString(),false);
+                        }
                     }
                 }
             };
@@ -650,10 +633,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             TableLayout keyboard = mKeyboard;
                             int visible = keyboard.getVisibility();
                             if (visible == View.VISIBLE ){
-                                search.removeTextChangedListener(textWatcher);
                                 keyboard.setVisibility(View.GONE);
                             }else {
-                                search.addTextChangedListener(textWatcher);
                                 keyboard.setVisibility(View.VISIBLE);
                             }
                             search.selectAll();

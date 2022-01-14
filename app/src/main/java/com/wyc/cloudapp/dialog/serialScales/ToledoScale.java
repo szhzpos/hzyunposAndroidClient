@@ -9,7 +9,6 @@ import com.wyc.cloudapp.customizationView.WeightInfoView;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Locale;
 
@@ -25,7 +24,7 @@ import java.util.Locale;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public class ToledoScale extends AbstractSerialScaleImp implements IMtWeighView{
+public class ToledoScale extends AbstractWeightedScaleImp implements IMtWeighView{
     private static final int RETURN_CODE_WEIGHT_UNSTABLE       = -1000; // 重量未稳定
     private static final int RETURN_CODE_WEIGHT_UNDERLOAD      = -1001; // 重量欠载
     private static final int RETURN_CODE_WEIGHT_OVERLOAD       = -1002; // 重量超载
@@ -107,15 +106,15 @@ public class ToledoScale extends AbstractSerialScaleImp implements IMtWeighView{
                 mZero = weInfo.getIntValue(RET_JSON_KEY_ZERO) == 1;//毛重零位  1：在 0 位，0：不是 0 位； 毛重零时（卸掉所有载荷后的空秤台），才允许清除测量皮重。
                 switch (result){
                     case 0:
-                        mOnReadStatus.onFinish(AbstractSerialScaleImp.OnReadStatus.STABLE,net);
+                        mOnReadStatus.onFinish(AbstractWeightedScaleImp.OnReadStatus.STABLE,net);
                         break;
                     case RETURN_CODE_WEIGHT_UNSTABLE:
-                        mOnReadStatus.onFinish(AbstractSerialScaleImp.OnReadStatus.NO_STABLE,net);
+                        mOnReadStatus.onFinish(AbstractWeightedScaleImp.OnReadStatus.NO_STABLE,net);
                         break;
                     case RETURN_CODE_WEIGHT_INVALID:
                     case RETURN_CODE_WEIGHT_OVERLOAD:
                     case RETURN_CODE_WEIGHT_UNDERLOAD:
-                        mOnReadStatus.onFinish(AbstractSerialScaleImp.OnReadStatus.NO_STABLE, WeightInfoView.INVALID);
+                        mOnReadStatus.onFinish(AbstractWeightedScaleImp.OnReadStatus.NO_STABLE, WeightInfoView.INVALID);
                         break;
                     default:
                         showMsg(result);

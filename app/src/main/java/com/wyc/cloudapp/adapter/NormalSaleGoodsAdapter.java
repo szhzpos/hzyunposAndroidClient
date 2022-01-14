@@ -6,7 +6,6 @@ import android.text.Html;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
@@ -14,7 +13,6 @@ import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;

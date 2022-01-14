@@ -8,8 +8,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -17,8 +15,7 @@ import androidx.annotation.Nullable;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp;
-import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.List;
@@ -158,14 +155,14 @@ public class ScaleView extends View {
         float pointTop = top - ((mBoundText.height() - (int) pointRadius) >> 1);
         float textOffsetX = pointRadius + pointRadius / 2;
 
-        if (mStat == AbstractSerialScaleImp.OnReadStatus.STABLE){
+        if (mStat == AbstractWeightedScaleImp.OnReadStatus.STABLE){
             mPaint.setColor(Color.GREEN);
         }else mPaint.setColor(Color.GRAY);
         canvas.drawCircle(0,pointTop,pointRadius,mPaint);
 
         canvas.drawText(stable,textOffsetX,top,mPaint);
 
-        if (mStat == AbstractSerialScaleImp.OnReadStatus.NO_STABLE){
+        if (mStat == AbstractWeightedScaleImp.OnReadStatus.NO_STABLE){
             mPaint.setColor(Color.GREEN);
         }else mPaint.setColor(Color.GRAY);
         top = top + verSpace + mBoundText.height();

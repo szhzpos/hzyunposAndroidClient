@@ -26,24 +26,29 @@ import com.wyc.cloudapp.data.viewModel.GoodsViewModel;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.CurPriceDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
+import com.wyc.cloudapp.fragment.BaseParameterFragment;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener, IndicatorRecyclerView.OnLoad {
-    public static final int SPAN_COUNT = 5,MOBILE_SPAN_COUNT = 1;
-    public static final String W_G_MARK = "IWG",SALE_TYPE = "ST";//W_G_MARK 计重、计份并且通过扫条码选择的商品标志
+    public static final int SPAN_COUNT = BaseParameterFragment.hasPic() ? 5 : 7,MOBILE_SPAN_COUNT = 1;
+    /**
+    * W_G_MARK 计重、计份并且通过扫条码选择的商品标志
+    * */
+    public static final String W_G_MARK = "IWG";
+    public static final String  SALE_TYPE = "ST";
     private final SaleActivity mContext;
     private JSONArray mDatas;
     private OnGoodsSelectListener mSelectListener;
-    private boolean mShowPic = true;
+    private final boolean mShowPic = SPAN_COUNT == 5;
     private View mCurrentItemView;
     private boolean mPriceAdjustMode;
     private static final String NOBARCODEGOODS = "9999999999999";
 
     private int mPageIndex = 0;
-    private static final int mPageNum = 40;
+    private static final int mPageNum = 50;
     private int mCategoryId = -1;
     private boolean mLoadMore = true;
     private String mGoodsImgPath = "";
@@ -51,17 +56,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     @SuppressLint("NotifyDataSetChanged")
     public GoodsInfoViewAdapter(final SaleActivity context){
         this.mContext = context;
-        final JSONObject jsonObject = new JSONObject();
-
-        if (SQLiteHelper.getLocalParameter("g_i_show",jsonObject)){
-            mShowPic = (Utils.getNotKeyAsNumberDefault(jsonObject,"s",1) == 1);
-            if (mShowPic){
-                mGoodsImgPath = CustomApplication.getGoodsImgSavePath();
-            }
-        }else{
-            MyDialog.ToastMessage("加载是否显示商品图片参数错误：" + jsonObject.getString("info"), null);
+        if (mShowPic){
+            mGoodsImgPath = CustomApplication.getGoodsImgSavePath();
         }
-
         new ViewModelProvider(context).get(GoodsViewModel.class).init().observe(mContext, array -> {
             mDatas = array;
             updateLoadFlag(array);

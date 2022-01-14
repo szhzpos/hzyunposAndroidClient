@@ -8,7 +8,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.IOException;
@@ -17,7 +16,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import android_serialport_api.SerialPort;
 
-public abstract class AbstractSerialScaleImp implements ISerialScale {
+public abstract class AbstractWeightedScaleImp implements IWeightedScale {
     protected volatile boolean mReading = true;
     protected String mPort;
     protected SerialPort mSerialPort = null;
@@ -75,7 +74,7 @@ public abstract class AbstractSerialScaleImp implements ISerialScale {
         void onFinish(int stat,double num);
         void onError(final String err);
     }
-    public ISerialScale setOnReadListener(OnReadStatus listener){
+    public IWeightedScale setOnReadListener(OnReadStatus listener){
         mOnReadStatus = listener;
         return this;
     }

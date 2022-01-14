@@ -2,19 +2,16 @@ package com.wyc.cloudapp.customizationView
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.compose.ui.graphics.Color
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.Group
 import androidx.core.view.isVisible
-import androidx.core.view.setPadding
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.dialog.serialScales.AbstractSerialScaleImp
+import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp
 import com.wyc.cloudapp.utils.Utils
 import java.lang.NumberFormatException
 
@@ -79,13 +76,13 @@ class WeightInfoView(context: Context, attrs: AttributeSet?, defStyleAttr: Int):
     }
     fun updateInfo(stat:Int,num:Double,price:Double){
         post {
-            if (Utils.getViewTagValue(stableIco, AbstractSerialScaleImp.OnReadStatus.NO_STABLE) != stat){
+            if (Utils.getViewTagValue(stableIco, AbstractWeightedScaleImp.OnReadStatus.NO_STABLE) != stat){
                 stableIco.tag = stat
                 when(stat){
-                    AbstractSerialScaleImp.OnReadStatus.STABLE ->{
+                    AbstractWeightedScaleImp.OnReadStatus.STABLE ->{
                         stableIco.setBackgroundColor(resources.getColor(R.color.stableColor))
                     }
-                    AbstractSerialScaleImp.OnReadStatus.NO_STABLE ->{
+                    AbstractWeightedScaleImp.OnReadStatus.NO_STABLE ->{
                         stableIco.setBackgroundColor(resources.getColor(R.color.black))
                     }
                     else->{
