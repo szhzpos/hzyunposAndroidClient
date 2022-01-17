@@ -301,7 +301,7 @@
     <string name="b_f_amt_sz">总价：</string>
     <string name="b_f_units_sz">件数：</string>
     <string name="b_f_rec_sz">应收：</string>
-    <string name="b_f_yus_sz">预收：</string>
+    <string name="b_f_yus_sz">实收现金：</string>
     <string name="b_f_zl_sz">@string/cash_zl_sz</string>
     <string name="b_f_hotline_sz">@string/hotline_sz</string>
     <string name="b_f_stores_address_sz">@string/stores_address_sz</string>

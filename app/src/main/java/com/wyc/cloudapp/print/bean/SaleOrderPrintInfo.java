@@ -9,6 +9,7 @@ import com.alibaba.fastjson.annotation.JSONField;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
@@ -337,6 +338,8 @@ public class SaleOrderPrintInfo{
         private Double pamt;
         @JSONField(name = "name")
         private String name;
+        @JSONField(name = "pay_method")
+        private Integer pay_method_id;
 
         public List<String> getXnoteList(){
             List<String> list = JSONArray.parseArray(getXnote(),String.class);
@@ -373,6 +376,32 @@ public class SaleOrderPrintInfo{
         public void setName(String name) {
             this.name = name;
         }
+
+        public Integer getPay_method_id() {
+            return pay_method_id;
+        }
+
+        public void setPay_method_id(Integer pay_method_id) {
+            this.pay_method_id = pay_method_id;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            PaysDTO paysDTO = (PaysDTO) o;
+            return Objects.equals(pay_method_id, paysDTO.pay_method_id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(pay_method_id);
+        }
+
+        public boolean isCashPay(){
+            return pay_method_id == PayMethod.CASH_METHOD_ID;
+        }
+
         @NonNull
         @Override
         public String toString() {
@@ -381,6 +410,7 @@ public class SaleOrderPrintInfo{
                     ", pzl=" + pzl +
                     ", pamt=" + pamt +
                     ", name='" + name + '\'' +
+                    ", pay_method_id='" + pay_method_id + '\'' +
                     '}';
         }
     }
@@ -393,7 +423,7 @@ public class SaleOrderPrintInfo{
             final StringBuilder err = new StringBuilder();
             final String goods_info_sql = "SELECT a.barcode,b.goods_title,b.type,a.price,a.retail_price original_price,a.xnum,a.retail_price * a.xnum original_amt,\n" +
                     "a.total_money sale_amt,a.retail_price * a.xnum - a.total_money discount_amt,a.goodsPractice FROM retail_order_goods a \n" +
-                    "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  b.name,pre_sale_money pamt,(pre_sale_money - pay_money) pzl,xnote FROM retail_order_pays a \n" +
+                    "left join barcode_info b on a.barcode_id = b.barcode_id where order_code = '" + order_code + "'", pays_info_sql = "SELECT  a.pay_method,b.name,pre_sale_money pamt,(pre_sale_money - pay_money) pzl,xnote FROM retail_order_pays a \n" +
                     "left join pay_method b on a.pay_method = b.pay_method_id where order_code = '" + order_code + "'";
 
             final JSONArray sales = SQLiteHelper.getListToJson(goods_info_sql, err), pays = SQLiteHelper.getListToJson(pays_info_sql, err);

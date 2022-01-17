@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.dialog.pay;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.os.Bundle;
 import android.text.Editable;
@@ -391,6 +392,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         }
     };
 
+    @SuppressLint("NotifyDataSetChanged")
     private void initPayMethod(){
         mPayMethodViewAdapter = new PayMethodViewAdapter(mContext,mPayDetailViewAdapter);
 
@@ -404,6 +406,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                     final JSONObject pay_method_copy = Utils.JsondeepCopy(object);
                     final String pay_method_id = pay_method_copy.getString("pay_method_id");
                     if (PayMethodViewAdapter.getCashMethodId().equals(pay_method_id)) {
+                        if (Utils.equalDouble(mCashAmt,0) && !mPayDetailViewAdapter.isEmpty()){
+                            /*
+                            * 当已存在支付记录并且现金金额为零时直接触发结算过程
+                            * */
+                            mPayDetailViewAdapter.notifyDataSetChanged();
+                            return;
+                        }
                         pay_method_copy.put("pay_code",getCashPayCode());
                         pay_method_copy.put("pamt",mCashAmt);
                         pay_method_copy.put("pzl",String.format(Locale.CHINA,"%.2f",mZlAmt));
@@ -737,7 +746,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
     private void calculatePayContent(){
         clearContent();
-        mAmt_received = Utils.formatDouble(mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt(),2);
+        mAmt_received = mPayDetailViewAdapter == null ? 0.0 : Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
         mDiscount_amt = Utils.formatDouble(mContext.getSumAmt(1),2);
         mActual_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
         mOrder_amt = Utils.formatDouble(mActual_amt + mDiscount_amt,2);

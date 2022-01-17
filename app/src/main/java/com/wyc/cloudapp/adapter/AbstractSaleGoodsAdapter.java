@@ -168,7 +168,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 myViewHolder.goods_title.setTextColor(mContext.getColor(R.color.black));//需要重新设置颜色；不然重用之后内容颜色为重用之前的。
             }
 
-            myViewHolder.itemView.setTag(goods_info);
+            myViewHolder.itemView.setTag(i);
             if (mCurrentItemIndex == i){
                 setSelectStatus(myViewHolder.itemView);
             }
@@ -1036,6 +1036,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             case 0:
                 if (value <= 0){
                     deleteSaleGoods(getCurrentItemIndex());
+                    return;
                 }else{
                     xnum = value;
 
@@ -1509,14 +1510,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     }
     protected void setCurrentItemIndexAndItemView(View v){
         mCurrentItemView = v;
-        for (int i = 0, length = mData.size(); i < length; i ++){
-            final JSONObject json = mData.getJSONObject(i);
-            if (isSameLineGoods(Utils.getViewTagValue(v),json)){
-                mCurrentItemIndex = i;
-                return;
-            }
-        }
-        mCurrentItemIndex = -1;
+        mCurrentItemIndex = Utils.getViewTagValue(v,-1);
     }
 
     protected void setSelectStatus(View v){

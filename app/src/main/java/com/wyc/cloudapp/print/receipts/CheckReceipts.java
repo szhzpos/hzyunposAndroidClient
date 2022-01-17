@@ -14,8 +14,8 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.GoodsPracticeInfo;
-import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.bean.SaleOrderPrintInfo;
+import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -126,25 +126,27 @@ public final class CheckReceipts extends AbstractReceipts {
         //支付方式
         SaleOrderPrintInfo.PaysDTO paysDTO;
         double zl = 0.0, pamt = 0.0;
+        String name;
         final List<SaleOrderPrintInfo.PaysDTO> pays = order_info.getPays();
         for (int i = 0, size = pays.size(); i < size; i++) {
             paysDTO = pays.get(i);
             zl = paysDTO.getPzl();
             pamt = paysDTO.getPamt();
 
+            name = paysDTO.getName();
+            final String c = String.format(Locale.CHINA, "%s:%.2f%s", name, pamt - zl, "元");
             if (i == 0){
-                printItems.add(new PrintItem.Builder().setLineSpacing(PrintItem.LineSpacing.SPACING_2).setContent(String.format(Locale.CHINA,"%s:%.2f%s",paysDTO.getName(),pamt - zl,"元")).build());
-            }else printItems.add(new PrintItem.Builder().setLineSpacing(PrintItem.LineSpacing.SPACING_10).setContent(String.format(Locale.CHINA,"%s:%.2f%s",paysDTO.getName(),pamt - zl,"元")).build());
-            printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%.2f,%s%.2f",context.getString(R.string.b_f_yus_sz),pamt,context.getString(R.string.b_f_zl_sz),zl)).build());
+                printItems.add(new PrintItem.Builder().setLineSpacing(PrintItem.LineSpacing.SPACING_2).setContent(c).build());
+            }else printItems.add(new PrintItem.Builder().setLineSpacing(PrintItem.LineSpacing.SPACING_10).setContent(c).build());
+
+            if (paysDTO.isCashPay())
+                printItems.add(new PrintItem.Builder().setContent(String.format(Locale.CHINA,"%s%.2f,%s%.2f",context.getString(R.string.b_f_yus_sz),pamt,context.getString(R.string.b_f_zl_sz),zl)).build());
 
             final List<String> xnote = paysDTO.getXnoteList();
-            if (xnote != null) {
-                int length = xnote.size();
-                if (length > 0) {
-                    for (int j = 0; j < length; j++) {
-                        if (i > 0 && j + 1 != length)
-                            printItems.add(new PrintItem.Builder().setContent(xnote.get(j)).build());
-                    }
+            int length = xnote.size();
+            if (length > 0) {
+                for (int j = 0; j < length; j++) {
+                    printItems.add(new PrintItem.Builder().setContent("    " + xnote.get(j)).build());
                 }
             }
         }
