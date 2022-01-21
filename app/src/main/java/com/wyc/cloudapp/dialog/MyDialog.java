@@ -92,6 +92,12 @@ public final class MyDialog extends AbstractDialogContext {
     }
 
     @Override
+    protected void closeWindow() {
+        super.closeWindow();
+        if (noOnclickListener != null)noOnclickListener.onNoClick(this);
+    }
+
+    @Override
     public void dismiss() {
         super.dismiss();
         if (mLifecycleEventObserver != null){
@@ -118,8 +124,7 @@ public final class MyDialog extends AbstractDialogContext {
         initView();
         //初始化界面数据
         initData();
-        //初始化界面控件的事件
-        initEvent();
+
     }
 
     protected double getWidthRatio(){
@@ -191,6 +196,7 @@ public final class MyDialog extends AbstractDialogContext {
 
         showBtn();
         showIcon();
+        initEvent();
     }
 
     private void showIcon(){

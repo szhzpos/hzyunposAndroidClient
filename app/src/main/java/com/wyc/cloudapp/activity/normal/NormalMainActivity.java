@@ -64,6 +64,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MoreFunDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.SecondDisplay;
@@ -725,6 +726,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             hideLastOrderInfo();
                             if (null != vip)showVipInfo(vip);
                             JSONObject barcode_id_obj,goods_info;
+                            final StringBuilder not_found_id = new StringBuilder();
                             for (int i = 0,length = array.size();i < length;i ++){
                                 barcode_id_obj = array.getJSONObject(i);
 
@@ -732,16 +734,43 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
                                 if (barcode_id_obj != null){
                                     goods_info = new JSONObject();
-                                    if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
+                                    if (mGoodsInfoViewAdapter.getSingleSaleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                         goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
                                         goods_info.put("goodsPractice",Utils.getNullObjectAsEmptyJsonArray(barcode_id_obj,"goodsPractice"));
                                         mSaleGoodsAdapter.addSaleGoods(goods_info);
-                                        hangBillDialog.dismiss();
                                     }else{
-                                        if (!isAdjustPriceMode()) MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"), null);
-                                        return;
+                                        if (goods_info.isEmpty()){
+                                            if (not_found_id.length() != 0){
+                                                not_found_id.append(",");
+                                            }
+                                            not_found_id.append(String.format(Locale.CHINA,"%s",Utils.getNullStringAsEmpty(barcode_id_obj,"goods_title")));
+                                        }else {
+                                            MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"), null);
+                                            return false;
+                                        }
                                     }
                                 }
+                            }
+                            boolean code = true;
+                            if (not_found_id.length() != 0){
+                                final JEventLoop loop = new JEventLoop();
+                                final String hint = String.format(Locale.CHINA,"%s\n%s",CustomApplication.getStringByResId(R.string.not_found_goods, not_found_id.toString()
+                                ),CustomApplication.getStringByResId(R.string.hang_tips));
+                                MyDialog.displayAskMessage(this,hint, myDialog -> {
+                                    myDialog.dismiss();
+                                    loop.done(1);
+                                }, myDialog -> {
+                                    myDialog.dismiss();
+                                    loop.done(0);
+                                });
+                                code = loop.exec() == 1;
+                            }
+                            if (code){
+                                hangBillDialog.dismiss();
+                                return true;
+                            }else {
+                                mSaleGoodsAdapter.clearGoods();
+                                return false;
                             }
                         });
                         hangBillDialog.setOnDismissListener(dialog -> tmp_order.setNum(HangBillDialog.getHangCounts(activity)));
@@ -888,13 +917,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
 
     @Override
-    protected void addSaleGoods(final @NonNull JSONObject jsonObject){
-        final JSONObject content = new JSONObject();
-        final String id = mGoodsInfoViewAdapter.getGoodsId(jsonObject);
-        if (mGoodsInfoViewAdapter.getSingleGoods(content,jsonObject.getString(GoodsInfoViewAdapter.W_G_MARK),id)){
-            hideLastOrderInfo();
-            mSaleGoodsAdapter.addSaleGoods(content);
-        }
+    protected void addSaleGoods(final @NonNull JSONObject saleGoods){
+        hideLastOrderInfo();
+        mSaleGoodsAdapter.addSaleGoods(saleGoods);
     }
     private boolean isAdjustPriceMode(){
         return mGoodsInfoViewAdapter != null  && mGoodsInfoViewAdapter.isPriceAdjustMode() ;
@@ -915,7 +940,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     @Override
     public boolean findGoodsByBarcodeId(@NonNull final JSONObject out_goods,final String barcode_id){
-        return mGoodsInfoViewAdapter.getSingleGoods(out_goods,null,barcode_id);
+        return mGoodsInfoViewAdapter.getSingleSaleGoods(out_goods,null,barcode_id);
     }
 
     @Override

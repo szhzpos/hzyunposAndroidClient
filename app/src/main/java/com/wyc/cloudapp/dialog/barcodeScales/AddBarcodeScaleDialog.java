@@ -65,7 +65,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
 
         //初始化按钮事件
         findViewById(R.id.save).setOnClickListener(v -> {
-            if (getScalseConfig()){
+            if (getScaleConfig()){
                 AddBarcodeScaleDialog.this.dismiss();
             }
         });
@@ -118,7 +118,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
     }
 
     private void initManufacturer(){
-        initScalseInfo();
+        initScaleInfo();
 
         mManufacturerEt = findViewById(R.id.s_manufacturer);
         mManufacturerEt.setOnFocusChangeListener((v, hasFocus) -> Utils.hideKeyBoard((EditText)v));
@@ -182,9 +182,8 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
         mGCategoryEt = editText;
     }
 
-    private void initScalseInfo(){
-        mManufacturerInfos = new JSONArray();
-        mManufacturerInfos.add(AbstractBarcodeScaleImp.getDHManufacturer());
+    private void initScaleInfo(){
+        mManufacturerInfos = AbstractBarcodeScaleImp.getManufacturerInfo();
     }
 
     private void initIP(){
@@ -200,7 +199,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
             }
         }
     }
-    private TextWatcher ipTextWatcher = new TextWatcher() {
+    private final TextWatcher ipTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -280,7 +279,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
         }
     }
 
-    private boolean getScalseConfig(){
+    private boolean getScaleConfig(){
         boolean code = false;
         JSONObject object = new JSONObject(),tmp;
         final StringBuilder names = new StringBuilder(),ids = new StringBuilder();

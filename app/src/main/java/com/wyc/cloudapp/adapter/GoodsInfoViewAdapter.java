@@ -70,7 +70,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public void onClick(View v) {
         set_selected_status(v);
         Utils.disableView(v,300);
-        if (mSelectListener != null)mSelectListener.onSelect(getSelectGoodsByIndex());
+        invokeListener(getSelectGoodsByIndex());
     }
 
     @Override
@@ -272,7 +272,7 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         if (array != null){
             if (code = !array.isEmpty()){
                 if (autoSelect && array.size() == 1){
-                    if (mSelectListener != null)mSelectListener.onSelect(array.getJSONObject(0));
+                    invokeListener(array.getJSONObject(0));
                 }else {
                     mDatas = array;
                     notifyDataSetChanged();
@@ -284,6 +284,32 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         return code;
     }
 
+    private void invokeListener(final JSONObject goods){
+        if (goods != null){
+            final JSONObject content = new JSONObject();
+            if (getSingleSaleGoods(content,goods.getString(GoodsInfoViewAdapter.W_G_MARK),getGoodsId(goods))){
+                boolean noBarcode = GoodsInfoViewAdapter.isNoBarcodeGoods(content);
+                if (noBarcode || GoodsInfoViewAdapter.isCurPriceGoods(content)){
+                    final CurPriceDialog dialog = new CurPriceDialog(mContext,content.getString("goods_title"),noBarcode ? 0 : 1);
+                    if (dialog.exec() == 1){
+                        content.put("retail_price",dialog.getPrice());
+                        content.put("price",dialog.getPrice());
+                        content.put("xnum",dialog.getNum());
+                    }else {
+                        return;
+                    }
+                }
+
+                if (mPriceAdjustMode){
+                    final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext,content);
+                    priceAdjustDialog.show();
+                }else {
+                    if (mSelectListener != null)mSelectListener.onSelect(content);
+                }
+            }
+        }
+    }
+
     public interface OnGoodsSelectListener {
         void onSelect(final JSONObject object);
     }
@@ -291,8 +317,14 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     public void setOnGoodsSelectListener(OnGoodsSelectListener listener) {
         mSelectListener = listener;
     }
+    /**
+     * @param object 查询商品输出参数。需要判断是否为空来判断查询内容是否存在
+     * @param weigh_barcode_info 称重条码信息。如果不为空则使用货号为id查询商品
+     * @param id 查询商品id。通过@linkgetGoodsId()获取
+     * */
+    public boolean getSingleSaleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
+        if (!object.isEmpty())object.clear();
 
-    public boolean getSingleGoods(@NonNull JSONObject object, final String weigh_barcode_info, final String id){
         final String full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,ifnull(unit_name,'') unit_name,barcode_id,ifnull(barcode,'') barcode,only_coding,ifnull(type,0) type," +
                 "brand_id,gs_id,a.category_id category_id,b.path path,retail_price,retail_price price,tc_rate,tc_mode,tax_rate,ps_price,cost_price,trade_price,buying_price,yh_mode,yh_price," +
                 "metering_id,current_goods,conversion from barcode_info a inner join shop_category b on a.category_id = b.category_id where goods_status = 1 and barcode_status = 1 and ";
@@ -306,32 +338,21 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
                     "where status = 1 and gp_id = " + id;
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
+            if (object.isEmpty()){
+                MyDialog.toastMessage("未找到商品请刷新后重试...");
+                return false;
+            }
+
             makeCommonSaleType(object);
 
-            boolean noBarcode = GoodsInfoViewAdapter.isNoBarcodeGoods(object);
-            if (noBarcode || GoodsInfoViewAdapter.isCurPriceGoods(object)){
-                final CurPriceDialog dialog = new CurPriceDialog(mContext,object.getString("goods_title"),noBarcode ? 0 : 1);
-                if (dialog.exec() == 1){
-                    object.put("retail_price",dialog.getPrice());
-                    object.put("price",dialog.getPrice());
-                    object.put("xnum",dialog.getNum());
-                }else {
-                    return false;
-                }
-            }
-
-            if (mPriceAdjustMode){
-                code = false;
-                final GoodsPriceAdjustDialog priceAdjustDialog = new GoodsPriceAdjustDialog(mContext,object);
-                priceAdjustDialog.show();
+            if (isWeighBarcode){
+                code = parseElectronicBarcode(object,weigh_barcode_info);
             }else {
-                if (isWeighBarcode){
-                    code = parseElectronicBarcode(object,weigh_barcode_info);
-                }else {
-                    code = getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId());
-                }
+                code = getPromotionInfo(object,mContext.getStoreId(),mContext.getVipGradeId());
             }
-        }else MyDialog.ToastMessage(object.getString("info"), null);
+        }else {
+            MyDialog.toastMessage(object.getString("info"));
+        }
        return code;
     }
 

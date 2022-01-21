@@ -177,4 +177,7 @@ dependencies {
     //托利多一体称
     implementation files('libs/MtWeighApi.jar')
     implementation files('libs/MtPrintApi.jar')
+
+    //托利多bPlus条码秤
+    implementation files('libs/mtaoscaleapi.jar')
 }

@@ -98,20 +98,42 @@ public abstract class AbstractBarcodeScaleImp implements IBarCodeScale {
         return futureList;
     }
 
-    static JSONObject getDHManufacturer(){
+    static JSONArray getManufacturerInfo(){
+        final JSONArray array = new JSONArray();
+
+        array.add(getDHManufacturer());
+        array.add(getTldManufacturer());
+
+        return array;
+    }
+
+    private static JSONObject getDHManufacturer(){
         JSONObject object = new JSONObject();
         JSONArray products = new JSONArray();
 
         object.put("name","大华系列");
 
-        products.add(getScalseProduct("DH15A","大华TM-15A"));
+        products.add(getScaleProduct(DH15A.class.getSimpleName(),"大华TM-15A"));
 
         object.put("products",products);
 
         return object;
     }
 
-    private static JSONObject getScalseProduct(final String s_id,final String s_type){
+    private static JSONObject getTldManufacturer(){
+        JSONObject object = new JSONObject();
+        JSONArray products = new JSONArray();
+
+        object.put("name","托利多系列");
+
+        products.add(getScaleProduct(ToledoBPlus.class.getSimpleName(),"托利多bPlus"));
+
+        object.put("products",products);
+
+        return object;
+    }
+
+    private static JSONObject getScaleProduct(final String s_id, final String s_type){
         JSONObject object = new JSONObject();
         object.put("s_id",s_id);
         object.put("s_type",s_type);

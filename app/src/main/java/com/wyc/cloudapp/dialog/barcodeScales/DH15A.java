@@ -26,29 +26,27 @@ public class DH15A extends AbstractBarcodeScaleImp {
     }
     @Override
     public boolean down(final JSONObject scale_info){
-        boolean code = false;
-        if (null != scale_info){
-            String ip = scale_info.getString("scale_ip"),goods_c_id = scale_info.getString("g_c_id");
-            int port = scale_info.getIntValue("scale_port");
-            JSONArray records = new JSONArray();
-            final JSONObject object = new JSONObject();
-            if (code = SQLiteHelper.getLocalParameter("scale_setting",object)){
-                final String prefix = object.getString("prefix");
-                if (goods_c_id.contains(AbstractBarcodeScaleImp.CATEGORY_SEPARATE)){
-                    String[] ids = goods_c_id.split("\\" + AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
-                    for (String id : ids) {
-                        code = generate_data_record(records,id, prefix);
-                    }
-                }else{
-                    code = generate_data_record(records,goods_c_id, prefix);
-                }
-                if (code){
-                    code = down_tcp(ip,port,records);
+        boolean code;
+        String ip = scale_info.getString("scale_ip"),goods_c_id = scale_info.getString("g_c_id");
+        int port = scale_info.getIntValue("scale_port");
+        JSONArray records = new JSONArray();
+        final JSONObject object = new JSONObject();
+        if (code = SQLiteHelper.getLocalParameter("scale_setting",object)){
+            final String prefix = object.getString("prefix");
+            if (goods_c_id.contains(AbstractBarcodeScaleImp.CATEGORY_SEPARATE)){
+                String[] ids = goods_c_id.split("\\" + AbstractBarcodeScaleImp.CATEGORY_SEPARATE);
+                for (String id : ids) {
+                    code = generate_data_record(records,id, prefix);
                 }
             }else{
-                if (mCallback != null){
-                    mCallback.OnShow(object.getString("info"));
-                }
+                code = generate_data_record(records,goods_c_id, prefix);
+            }
+            if (code){
+                code = down_tcp(ip,port,records);
+            }
+        }else{
+            if (mCallback != null){
+                mCallback.OnShow(object.getString("info"));
             }
         }
         return code;

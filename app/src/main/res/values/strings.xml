@@ -124,6 +124,8 @@
     <string name="orderIdNotEmptyHint">打印单号不能为空!</string>
     <string name="IllegalOrderSize">非法单据规格!</string>
     <string name="exist_goods_hint">存在已选商品,请先处理!</string>
+    <string name="not_found_goods">未找到以下商品:%1$s</string>
+
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
     <string name="vip_search_hint_sz">请输入会员手机号</string>
@@ -232,6 +234,8 @@
     <string name="hangbill_sz">挂单</string>
     <string name="to_checkout_sz">去结账</string>
     <string name="del_hang_bill">删除挂单</string>
+    <string name="del_hang_bill_hint">删除挂单信息错误:%1$s</string>
+    <string name="hang_tips">"点“是”过滤商品并取单，点“否”取消"</string>
 
     <!-- 条码秤窗口 -->
     <string name="add_scale_sz">新增秤</string>

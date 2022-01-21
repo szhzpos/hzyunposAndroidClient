@@ -34,6 +34,7 @@ import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.decoration.SaleGoodsItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.AddGoodsInfoDialog;
 import com.wyc.cloudapp.dialog.orderDialog.HangBillDialog;
@@ -153,20 +154,48 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
                 hangBillDialog.setGetBillDetailListener((array, vip) -> {
                     if (null != vip)showVipInfo(vip);
                     JSONObject barcode_id_obj,goods_info;
+                    final StringBuilder not_found_id = new StringBuilder();
                     for (int i = 0,length = array.size();i < length;i ++){
                         barcode_id_obj = array.getJSONObject(i);
                         if (barcode_id_obj != null){
                             goods_info = new JSONObject();
-                            if (mGoodsInfoViewAdapter.getSingleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
+                            if (mGoodsInfoViewAdapter.getSingleSaleGoods(goods_info,barcode_id_obj.getString(GoodsInfoViewAdapter.W_G_MARK),mGoodsInfoViewAdapter.getGoodsId(barcode_id_obj))){
                                 goods_info.put("xnum",barcode_id_obj.getDoubleValue("xnum"));//挂单取出重量
                                 goods_info.put("goodsPractice",Utils.getNullObjectAsEmptyJsonArray(barcode_id_obj,"goodsPractice"));
                                 mSaleGoodsAdapter.addSaleGoods(goods_info);
-                                hangBillDialog.dismiss();
                             }else{
-                                MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"), null);
-                                return;
+                                if (goods_info.isEmpty()){
+                                    if (not_found_id.length() != 0){
+                                        not_found_id.append(",");
+                                    }
+                                    not_found_id.append(String.format(Locale.CHINA,"%s",Utils.getNullStringAsEmpty(barcode_id_obj,"goods_title")));
+                                }else {
+                                    MyDialog.ToastMessage("选择商品错误：" + goods_info.getString("info"), null);
+                                    return false;
+                                }
                             }
                         }
+                    }
+                    boolean code = true;
+                    if (not_found_id.length() != 0){
+                        final JEventLoop loop = new JEventLoop();
+                        final String hint = String.format(Locale.CHINA,"%s\n%s",CustomApplication.getStringByResId(R.string.not_found_goods, not_found_id.toString()
+                                ),CustomApplication.getStringByResId(R.string.hang_tips));
+                        MyDialog.displayAskMessage(this,hint, myDialog -> {
+                            myDialog.dismiss();
+                            loop.done(1);
+                        }, myDialog -> {
+                            myDialog.dismiss();
+                            loop.done(0);
+                        });
+                        code = loop.exec() == 1;
+                    }
+                    if (code){
+                        hangBillDialog.dismiss();
+                        return true;
+                    }else {
+                        mSaleGoodsAdapter.clearGoods();
+                        return false;
                     }
                 });
                 hangBillDialog.setOnDismissListener(dialog -> {
@@ -487,12 +516,8 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     }
 
     @Override
-    protected void addSaleGoods(final @NonNull JSONObject jsonObject){
-        super.addSaleGoods(jsonObject);
-        final JSONObject content = new JSONObject();
-        if (mGoodsInfoViewAdapter.getSingleGoods(content,null,mGoodsInfoViewAdapter.getGoodsId(jsonObject))){
-            mSaleGoodsAdapter.addSaleGoods(content);
-        }
+    protected void addSaleGoods(final @NonNull JSONObject saleGoods){
+        mSaleGoodsAdapter.addSaleGoods(saleGoods);
     }
     @Override
     public void resetOrderCode(){
@@ -549,6 +574,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     }
     @Override
     public boolean findGoodsByBarcodeId(@NonNull final JSONObject out_goods,final String barcode_id){
-        return mGoodsInfoViewAdapter.getSingleGoods(out_goods,null,barcode_id);
+        return mGoodsInfoViewAdapter.getSingleSaleGoods(out_goods,null,barcode_id);
     }
 }

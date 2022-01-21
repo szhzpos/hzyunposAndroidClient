@@ -39,7 +39,7 @@ public class SaleActivity extends MainActivity{
         AbstractPrinter.clearResource();
     }
 
-    protected void addSaleGoods(final @NonNull JSONObject jsonObject){
+    protected void addSaleGoods(final @NonNull JSONObject saleGoods){
     }
 
     public void addBuyFullGiveGoods(final @NonNull JSONObject goods){

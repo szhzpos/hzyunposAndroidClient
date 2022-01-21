@@ -34,6 +34,7 @@ import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
@@ -374,7 +375,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
         if (mGetListener != null && mHbDetailCursorAdapter != null){
             if (mCurrentHangId != null){
                 final StringBuilder err = new StringBuilder();
-                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +","+ GoodsInfoViewAdapter.SALE_TYPE +",sale_price price,xnum,sale_amt,goodsPractice FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
+                final JSONArray barcode_ids = SQLiteHelper.getListToJson("SELECT barcode_id,only_coding,goods_title,gp_id,"+ GoodsInfoViewAdapter.W_G_MARK +","+ GoodsInfoViewAdapter.SALE_TYPE +",sale_price price,xnum,sale_amt,goodsPractice FROM hangbill_detail where hang_id = " + mCurrentHangId, err);
                 if (null != barcode_ids) {
                     final JSONObject object = new JSONObject();
                     if (SQLiteHelper.execSql(object,"SELECT ifnull(card_code,'') card_code FROM hangbill where hang_id = " + mCurrentHangId)){
@@ -386,10 +387,10 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                                 try {
                                     final JSONArray vips = VipInfoDialog.searchVip(card_code);
                                     mContext.runOnUiThread(() -> {
-                                        if (deleteBill(mCurrentHangId, err)) {
-                                            mGetListener.onGet(barcode_ids, vips.getJSONObject(0));
-                                        } else {
-                                            MyDialog.ToastMessage("删除挂单信息错误：" + err, null);
+                                        if (mGetListener.onGet(barcode_ids, vips.getJSONObject(0))){
+                                            if (!deleteBill(mCurrentHangId, err)) {
+                                                MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.del_hang_bill_hint,err.toString()));
+                                            }
                                         }
                                     });
                                 } catch (JSONException e) {
@@ -399,10 +400,10 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
                                 progressDialog.dismiss();
                             });
                         } else {
-                            if (deleteBill(mCurrentHangId, err)) {
-                                mGetListener.onGet(barcode_ids, null);
-                            } else {
-                                MyDialog.ToastMessage("删除挂单信息错误：" + err, getWindow());
+                            if (mGetListener.onGet(barcode_ids, null)){
+                                if (!deleteBill(mCurrentHangId, err)) {
+                                    MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.del_hang_bill_hint,err.toString()));
+                                }
                             }
                         }
                     }else{
@@ -515,6 +516,6 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     }
 
     public interface OnGetBillListener{
-        void onGet(final JSONArray array,final JSONObject vip);
+        boolean onGet(final JSONArray array,final JSONObject vip);
     }
 }

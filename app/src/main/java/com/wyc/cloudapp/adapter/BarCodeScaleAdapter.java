@@ -25,7 +25,7 @@ public class BarCodeScaleAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int CONTENT = -2;
     private Context mContext;
     private JSONArray mDatas;
-    private Map<String,TextView> mCurrentItemIndexMap;
+    private final Map<String,TextView> mCurrentItemIndexMap;
     public BarCodeScaleAdapter(Context context){
         this.mContext = context;
         mDatas = new JSONArray();
