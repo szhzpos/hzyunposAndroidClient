@@ -25,7 +25,6 @@
         android:id="@+id/barcode_tv"
         android:layout_width="0dp"
         android:layout_height="@dimen/height_35"
-        android:autofillHints=""
         android:background="@drawable/bottom_separator"
         android:drawableEnd="@drawable/scan"
         android:inputType="number"
@@ -34,9 +33,21 @@
         android:selectAllOnFocus="true"
         android:textColor="@color/label_text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/continue_cb"
         app:layout_constraintStart_toEndOf="@id/barcode_label"
         app:layout_constraintTop_toTopOf="@id/barcode_label" />
+
+    <CheckBox
+        android:id="@+id/continue_cb"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="2dp"
+        android:text="@string/continue_scan"
+        android:textColor="@color/lightBlue"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/barcode_tv"
+        app:layout_constraintTop_toTopOf="@id/barcode_tv" />
 
     <TextView
         android:id="@+id/item_no_label"
@@ -53,7 +64,6 @@
         android:id="@+id/item_no_tv"
         android:layout_width="0dp"
         android:layout_height="@dimen/height_35"
-        android:autofillHints=""
         android:background="@drawable/bottom_separator"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_5"
@@ -79,7 +89,6 @@
         android:id="@+id/name_tv"
         android:layout_width="0dp"
         android:layout_height="@dimen/height_35"
-        android:autofillHints=""
         android:background="@drawable/bottom_separator"
         android:gravity="center_vertical"
         android:paddingStart="@dimen/margin_5"
@@ -112,7 +121,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autofillHints=""
             android:background="@drawable/bottom_separator"
             android:inputType="numberDecimal"
             android:paddingStart="@dimen/margin_5"
@@ -136,7 +144,6 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:autofillHints=""
             android:background="@drawable/bottom_separator"
             android:gravity="center_vertical"
             android:paddingStart="@dimen/margin_5"
@@ -145,6 +152,33 @@
             android:textSize="@dimen/font_size_16" />
 
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/remark_label"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/height_35"
+        android:gravity="center"
+        android:text="@string/remark_colon_sz"
+        android:textColor="@color/label_text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/one" />
+
+    <EditText
+        android:id="@+id/remark_tv"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/height_35"
+        android:background="@drawable/bottom_separator"
+        android:gravity="center_vertical"
+        android:inputType="text"
+        android:paddingStart="@dimen/margin_5"
+        android:paddingEnd="0dp"
+        android:textColor="@color/label_text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintRight_toRightOf="@id/remark_label"
+        app:layout_constraintStart_toEndOf="@id/remark_label"
+        app:layout_constraintTop_toTopOf="@id/remark_label" />
 
     <Button
         android:id="@+id/ok_btn"
@@ -160,7 +194,7 @@
         app:layout_constraintEnd_toStartOf="@+id/cancel_btn"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/continue_btn"
-        app:layout_constraintTop_toBottomOf="@+id/one" />
+        app:layout_constraintTop_toBottomOf="@id/remark_label" />
 
     <Button
         android:id="@+id/continue_btn"

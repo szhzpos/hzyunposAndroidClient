@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.CallSuper;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.logger.Logger;
 
 public abstract class AbstractDefinedTitleActivity extends MainActivity {
@@ -119,27 +118,30 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
                     recycleVelocityTracker();
 
                     if (mScroller == null)mScroller = new OverScroller(this);
+                    Logger.d("initialXVelocity:%d,mMinimumVelocity:%d,getScrollX:%d",initialXVelocity,mMinimumVelocity,mRoot.getScrollX());
                     if (Math.abs(initialXVelocity) > mMinimumVelocity){
-                        mScroller.fling(mRoot.getScrollX(),0,initialXVelocity ,0,0,0,0,0);
-                        mRoot.scrollBy(mScroller.getCurrX(),0);
-                    }
-
-                    int w = mRoot.getWidth();
-                    int scrollX = mRoot.getScrollX(),distance_scrollX = Math.abs(scrollX);
-                    int dx;
-                    if (distance_scrollX > (w >> 1)){
-                        dx = distance_scrollX - w;
+                        mScroller.fling(mRoot.getScrollX(),0,-initialXVelocity,0,0,mRoot.getWidth(),0,0);
                     }else {
-                        dx = distance_scrollX;
+                        calculateScrollX();
                     }
-                    if (scrollX > 0)dx = -dx;
-
-                    mScroller.startScroll(scrollX,0,dx,0);
                     startScroll();
                     break;
             }
         }
         return super.onTouchEvent(ev);
+    }
+
+    private void calculateScrollX(){
+        int w = mRoot.getWidth();
+        int scrollX = mRoot.getScrollX(),distance_scrollX = Math.abs(scrollX);
+        int dx;
+        if (distance_scrollX > (w >> 1)){
+            dx = distance_scrollX - w;
+        }else {
+            dx = distance_scrollX;
+        }
+        if (scrollX > 0)dx = -dx;
+        mScroller.startScroll(scrollX,0,dx,0);
     }
 
     protected boolean hasSlide(){
@@ -149,7 +151,12 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
     private void startScroll(){
         if (mScroller.computeScrollOffset()){
             int cur_x = mScroller.getCurrX();
-            if (Math.abs(cur_x) < mRoot.getRight()) {
+            int finalX = mScroller.getFinalX();
+            int right = mRoot.getRight();
+            if (finalX != 0 && Math.abs(cur_x) == mScroller.getFinalX() && Math.abs(cur_x) < right){
+                calculateScrollX();
+                mRoot.postDelayed(this::startScroll,16);
+            }else if (Math.abs(cur_x) < right) {
                 mRoot.scrollTo(cur_x,0);
                 mRoot.postDelayed(this::startScroll,16);
             } else {

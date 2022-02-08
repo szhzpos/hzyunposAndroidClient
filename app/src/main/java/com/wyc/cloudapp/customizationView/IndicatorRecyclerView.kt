@@ -316,10 +316,10 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun resetChildLocation(){
+        mChildOffset = 0
+        mIndicatorMoveY = 0
+        mIndicatorMoveX = 0
         if (hasEnterLoad()){
-            mChildOffset = 0
-            mIndicatorMoveY = 0
-            mIndicatorMoveX = 0
             if (isVerOrientation()){
                 if (hasSlideUp()){
                     scrollToPosition(layoutManager?.itemCount?:0)
