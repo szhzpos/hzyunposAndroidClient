@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.wyc.cloudapp.customizationView.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_flowLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/margin_1"
+    app:item_horizontal_spacing="@dimen/margin_1"
+    app:item_vertical_spacing="@dimen/margin_1"
+    app:rowCount="2"
+    app:separator_color="@color/white">
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/fg_cashier_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#FA987E"
+        android:drawableTop="@drawable/m_cashier"
+        android:gravity="center"
+        android:tag="activity.mobile.cashierDesk.MobileCashierActivity"
+        android:text="@string/fg_casher_sz"
+        android:textColor="#795548"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/trade_query_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#1b81d6"
+        android:drawableTop="@drawable/m_trade"
+        android:gravity="center"
+        android:text="@string/trade_query_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:verSpacing="@dimen/default_vertical"
+        app:layout_weight_width="0.5" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/fg_refund_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#17cfd7"
+        android:drawableTop="@drawable/m_fg_refund"
+        android:gravity="center"
+        android:text="@string/fg_refund_sz"
+        android:textColor="#616161"
+        android:textSize="@dimen/font_size_18"
+        android:visibility="visible"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/refund_query_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#a935b8"
+        android:drawableTop="@drawable/m_refund_query"
+        android:gravity="center"
+        android:text="@string/refund_query_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:verSpacing="@dimen/default_vertical"
+        app:layout_weight_width="0.50" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/vip_charge_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#00da8d"
+        android:drawableTop="@drawable/m_vip_charge"
+        android:gravity="center"
+        android:text="@string/vip_charge_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/charge_query_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#fcc65a"
+        android:drawableTop="@drawable/m_charge_query"
+        android:gravity="center"
+        android:text="@string/charge_query_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/once_card_sale_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#E4B0D9"
+        android:drawableTop="@drawable/once_card"
+        android:gravity="center"
+        android:tag="activity.mobile.cashierDesk.TimeCardBusinessActivity"
+        android:text="@string/once_card_sale_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/topDrawableTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#A2A0AB"
+        android:drawableTop="@drawable/m_charge_query"
+        android:gravity="center"
+        android:tag="activity.mobile.cashierDesk.TimeCardQueryActivity"
+        android:text="@string/once_card_query_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical"
+        tools:visibility="visible" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/gift_card_sale_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#9A8C4A"
+        android:drawableTop="@drawable/gift_card"
+        android:gravity="center"
+        android:tag="activity.mobile.cashierDesk.GiftCardSaleActivity"
+        android:text="@string/gift_card_sale_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/gift_card_query_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#ACBA95"
+        android:drawableTop="@drawable/m_charge_query"
+        android:gravity="center"
+        android:tag="activity.mobile.cashierDesk.GiftCardOrderQueryActivity"
+        android:text="@string/gift_card_query_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/fd_shift_exchange_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#bc3242"
+        android:drawableTop="@drawable/m_shift_exchange"
+        android:gravity="center"
+        android:text="@string/fg_shift_ex_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+    <com.wyc.cloudapp.customizationView.TopDrawableTextView
+        android:id="@+id/data_exchange_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/board_rect_size"
+        android:background="#5a3fcb"
+        android:drawableTop="@drawable/m_data_exchange"
+        android:gravity="center"
+        android:text="@string/data_ex_sz"
+        android:textColor="@color/white"
+        android:textSize="@dimen/font_size_18"
+        app:layout_weight_width="0.5"
+        app:verSpacing="@dimen/default_vertical" />
+
+</com.wyc.cloudapp.customizationView.FlowLayout>

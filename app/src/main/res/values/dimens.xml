@@ -213,4 +213,5 @@
     <dimen name="business_print_item_height">45dp</dimen>
     <dimen name="goods_practice_item_height">65dp</dimen>
     <dimen name="hangbill_order_list_width">@dimen/size_308</dimen>
+    <dimen name="business_item_height">@dimen/size_88</dimen>
 </resources>

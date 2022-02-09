@@ -24,6 +24,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.business.InventoryClearHintDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
@@ -37,6 +38,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
     private JSONObject mTaskInfo;
     private CustomProgressDialog mProgressDialog;
     private MobileInventoryAuditDetailAdapter mAdapter;
+    private String mExamineMessage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,9 +100,28 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
 
     private void initAuditBtn(){
         final Button btn = findViewById(R.id.inventory_audit_btn);
-        btn.setOnClickListener(v -> auditInfo());
+        btn.setOnClickListener(v -> {
+            if (Utils.isNotEmpty(mExamineMessage)){
+                final InventoryClearHintDialog dialog = new InventoryClearHintDialog(this);
+                dialog.setHintMsg(mExamineMessage);
+                if (dialog.exec() == 1){
+                    int flag = dialog.getClearFlag();
+                    String hint = CustomApplication.getStringByResId(R.string.audit_verify_hint,CustomApplication.getStringByResId(R.string.no_zero_audit_hint));
+                    if (flag == 1){
+                        hint = CustomApplication.getStringByResId(R.string.audit_verify_hint,CustomApplication.getStringByResId(R.string.zero_audit_hint));
+                    }
+                    MyDialog.displayAskMessage(this, hint, myDialog -> {
+                        myDialog.dismiss();
+                        auditInfo(flag);
+                    }, MyDialog::dismiss);
+                }
+            }else auditInfo(0);
+        });
     }
-    private void auditInfo(){
+    /**
+     * clearFlag 1 清零
+     * */
+    private void auditInfo(int clearFlag){
         showProgress(getString(R.string.auditing_hints));
         CustomApplication.execute(()->{
             final JSONObject param_obj = new JSONObject();
@@ -108,6 +129,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
             param_obj.put("stores_id",getStoreId());
             param_obj.put("pt_user_id",getPtUserId());
             param_obj.put("pcd_task_id",Utils.getNullStringAsEmpty(mTaskInfo,"pcd_task_id"));
+            param_obj.put("reset",clearFlag);
 
             Logger.d_json(param_obj.toString());
 
@@ -195,6 +217,7 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
                 try {
                     final JSONObject info = JSONObject.parseObject(retJson.getString("info"));
                     if (HttpUtils.checkBusinessSuccess(info)){
+                        mExamineMessage = Utils.getNullStringAsEmpty(info,"examine_message");
                         mTaskInfo = info.getJSONObject("data");
                         runOnUiThread(this::showOrder);
                     }else throw new JSONException(info.getString("info"));

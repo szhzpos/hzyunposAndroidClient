@@ -27,11 +27,11 @@ import java.util.List;
 public final class MobileCashierDeskFragment extends AbstractJumpFragment {
     @Override
     protected int getRootLayout() {
-        return R.layout.mobile_cashier_desk_fragment_layout;
+        return R.layout.desk_flow_layout;
     }
     @Override
     protected int getMainViewId() {
-        return R.id.main_linearLayout;
+        return R.id.main_flowLayout;
     }
 
     @Override

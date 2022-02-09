@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.utils.Utils;
 
 public class SwipeLayout extends FrameLayout {
     private OverScroller mScroller;
@@ -123,7 +124,7 @@ public class SwipeLayout extends FrameLayout {
     private TextView generateMenuView(){
         final TextView tv = new TextView(getContext());
         tv.setGravity(Gravity.CENTER);
-        tv.setTextSize(CustomApplication.getDimension(R.dimen.font_size_12));
+        tv.setTextSize(12);
         tv.setTextColor(getResources().getColor(R.color.white,null));
         measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
         tv.setLayoutParams(new LinearLayout.LayoutParams(getMeasuredHeightAndState(), ViewGroup.LayoutParams.MATCH_PARENT));

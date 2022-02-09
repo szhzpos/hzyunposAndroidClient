@@ -13,12 +13,12 @@ import com.wyc.cloudapp.utils.Utils;
 public final class MobileBusinessFragment extends AbstractJumpFragment {
     @Override
     protected int getRootLayout() {
-        return R.layout.mobile_business_fragment_layout;
+        return R.layout.mobile_business_fragment_flowlayout;
     }
 
     @Override
     protected int getMainViewId() {
-        return R.layout.mobile_business_fragment_layout;
+        return R.layout.mobile_business_fragment_flowlayout;
     }
 
     @Override

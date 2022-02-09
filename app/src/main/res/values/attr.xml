@@ -33,4 +33,17 @@
         <attr name="perId" format="string" />
         <attr name="hide" format="boolean"/>
     </declare-styleable>
+
+    <declare-styleable name="FlowLayout_Layout">
+        <attr name="layout_weight_width" format="float"/>
+        <attr name="layout_weight_height" format="float"/>
+    </declare-styleable>
+    <declare-styleable name="FlowLayout">
+        <attr name="item_horizontal_spacing" format="dimension"/>
+        <attr name="item_vertical_spacing" format="dimension"/>
+        <attr name="separator_color" format="color"/>
+        <attr name="separator_size" format="dimension"/>
+        <attr name="closing" format="boolean"/>
+        <attr name="rowCount" format="integer"/>
+    </declare-styleable>
 </resources>

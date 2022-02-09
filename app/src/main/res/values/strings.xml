@@ -533,6 +533,11 @@
     <string name="inventory_order_sz">实盘录入</string>
     <string name="inventory_task_not_colon">盘点任务</string>
     <string name="inventory_audit_sz">盘点审核</string>
+    <string name="zero_audit">清零审核</string>
+    <string name="no_zero_audit">不清零审核</string>
+    <string name="audit_verify_hint">是否确认【%1$s】审核！（审核后不可撤销，请谨慎操作）</string>
+    <string name="zero_audit_hint">未盘商品清零审核</string>
+    <string name="no_zero_audit_hint">未盘商品不清零审核</string>
     <string name="chain_sz">连锁</string>
     <string name="distribution_warehouse_sz">配送出库单</string>
     <string name="distribution_warehousing_sz">配送入库单</string>
