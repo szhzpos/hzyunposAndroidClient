@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+1920 * 1080 dpi=176
+-->
 <resources>
     <dimen name="fun_button_width_size">@dimen/width_85</dimen>
     <dimen name="fun_button_height_size">@dimen/height_50</dimen>

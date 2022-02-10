@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.*
+import android.widget.EdgeEffect
 import android.widget.FrameLayout
 import android.widget.OverScroller
 import androidx.core.view.*
@@ -56,6 +57,9 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
     private var mMaximumVelocity = 0
     private var mActivePointerId = -1
 
+    private val mEdgeEffectTop:EdgeEffect
+    private var hasToBottom = false
+
     init {
         val a: TypedArray = context.obtainStyledAttributes(attributes,R.styleable.FlowLayout)
         mHorizontalSpacing = a.getDimension(R.styleable.FlowLayout_item_horizontal_spacing, 0f)
@@ -71,6 +75,9 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
         mSeparatorPaint.strokeWidth = mSeparatorSize
 
         a.recycle()
+
+        mEdgeEffectTop = EdgeEffect(context)
+        mEdgeEffectTop.color = Color.RED
 
         setWillNotDraw(false)
 
@@ -100,6 +107,11 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
         }
     }
 
+    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+        super.onSizeChanged(w, h, oldw, oldh)
+        mEdgeEffectTop.setSize(w, h shr 2)
+    }
+
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         recycleVelocityTracker()
@@ -111,6 +123,8 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
             when (ev.action) {
                 MotionEvent.ACTION_DOWN -> {
                     mScroller.abortAnimation()
+                    mEdgeEffectTop.finish()
+                    postInvalidateOnAnimation()
 
                     mYDown = ev.y
                     mYLastMove = mYDown
@@ -148,15 +162,22 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
 
                     if (scrollY + scrolledY < mTopBorder) {
                         scrollTo(0, 0)
+                        hasToBottom = false
+                        edgePull(event)
                         return true
                     } else if (scrollY + height + scrolledY > mBottomBorder) {
+                        hasToBottom = true
                         scrollTo(0, mBottomBorder - height)
+                        edgePull(event)
                         return true
                     }
+                    hasToBottom = false
                     scrollBy(0, scrolledY)
                     mYLastMove = mYMove
                 }
                 MotionEvent.ACTION_UP -> {
+                    edgeRelease()
+
                     val velocityTracker = mVelocityTracker
                     velocityTracker?.computeCurrentVelocity(1000, mMaximumVelocity.toFloat())
                     val initialYVelocity = velocityTracker?.getYVelocity(mActivePointerId)?.toInt() ?: 0
@@ -174,6 +195,30 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
             }
         }
         return super.onTouchEvent(event)
+    }
+    private fun edgePull(event: MotionEvent){
+        mEdgeEffectTop.onPull(event.y / height,if (hasToBottom) 1 - event.x / width else event.x / width)
+        postInvalidateOnAnimation()
+    }
+    private fun edgeRelease(){
+        mEdgeEffectTop.onRelease()
+        postInvalidateOnAnimation()
+    }
+
+    override fun onDrawForeground(canvas: Canvas) {
+        super.onDrawForeground(canvas)
+        if (!mEdgeEffectTop.isFinished){
+            if (hasToBottom){
+                canvas.save()
+                canvas.translate(-width.toFloat(), 0f)
+                canvas.rotate(180f,width.toFloat(),0f)
+                canvas.translate(0f, (-mBottomBorder).toFloat())
+                mEdgeEffectTop.draw(canvas)
+                canvas.restore()
+            }else
+                mEdgeEffectTop.draw(canvas)
+            invalidate()
+        }
     }
 
     override fun computeScroll() {

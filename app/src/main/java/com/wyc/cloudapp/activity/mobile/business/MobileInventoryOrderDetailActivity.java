@@ -141,10 +141,10 @@ public class MobileInventoryOrderDetailActivity extends AbstractDefinedTitleActi
                 if (HttpUtils.checkBusinessSuccess(info)){
                     CustomApplication.runInMainThread(()->{
                         finish();
-                        MyDialog.toastMessage(getString(R.string.audited_sz));
+                        MyDialog.toastMessage(Utils.getNullStringAsEmpty(info,"info"));
                     });
                 }else {
-                    err = info.getString("info");
+                    err = Utils.getNullStringAsEmpty(info,"info");
                 }
             }
             if (Utils.isNotEmpty(err)){
