@@ -358,6 +358,31 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         }
     }
 
+    /**
+     * 余额不足以付款的情况下，需要使用会员余额做部分付款
+     * */
+    private void vipRetryPay(double vipBalance){
+        final JSONObject object = mPayDetailViewAdapter.findPayDetailById(PayMethodViewAdapter.getVipMethodId());
+        if (object != null){
+            object.put("pamt",vipBalance);
+            mPayDetailViewAdapter.notifyDataSetChanged();
+            //CustomApplication.runInMainThread(this::vipPay);
+        }
+    }
+    private void vipPay(){
+        final String id = PayMethodViewAdapter.getVipMethodId();
+        final int index = mPayMethodViewAdapter.findPayMethodIndexById(id);
+        if (index != -1){
+            RecyclerView.ViewHolder viewHolder = mPayMethodView.findViewHolderForAdapterPosition(index);
+            if (viewHolder != null){
+                viewHolder.itemView.callOnClick();
+            }else
+                mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
+        }else {
+            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%s的支付方式不存在!",id), getWindow());
+        }
+    }
+
     private final View.OnClickListener button_click = v -> {
         final View view =  getCurrentFocus();
         if (view != null) {
@@ -422,8 +447,19 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                             MyDialog.SnackBarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                         } else {
-                            if (mVip != null && PayMethodViewAdapter.isVipPay(pay_method_copy)){
-                                pay_method_copy.put("card_code",mVip.getString("card_code"));
+                            boolean isVipPay = false;
+                            double vipAmt = 0.0;
+                            if (PayMethodViewAdapter.isVipPay(pay_method_copy)){
+                                isVipPay = true;
+                                if (mVip != null){
+                                    pay_method_copy.put("card_code",mVip.getString("card_code"));
+                                }else {
+                                    final JSONObject payDetail = mPayDetailViewAdapter.findPayDetailById(PayMethodViewAdapter.getVipMethodId());
+                                    if (payDetail != null){
+                                        pay_method_copy.put("card_code",payDetail.getString("v_num"));
+                                        vipAmt = payDetail.getDoubleValue("pamt");
+                                    }
+                                }
                             }
                             final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method_copy);
                             final JSONObject default_method = mPayMethodViewAdapter.getDefaultPayMethod();
@@ -439,7 +475,15 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                 }
                             }
 
-                            payMethodDialogImp.setPayAmt(mPay_balance);
+                            double payAmt = mPay_balance;
+                            if (isVipPay && !Utils.equalDouble(vipAmt,0.0)){
+                                /**
+                                 *由于会员重新付款并且付款金额不等于0，使用已存在付款金额
+                                 * */
+                                payAmt = vipAmt;
+                            }
+                            payMethodDialogImp.setPayAmt(payAmt);
+
                             payMethodDialogImp.setYesOnclickListener(dialog -> {
                                 final JSONObject jsonObject = payMethodDialogImp.getContent();
                                 if (jsonObject != null)mPayDetailViewAdapter.addPayDetail(jsonObject);
@@ -1123,6 +1167,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                     break;
                                 case 1:
                                     info_json = JSON.parseObject(retJson.getString("info"));
+                                    Logger.d_json(info_json);
                                     switch (info_json.getString("status")){
                                         case "n":
                                             mPayStatus = false;
@@ -1224,6 +1269,21 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                                         }
                                                     }
                                                     break;
+                                                case 6:
+                                                    if (mProgressDialog.isShowing())mProgressDialog.dismiss();
+
+                                                    mPayStatus = false;
+                                                    final double vipBalance = Utils.getNotKeyAsNumberDefault(info_json,"money_sum",0.0);
+                                                    final String msg = String.format(Locale.CHINA,"会员当前余额【%.2f】小于付款金额【%.2f】" +
+                                                            ",是否使用当前余额做部分付款？",vipBalance,Utils.getNotKeyAsNumberDefault(info_json,"pay_money",0.0));
+                                                    mContext.runOnUiThread(() -> MyDialog.displayAskMessage(mContext, msg, myDialog -> {
+                                                        myDialog.dismiss();
+                                                        vipRetryPay(vipBalance);
+                                                    }, MyDialog::dismiss));
+                                                    break;
+                                                default:
+                                                    mPayStatus = false;
+                                                    err.append(String.format(Locale.CHINA,"支付失败,未知状态res_code:%d",res_code));
                                             }
                                             break;
                                     }
@@ -1301,14 +1361,14 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     private void payError(final StringBuilder err){
         mContext.runOnUiThread(()->{
             MyDialog.displayErrorMessage(mContext, err.toString());
-            if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+            if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         });
     }
 
     private void paySuccess(){
         mContext.runOnUiThread(()->{
             setCodeAndExit(1);
-            if (mProgressDialog != null && mProgressDialog.isShowing())mProgressDialog.dismiss();
+            if (mProgressDialog.isShowing())mProgressDialog.dismiss();
         });
     }
 

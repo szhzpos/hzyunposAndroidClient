@@ -1217,9 +1217,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                     for (int i = 0; i < columnCount; i++) {
                         if(coltypes.get(i) == FIELD_TYPE_FLOAT){
                             jsonObj.put(colNames.get(i) ,cursor.getDouble(i));
-                        }else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
-                            jsonObj.put(colNames.get(i) , cursor.getInt(i));
-                        }else {
+                        }/*else if(coltypes.get(i) == FIELD_TYPE_INTEGER){
+                            jsonObj.put(colNames.get(i) , cursor.getDouble(i));
+                        }*/else {
                             if(cursor.getString(i)==null){
                                 jsonObj.put(colNames.get(i) , "");
                             }else{
@@ -1236,9 +1236,9 @@ public final class SQLiteHelper extends SQLiteOpenHelper {
                 for (int i = 0; i < columnCount; i++) {
                     if (coltypes.get(i) == FIELD_TYPE_FLOAT) {
                         jsonObj.put(colNames.get(i),cursor.getDouble(i));
-                    } else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
-                        jsonObj.put(colNames.get(i), cursor.getInt(i));
-                    } else {
+                    } /*else if (coltypes.get(i) == FIELD_TYPE_INTEGER) {
+                        jsonObj.put(colNames.get(i), cursor.getDouble(i));
+                    } */else {
                         if (cursor.getString(i) == null) {
                             jsonObj.put(colNames.get(i), "");
                         } else {

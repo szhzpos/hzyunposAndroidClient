@@ -120,7 +120,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
                             break;
                         case "y":
                             int res_code = info_json.getIntValue("res_code");
-                            if (res_code == 1 || res_code == 2){//支付成功
+                            if (res_code == 1 || res_code == 2 || res_code == 6){//获取状态
                                 query_status = true;
                                 Logger.d_json(info_json.toString());
                                 if (info_json.containsKey("xnote")){
@@ -131,7 +131,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
                                 pay_time = info_json.getLong("pay_time");
                                 pay_status = info_json.getIntValue("pay_status");
                             }
-                            if (res_code == 2){//支付失败
+                            if (res_code == 2 || res_code == 6){//2支付失败 6会员余额不足
                                 pay_status = 1;
                                 err.append(info_json.getString("info"));
                             }

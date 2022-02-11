@@ -14,6 +14,7 @@ import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -39,7 +40,7 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
     @Override
     protected void setSelectStatus(View v) {
         super.setSelectStatus(v);
-        final JSONObject goods = Utils.getViewTagValue(v);
+        final JSONObject goods = getCurrentContent();
         if (GoodsInfoViewAdapter.isWeighingGoods(goods)){
             mContext.updateScalePrice(goods.getDoubleValue("price"));
         }

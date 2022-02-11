@@ -30,7 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1.55"
-            android:autofillHints=""
             android:background="@drawable/edit_text_style"
             android:focusable="auto"
             android:hint="@string/pay_amt_hint_sz"

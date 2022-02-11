@@ -92,7 +92,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
 
-public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback,View.OnClickListener {
+public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback {
     private RecyclerView mSaleGoodsRecyclerView;
     private GoodsCategoryAdapter mGoodsCategoryAdapter;
     private GoodsInfoViewAdapter mGoodsInfoViewAdapter;
@@ -380,54 +380,57 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     private void initMoreFunBtn(){
         final Button btn = findViewById(R.id.more_fun_btn);
-        btn.setOnClickListener(v -> {
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-            final PopupWindow window = new PopupWindow(this);
-            window.setContentView(View.inflate(this,R.layout.more_fun_popup_window_layout,null));
-            window.setOutsideTouchable(true);
-            window.setBackgroundDrawable(ContextCompat.getDrawable(this,R.color.transparent));
+                final PopupWindow window = new PopupWindow(NormalMainActivity.this);
+                window.setContentView(View.inflate(NormalMainActivity.this,R.layout.more_fun_popup_window_layout,null));
+                window.setOutsideTouchable(true);
+                window.setBackgroundDrawable(ContextCompat.getDrawable(NormalMainActivity.this,R.color.transparent));
 
-            runOnUiThread(() -> {
-                final View contentView = window.getContentView();
-                contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-                final int content_height = contentView.getMeasuredHeight();
-                int width = btn.getWidth();
-                int[] ints = new int[2];
-                btn.getLocationInWindow(ints);
-                window.showAsDropDown(btn,width, -content_height );
+                runOnUiThread(() -> {
+                    final View contentView = window.getContentView();
+                    contentView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
+                    final int content_height = contentView.getMeasuredHeight();
+                    int width = btn.getWidth();
+                    int[] ints = new int[2];
+                    btn.getLocationInWindow(ints);
+                    window.showAsDropDown(btn,width, -content_height );
 
-                final InterceptLinearLayout interceptLinearLayout = contentView.findViewById(R.id.interceptLinearLayout);
-                if (interceptLinearLayout != null){
-                    interceptLinearLayout.setClickListener(this);
+                    final InterceptLinearLayout interceptLinearLayout = contentView.findViewById(R.id.interceptLinearLayout);
+                    if (interceptLinearLayout != null){
+                        interceptLinearLayout.setClickListener(clickListener);
+                    }
+                });
+            }
+
+            private final View.OnClickListener clickListener = view -> {
+                int id = view.getId();
+                if (id == R.id.pop_present_btn){
+                    present();
+                }else if (id == R.id.pop_o_cashbox){
+                    if (verifyOpenCashboxPermissions()){
+                        AbstractPrinter.openCashDrawer();
+                    }
+                }else if (id == R.id.pop_sale_man_btn){
+                    final JSONObject object = AbstractVipChargeDialog.showSaleInfo(NormalMainActivity.this);
+                    final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
+                    mSaleManInfo = new JSONObject();
+                    mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
+                    mSaleManInfo.put("name",name);
+                    setSaleManView(name);
+                }else if (id == R.id.pop_refund_btn){
+                    if (RefundDialog.verifyRefundPermission(NormalMainActivity.this)){
+                        setSingleRefundStatus(true);
+                    }
+                }else if (id == R.id.pop_time_card_btn){
+                    NTimeCardBusiness.start(NormalMainActivity.this);
+                }else if (id == R.id.goods_practice){
+                    disposeGoodsPractice();
                 }
-            });
+            };
         });
-    }
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
-        if (id == R.id.pop_present_btn){
-            present();
-        }else if (id == R.id.pop_o_cashbox){
-            if (verifyOpenCashboxPermissions()){
-                AbstractPrinter.openCashDrawer();
-            }
-        }else if (id == R.id.pop_sale_man_btn){
-            final JSONObject object = AbstractVipChargeDialog.showSaleInfo(this);
-            final String name = Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_NAME);
-            mSaleManInfo = new JSONObject();
-            mSaleManInfo.put("id",Utils.getNullStringAsEmpty(object, TreeListBaseAdapter.COL_ID));
-            mSaleManInfo.put("name",name);
-            setSaleManView(name);
-        }else if (id == R.id.pop_refund_btn){
-            if (RefundDialog.verifyRefundPermission(this)){
-                setSingleRefundStatus(true);
-            }
-        }else if (id == R.id.pop_time_card_btn){
-            NTimeCardBusiness.start(this);
-        }else if (id == R.id.goods_practice){
-            disposeGoodsPractice();
-        }
     }
 
     @CallSuper
@@ -571,7 +574,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
     @Override
     public void setScaleInfo(int stat, float v){
-        if (mWeighView != null)mWeighView.updateInfo(stat,v,Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"price",0.00));
+        if (mWeighView != null)mWeighView.updateInfo(AbstractWeightedScaleImp.OnReadStatus.STABLE,getWeigh(),Utils.getNotKeyAsNumberDefault(mSaleGoodsAdapter.getCurrentContent(),"price",0.000));
     }
     @Override
     public void updateScalePrice(double price){

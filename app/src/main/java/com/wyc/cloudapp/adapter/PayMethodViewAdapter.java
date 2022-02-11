@@ -268,6 +268,9 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public static String getCashMethodId(){
         return CASH_METHOD_ID;
     }
+    public static String getVipMethodId(){
+        return VIP_METHOD_ID;
+    }
     public static boolean isApiCheck(int check){
         return check == 1;
     }

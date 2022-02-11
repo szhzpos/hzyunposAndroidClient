@@ -129,7 +129,8 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void addPayDetail(@NonNull JSONObject pay_detail_info){
         double amt = pay_detail_info.getDouble("pamt");
         final JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
-        if (object != null){
+        final String v_num = Utils.getNullStringAsEmpty(pay_detail_info,"v_num");
+        if (object != null && Utils.getNullStringAsEmpty(object,"v_num").equals(v_num)){
             double payed_amt = object.getDouble("pamt"),
                     zl_amt = object.getDouble("pzl");
 
@@ -137,8 +138,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             object.put("pamt",Utils.formatDouble(amt,2));
             object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
-            object.put("v_num",pay_detail_info.getString("v_num"));
-
+            object.put("v_num",v_num);
         }else{
             mDatas.add(pay_detail_info);
         }

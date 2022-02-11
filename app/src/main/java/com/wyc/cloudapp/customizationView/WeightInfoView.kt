@@ -12,6 +12,7 @@ import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import java.lang.NumberFormatException
 
@@ -101,8 +102,7 @@ class WeightInfoView(context: Context, attrs: AttributeSet?, defStyleAttr: Int):
         var num = 0.00
         try {
             num = weigh.text.toString().toDouble()
-        }catch (e:NumberFormatException){
-            MyDialog.toastMessage(e.message)
+        }catch (_:NumberFormatException){
         }
         mPrice.text = String.format("%.2f",price)
         mAmt.text = String.format("%.2f",num * price)

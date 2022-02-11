@@ -106,6 +106,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final CheckBox auto_weigh_rb = findViewById(R.id.auto_weigh);
                 if (NONE.equals(mSerialPortAdapter.getItem(position))){
+                    auto_weigh_rb.setChecked(false);
                     auto_weigh_rb.setVisibility(View.GONE);
                 }else auto_weigh_rb.setVisibility(View.VISIBLE);
             }

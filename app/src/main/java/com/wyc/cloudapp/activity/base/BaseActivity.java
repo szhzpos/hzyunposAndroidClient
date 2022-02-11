@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
+import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
@@ -35,6 +36,7 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        hideNavigationBar();
         if (NotchUtils.hasNotchScreen(this)){
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }else getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -53,6 +55,17 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
             finish();
         }
     }
+    private void hideNavigationBar() {
+        View decorView = getWindow().getDecorView();
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+        decorView.setSystemUiVisibility(uiOptions);
+
+        decorView.setOnSystemUiVisibilityChangeListener(visibility -> decorView.setSystemUiVisibility(uiOptions));
+    }
+
+
 
     @Override
     protected void finalize(){
