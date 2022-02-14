@@ -161,9 +161,11 @@ final class SyncHandler1 extends Handler {
         int gp_id;
         String order_code;
 
+        final ContentValues values = new ContentValues();
+
         if (code = null != (orders = SQLiteHelper.getListToJson(sql_orders,err))){
             if (!orders.isEmpty()){
-                startUploadRetailOrder(reupload);
+                startUploadRetailOrder(false);
                 for (int i = 0,size = orders.size();i < size;i++){
                     order_gp_ids.delete(0,order_gp_ids.length());
 
@@ -214,7 +216,7 @@ final class SyncHandler1 extends Handler {
                                             break;
                                         case 1:
                                             retJson = JSON.parseObject(retJson.getString("info"));
-                                            final ContentValues values = new ContentValues();
+
                                             switch (retJson.getString("status")){
                                                 case "n":
                                                     values.put("upload_status", RetailOrderStatus.UPLOAD_ERROR);
@@ -239,14 +241,21 @@ final class SyncHandler1 extends Handler {
                                 }
                             }
                         }else {
+                            values.put("upload_status", RetailOrderStatus.UPLOAD_ERROR);
+                            SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},null);
                             err.append("上传明细为空！");
                             Logger.e("销售单:%s,order_code:%s",err,order_code);
                         }
+                    }else {
+                        values.put("upload_status", RetailOrderStatus.UPLOAD_ERROR);
+                        SQLiteHelper.execUpdateSql("retail_order",values,"order_code = ?",new String[]{order_code},null);
+                        Logger.e("销售单:%s,order_code:%s",err,order_code);
                     }
                 }
             }
         }
         if (!code || err.length() > 0){
+            if (reupload)MyDialog.toastMessage(err.toString());
             Logger.e("上传销售单据错误：%s",err);
             CustomApplication.transFailure();
         }else CustomApplication.transSuccess();

@@ -21,6 +21,7 @@ import com.wyc.cloudapp.utils.http.HttpUtils;
 import com.wyc.cloudapp.utils.http.callback.TypeCallback;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -323,6 +324,9 @@ public final class PayMethod implements Serializable,Cloneable {
                             res_code = data.getRes_code();
                         }
                         break;
+                    default:
+                        result.failure(String.format(Locale.CHINA,"支付失败,未知状态：%d",res_code));
+                        loop.done(0);
                 }
                 result.copy(data);
                 loop.done(1);

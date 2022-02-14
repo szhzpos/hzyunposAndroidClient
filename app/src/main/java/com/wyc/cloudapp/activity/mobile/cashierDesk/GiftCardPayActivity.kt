@@ -9,6 +9,9 @@ import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
 import com.wyc.cloudapp.dialog.MyDialog
 
 class GiftCardPayActivity : CardPayBaseActivity<GiftCardSaleOrder>() {
+    override fun getSupportPayMethod(): String {
+        return "7"
+    }
     companion object{
         @JvmStatic
         fun start(context: Activity, order: GiftCardSaleOrder?) {

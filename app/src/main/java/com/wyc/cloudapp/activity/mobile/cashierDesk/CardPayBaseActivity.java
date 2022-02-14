@@ -162,7 +162,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
                 Logger.d("amt:%f - zl_amt:%f = %f,mActual_amt:%f,mAmt_received:%f",pay_amt,zl_amt,pay_amt - zl_amt,mActual_amt,mAmt_received);
                 if (mPaying){
                     double sale_amt = Utils.formatDouble(getSaleAmt(),2);
-                    double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
+                    double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPayingSumAmt(),2);
                     if (Utils.equalDouble(sale_amt,rec_pay_amt)){//证销售金额以及付款金额是否相等
                         save();
                     }else{
@@ -193,7 +193,7 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
 
     private void calculatePayContent(){
         clearContent();
-        mAmt_received = Utils.formatDouble(mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPaySumAmt(),2);
+        mAmt_received = Utils.formatDouble(mPayDetailViewAdapter == null ? 0.0 :mPayDetailViewAdapter.getPayingSumAmt(),2);
         mDiscount_amt = Utils.formatDouble(mOrder.getDiscountAmt(),2);
         mActual_amt = Utils.formatDouble(getSaleAmt(),2);
         mOrder_amt = Utils.formatDouble(mActual_amt + mDiscount_amt,2);
@@ -229,9 +229,17 @@ public class CardPayBaseActivity<T extends ICardPay<?>> extends BaseWindowActivi
         return mPayDetailViewAdapter.getDatas();
     }
 
+    /**
+     * 子类可以重写，自定义自己支持的付款方式
+     * @return 6支持次卡 7支持购物卡
+     * */
+    protected String getSupportPayMethod(){
+        return "6";
+    }
+
     private void initPayMethod(){
         mPayMethodViewAdapter = new PayMethodAdapterForObj(this,mPayDetailViewAdapter);
-        mPayMethodViewAdapter.setData("6");
+        mPayMethodViewAdapter.setData(getSupportPayMethod());
         mPayMethodViewAdapter.setOnItemClickListener((object) -> {
             //次卡销售只支持一种付款方式，选择之前先清除已付款的记录
             if (!mPayDetailViewAdapter.isEmpty()){

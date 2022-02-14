@@ -36,6 +36,7 @@ public class UnifiedPayResult extends Result {
     private double pay_money;
     private String discount;
     private String discount_xnote;
+    private String xnote;
     private String pay_status;
     private String pay_time;
 
@@ -95,6 +96,14 @@ public class UnifiedPayResult extends Result {
         this.discount_xnote = discount_xnote;
     }
 
+    public String getXnote() {
+        return xnote;
+    }
+
+    public void setXnote(String xnote) {
+        this.xnote = xnote;
+    }
+
     public String getPay_status() {
         return pay_status;
     }
@@ -121,6 +130,7 @@ public class UnifiedPayResult extends Result {
         pay_money = o.pay_money;
         discount = o.discount;
         discount_xnote = o.discount_xnote;
+        xnote = o.xnote;
         pay_status = o.pay_status;
         pay_time = o.pay_time;
     }
@@ -151,18 +161,18 @@ public class UnifiedPayResult extends Result {
     }
 
     @NonNull
+
     @Override
     public String toString() {
         return "UnifiedPayResult{" +
-                "status=" + getStatus() +
-                ", info='" + getInfo() + '\'' +
-                ", res_code=" + res_code +
+                "res_code=" + res_code +
                 ", order_code='" + order_code + '\'' +
                 ", order_code_son='" + order_code_son + '\'' +
                 ", pay_code='" + pay_code + '\'' +
                 ", pay_money=" + pay_money +
                 ", discount='" + discount + '\'' +
                 ", discount_xnote='" + discount_xnote + '\'' +
+                ", xnote='" + xnote + '\'' +
                 ", pay_status='" + pay_status + '\'' +
                 ", pay_time='" + pay_time + '\'' +
                 '}';

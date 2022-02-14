@@ -53,6 +53,9 @@
     <string name="currency_symbol_sz">￥</string>
     <string name="space_sz">""</string>
     <string name="affirm_pay_sz">确认收银</string>
+    <string name="forbid_del_hints">不能删除已付款的支付方式!</string>
+    <string name="del_pay_detail_err">删除支付明细错误:%1$s</string>
+    <string name="exist_pay_detail_hints">已存在部分付款,不能退出!</string>
     <string name="order_amt_sz">单据金额</string>
     <string name="discount_amt_sz">优惠金额</string>
     <string name="rec_amt_sz">应收金额</string>

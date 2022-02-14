@@ -12,7 +12,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.callback.ClickListener;
+import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
 
 public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -22,7 +25,7 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     private final JSONArray mDatas;
     private View mCurrentItemView;
     private int mCurrentItemIndex;
-    private OnDeleteItem mDelItemListener = id -> true;
+    private OnDeleteItem mDelItemListener = (id,code) -> true;
 
     public PayDetailViewAdapter(Context context){
         this.mContext = context;
@@ -73,13 +76,16 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
                 contentHolder.pay_method_name.setText(pay_detail.getString("name"));
                 contentHolder.pay_detail_amt.setText(pay_detail.getString("pamt"));
                 contentHolder.pay_detail_zl.setText(pay_detail.getString("pzl"));
-                contentHolder.pay_detail_v_num.setText(pay_detail.getString("v_num"));
 
-                final String pay_method_id = pay_detail.getString("pay_method_id");
+
+                final String pay_method_id = pay_detail.getString("pay_method_id"),
+                        v_num = Utils.getNullStringAsEmpty(pay_detail,"v_num");
+
+                contentHolder.pay_detail_v_num.setText(v_num);
                 contentHolder.pay_method_id.setText(pay_method_id);
                 contentHolder.itemView.setOnTouchListener(new ClickListener(v -> {
                     setCurrentItemIndexAndItemView(v);
-                    if (mDelItemListener.onDel(pay_method_id)){
+                    if (mDelItemListener.onDel(pay_method_id,v_num)){
                         deletePayDetail(mCurrentItemIndex);
                     }
                 }, this::setSelectStatus));
@@ -125,12 +131,14 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         return mDatas;
     }
 
+    /**
+     * 根据付款方式id以及凭证号增加支付明细
+     * */
     @SuppressLint("NotifyDataSetChanged")
     public void addPayDetail(@NonNull JSONObject pay_detail_info){
         double amt = pay_detail_info.getDouble("pamt");
-        final JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"));
-        final String v_num = Utils.getNullStringAsEmpty(pay_detail_info,"v_num");
-        if (object != null && Utils.getNullStringAsEmpty(object,"v_num").equals(v_num)){
+        final JSONObject object = findPayDetailById(pay_detail_info.getString("pay_method_id"),Utils.getNullStringAsEmpty(pay_detail_info,"v_num"));
+        if (object != null){
             double payed_amt = object.getDouble("pamt"),
                     zl_amt = object.getDouble("pzl");
 
@@ -138,7 +146,6 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             object.put("pamt",Utils.formatDouble(amt,2));
             object.put("pzl",Utils.formatDouble(zl_amt + pay_detail_info.getDouble("pzl"),2));
-            object.put("v_num",v_num);
         }else{
             mDatas.add(pay_detail_info);
         }
@@ -180,8 +187,72 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return null;
     }
+    /**
+     * 根据付款方式id以及凭证号查找支付明细
+     * @param id 付款方式id
+     * @param code 凭证号
+     * */
+    public JSONObject findPayDetailById(final String id,final String code){
+        JSONObject detail;
+        for (int i = 0,length = mDatas.size();i < length;i ++){
+            detail = mDatas.getJSONObject(i);
+            if (Utils.getNullStringAsEmpty(detail,"pay_method_id").equals(id)
+                    && Utils.getNullStringAsEmpty(detail,"v_num").equals(code)){
+                return detail;
+            }
+        }
+        return null;
+    }
+    /**
+     * 根据付款方式id以及凭证号删除支付明细
+     * @param id 付款方式id
+     * @param code 凭证号
+     * */
+    @SuppressLint("NotifyDataSetChanged")
+    public void delDetailWithIdAndVoucherNum(final String id, final String code){
+        JSONObject detail;
+        for (int i = mDatas.size() - 1;i >= 0;i --){
+            detail = mDatas.getJSONObject(i);
+            if (Utils.getNullStringAsEmpty(detail,"pay_method_id").equals(id)
+                    && Utils.getNullStringAsEmpty(detail,"v_num").equals(code)){
+                mDatas.remove(i);
+                notifyDataSetChanged();
+                return;
+            }
+        }
+    }
 
-    public double getPaySumAmt(){
+    /**
+     * 从数据库删除支付明细
+     * @param orderCode 业务订单号
+     * @param payMethodId 支付方式id
+     * @param code 支付方式凭证号
+     * */
+    public static boolean delPayDetailFromDatabase(final String orderCode,final String payMethodId,final String code){
+        final StringBuilder err = new StringBuilder();
+        if (isPayed(orderCode,payMethodId,code)){
+            MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.forbid_del_hints));
+            return false;
+        }
+        if (SQLiteHelper.execDelete("retail_order_pays","order_code=? and pay_method=? and ifnull(v_num,'')=?",new String[]{orderCode,payMethodId,code},err) < 0){
+            MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.del_pay_detail_err,err));
+            return false;
+        }
+        return true;
+    }
+    /**
+     * 检查请求api的支付方式是否已经完成支付
+     * */
+    private static boolean isPayed(final String orderCode,final String payMethodId,final String code){
+        final JSONObject pay_status = new JSONObject();
+        if (!SQLiteHelper.execSql(pay_status,"select pay_status from retail_order_pays where is_check = 1 and order_code='" + orderCode +"' and pay_method='" + payMethodId +"' and ifnull(v_num,'')='" + code +"'")){
+            MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.del_pay_detail_err,pay_status.getString("info")));
+            return false;
+        }
+        return pay_status.getIntValue("pay_status") == 2;
+    }
+
+    public double getPayingSumAmt(){
         double amt = 0.0;
         for (int i = 0,size = mDatas.size();i < size;i++){
             final JSONObject object = mDatas.getJSONObject(i);
@@ -190,6 +261,14 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
         }
         return amt;
     }
+
+    public boolean hasPayMethodPayed(){
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            if (Utils.getNotKeyAsNumberDefault(mDatas.getJSONObject(i),"pay_status",1) == 2)return true;
+        }
+        return false;
+    }
+
     public boolean isEmpty(){
         return getItemCount() - 1 == 0;
     }
@@ -201,13 +280,14 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     public interface OnDeleteItem{
         /**
         * @param id 支付方式Id
+         * @param code 凭证号
         * @return true 可以删除明细，false不删除明细
         * */
-        boolean onDel(@NonNull String id);
+        boolean onDel(@NonNull String id,final String code);
     }
     public void setDelItemListener(OnDeleteItem delItemListener){
         if (delItemListener == null)
-            mDelItemListener = id -> true;
+            mDelItemListener = (id,code)-> true;
         else
             mDelItemListener = delItemListener;
     }

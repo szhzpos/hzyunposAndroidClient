@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -31,9 +32,11 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
 import com.wyc.cloudapp.data.SQLiteHelper;
+import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
@@ -129,6 +132,17 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     public void dismiss(){
         super.dismiss();
         Printer.dismissPrintIcon(mContext);
+    }
+
+    @Override
+    protected void closeWindow() {
+        if (!verifyPayed()){
+            super.closeWindow();
+        }else MyDialog.toastMessage(R.string.exist_pay_detail_hints);
+    }
+
+    private boolean verifyPayed(){
+        return mPayDetailViewAdapter != null && mPayDetailViewAdapter.hasPayMethodPayed();
     }
 
     @Override
@@ -366,20 +380,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         if (object != null){
             object.put("pamt",vipBalance);
             mPayDetailViewAdapter.notifyDataSetChanged();
-            //CustomApplication.runInMainThread(this::vipPay);
-        }
-    }
-    private void vipPay(){
-        final String id = PayMethodViewAdapter.getVipMethodId();
-        final int index = mPayMethodViewAdapter.findPayMethodIndexById(id);
-        if (index != -1){
-            RecyclerView.ViewHolder viewHolder = mPayMethodView.findViewHolderForAdapterPosition(index);
-            if (viewHolder != null){
-                viewHolder.itemView.callOnClick();
-            }else
-                mPayMethodView.scrollToPosition(index);//如果找不到view则滚动
-        }else {
-            MyDialog.ToastMessage(String.format(Locale.CHINA,"ID为%s的支付方式不存在!",id), getWindow());
         }
     }
 
@@ -448,7 +448,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             MyDialog.SnackBarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                         } else {
                             boolean isVipPay = false;
-                            double vipAmt = 0.0;
                             if (PayMethodViewAdapter.isVipPay(pay_method_copy)){
                                 isVipPay = true;
                                 if (mVip != null){
@@ -457,7 +456,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                     final JSONObject payDetail = mPayDetailViewAdapter.findPayDetailById(PayMethodViewAdapter.getVipMethodId());
                                     if (payDetail != null){
                                         pay_method_copy.put("card_code",payDetail.getString("v_num"));
-                                        vipAmt = payDetail.getDoubleValue("pamt");
                                     }
                                 }
                             }
@@ -474,15 +472,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                     }
                                 }
                             }
-
-                            double payAmt = mPay_balance;
-                            if (isVipPay && !Utils.equalDouble(vipAmt,0.0)){
-                                /**
-                                 *由于会员重新付款并且付款金额不等于0，使用已存在付款金额
-                                 * */
-                                payAmt = vipAmt;
-                            }
-                            payMethodDialogImp.setPayAmt(payAmt);
+                            payMethodDialogImp.setPayAmt(mPay_balance);
 
                             payMethodDialogImp.setYesOnclickListener(dialog -> {
                                 final JSONObject jsonObject = payMethodDialogImp.getContent();
@@ -573,7 +563,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 if (verifyPayBalance()){
                     if (Utils.equalDouble(mActual_amt,mAmt_received)){//支付明细数据发送变化后，计算是否已经付款完成，如果完成触发支付完成事件
                         double sale_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
-                        double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
+                        double rec_pay_amt = Utils.formatDouble(mPayDetailViewAdapter.getPayingSumAmt(),2);
                         if (Utils.equalDouble(sale_amt,rec_pay_amt)){//再次验证销售金额以及付款金额是否相等
                             startPay();
                         }else{
@@ -594,7 +584,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 }
             }
         });
-        mPayDetailViewAdapter.setDelItemListener(id -> SQLiteHelper.execDelete("retail_order_pays","order_code=? and pay_method=?",new String[]{mContext.getOrderCode(),id},null) >= 0);
+        mPayDetailViewAdapter.setDelItemListener((id,code) -> PayDetailViewAdapter.delPayDetailFromDatabase(mContext.getOrderCode(),id,code));
 
         RecyclerView recyclerView = findViewById(R.id.pay_detail_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
@@ -790,7 +780,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     }
     private void calculatePayContent(){
         clearContent();
-        mAmt_received = mPayDetailViewAdapter == null ? 0.0 : Utils.formatDouble(mPayDetailViewAdapter.getPaySumAmt(),2);
+        mAmt_received = mPayDetailViewAdapter == null ? 0.0 : Utils.formatDouble(mPayDetailViewAdapter.getPayingSumAmt(),2);
         mDiscount_amt = Utils.formatDouble(mContext.getSumAmt(1),2);
         mActual_amt = Utils.formatDouble(mContext.getSumAmt(3),2);
         mOrder_amt = Utils.formatDouble(mActual_amt + mDiscount_amt,2);
@@ -959,6 +949,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         pays_data = Utils.JsondeepCopy(getContent());//不能直接获取引用，需要重新复制一份否则会修改原始数据；如果业务不能正常完成，之前数据会遭到破坏
         JSONObject pay;
         double pamt = 0.0,pzl = 0.0;
+        int pay_status;
         for (int i= 0,size = pays_data.size();i < size;i++){
             tmp_json = (JSONObject) pays_data.remove(0);
 
@@ -966,6 +957,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
             pamt  = tmp_json.getDouble("pamt");
             pzl = tmp_json.getDouble("pzl");
+            pay_status = Utils.getNotKeyAsNumberDefault(tmp_json,"pay_status",1);
 
             pay.put("order_code",order_code);
             pay.put("pay_code",tmp_json.getString("pay_code"));
@@ -973,7 +965,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             pay.put("pay_money",pamt - pzl);
             pay.put("is_check",tmp_json.getDouble("is_check"));
             pay.put("pay_time",0);
-            pay.put("pay_status",1);
+            pay.put("pay_status",pay_status);
             pay.put("pay_serial_no","");//第三方返回的支付流水号
             pay.put("remark","");
             pay.put("zk_money",0.0);
@@ -1044,12 +1036,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
 
            if (code = generateOrderInfo(data)){
-               final JSONObject retail_order = Utils.getNullObjectAsEmptyJsonArray(data,"retail_order").getJSONObject(0);
-               final String order_code = Utils.getNullStringAsEmpty(retail_order,"order_code"),stores_id = Utils.getNullStringAsEmpty(retail_order,"stores_id");
-               final List<String> delete_sql = Arrays.asList(" delete from retail_order where order_code = '"+ order_code +"' and stores_id = '"+ stores_id +"' and pay_status = 1 and order_status = 1",
-                       "delete from retail_order_goods where order_code = '"+ order_code +"'"," delete from retail_order_pays where order_code = '"+ order_code +"'");
-
-               if (code = SQLiteHelper.execBatchUpdateSql(delete_sql,err)){//保存之前，先删除相同订单号以及相同订单状态的订单信息，防止由于多次结账失败引起的订单错乱。
+               if (code = delCurrentOrder(err)){//保存之前，先删除相同订单号以及相同订单状态的订单信息，防止由于多次结账失败引起的订单错乱。
                    if (!(code = SQLiteHelper.execSQLByBatchFromJson(data,tables,Arrays.asList(retail_order_cols,retail_order_goods_cols,retail_order_pays_cols,discount_record_cols),err,1))){
                        err.insert(0,"保存订单信息错误：");
                    }
@@ -1061,17 +1048,35 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
            }
         return code;
     }
+    private boolean delCurrentOrder(@Nullable final StringBuilder err){
+        final String order_code = mContext.getOrderCode();
+        final List<String> delete_sql = Arrays.asList(" delete from retail_order where order_code = '"+ order_code +"' and stores_id = '"+ mContext.getStoreId() +"' and pay_status = 1 and order_status = 1",
+                "delete from retail_order_goods where order_code = '"+ order_code +"'"," delete from retail_order_pays where order_code = '"+ order_code +"'");
+        return SQLiteHelper.execBatchUpdateSql(delete_sql,err);
+    }
+
     private int updateOrderToPayingStatus(final String order_code,final StringBuilder err){
          final ContentValues values = new ContentValues();
         values.put("pay_status",3);
         return SQLiteHelper.execUpdateSql("retail_order",values," order_code = ?",new String[]{order_code},err);
     }
     private int updateToPayingStatus(final JSONObject pay_detail,final String order_code,final StringBuilder err){
+        final String id = Utils.getNullOrEmptyStringAsDefault(pay_detail,"pay_method","-1"),v_num = Utils.getNullStringAsEmpty(pay_detail,"v_num");
+
+        updatePayDetailStatus(3,id,v_num);
+
         final ContentValues values = new ContentValues();
         values.put("pay_status",3);
         return SQLiteHelper.execUpdateSql("retail_order_pays",values," order_code = ? and pay_method = ? and pay_code = ?",
-                new String[]{order_code,Utils.getNullOrEmptyStringAsDefault(pay_detail,"pay_method","-1"),Utils.getNullStringAsEmpty(pay_detail,"pay_code")},err);
+                new String[]{order_code,id,Utils.getNullStringAsEmpty(pay_detail,"pay_code")},err);
     }
+    private void updatePayDetailStatus(int status,final String id,final String v_num){
+        final JSONObject tmp_pay_detail = mPayDetailViewAdapter.findPayDetailById(id,v_num);
+        if (null != tmp_pay_detail){
+            tmp_pay_detail.put("pay_status",status);
+        }
+    }
+
     private void requestPay(){
         mProgressDialog.setMessage("正在支付...").refreshMessage();
         mPayStatus = true;
@@ -1099,12 +1104,13 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             return;
         }
 
-        final JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
+        final JSONArray pays = SQLiteHelper.getListToJson("select pay_method,pay_money,pay_code,pay_status,is_check,v_num from retail_order_pays where order_code = '" + order_code +"'",0,0,false,err);
         if (null != pays){
             try{
                 for (int i = 0,size = pays.size();i < size && mPayStatus;i++){
                     discount_xnote = "[]";
                     third_pay_order_id = "";
+                    pay_status = 1;
                     pay_detail = pays.getJSONObject(i);
                     pay_method_id = pay_detail.getString("pay_method");
                     order_code_son = pay_detail.getString("pay_code");
@@ -1117,6 +1123,44 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         pay_status = 2;
                         pay_time = System.currentTimeMillis()/1000;
                     }else{
+                        //检查已支付的付款记录
+                        int temp_pay_status = pay_detail.getIntValue("pay_status");
+                        if (temp_pay_status == 2){
+                            try {
+                                int id = Integer.parseInt(pay_method_id);
+                                final PayMethod payMethod = PayMethod.getMethodById(id);
+                                if (payMethod != null){
+                                    final UnifiedPayResult result = payMethod.queryPayStatus(mContext,order_code_son,this.getClass().getSimpleName());
+                                    if (result.isSuccess()){
+                                        final JSONObject jsonObject = mPayDetailViewAdapter.findPayDetailById(pay_method_id);
+                                        if (jsonObject != null)jsonObject.put("xnote",result.getXnote());
+
+                                        third_pay_order_id = result.getPay_code();
+                                        discount_money = Double.parseDouble(result.getDiscount());
+                                        pay_time = Long.parseLong(result.getPay_time());
+                                        pay_status = Integer.parseInt(result.getPay_status());
+
+                                        tables.add("retail_order_pays");
+                                        final ContentValues values_pays = new ContentValues();
+                                        values_pays.put("pay_status",pay_status);
+                                        values_pays.put("pay_serial_no",third_pay_order_id);
+                                        values_pays.put("pay_time",pay_time);
+                                        values_pays.put("discount_money",discount_money);
+                                        values_pays.put("xnote",discount_xnote);
+                                        values_pays.put("return_code",third_pay_order_id);
+                                        valueList.add(values_pays);
+
+                                        whereClauseList.add("order_code = ? and pay_code = ? and pay_method = ?");
+                                        whereArgsList.add(new String[]{order_code,order_code_son,pay_method_id});
+                                        continue;
+                                    }
+                                }
+                            }catch (NumberFormatException e){
+                                e.printStackTrace();
+                            }
+                        }
+                        //检查已支付的付款记录
+
                         //更新支付记录到正在支付状态
                         if (updateToPayingStatus(pay_detail,order_code,err) < 0){
                             payError(err);
@@ -1276,10 +1320,18 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                                     final double vipBalance = Utils.getNotKeyAsNumberDefault(info_json,"money_sum",0.0);
                                                     final String msg = String.format(Locale.CHINA,"会员当前余额【%.2f】小于付款金额【%.2f】" +
                                                             ",是否使用当前余额做部分付款？",vipBalance,Utils.getNotKeyAsNumberDefault(info_json,"pay_money",0.0));
+
+                                                    final String id = pay_method_id,code = v_num;
+
                                                     mContext.runOnUiThread(() -> MyDialog.displayAskMessage(mContext, msg, myDialog -> {
                                                         myDialog.dismiss();
                                                         vipRetryPay(vipBalance);
-                                                    }, MyDialog::dismiss));
+                                                    }, myDialog -> {
+                                                        myDialog.dismiss();
+                                                        if (PayDetailViewAdapter.delPayDetailFromDatabase(order_code,id,code)){
+                                                            mPayDetailViewAdapter.delDetailWithIdAndVoucherNum(id,code);
+                                                        }
+                                                    }));
                                                     break;
                                                 default:
                                                     mPayStatus = false;
@@ -1294,6 +1346,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             mPayStatus = false;
                             err.append("付款方式不存在:pay_method_id--").append(pay_method_id);
                         }
+
+                        updatePayDetailStatus(pay_status,pay_method_id,v_num);
+
                     }
 
                     tables.add("retail_order_pays");
@@ -1309,7 +1364,6 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
                     whereClauseList.add("order_code = ? and pay_code = ? and pay_method = ?");
                     whereArgsList.add(new String[]{order_code,order_code_son,pay_method_id});
-
                 }
             }catch (JSONException e){
                 e.printStackTrace();
