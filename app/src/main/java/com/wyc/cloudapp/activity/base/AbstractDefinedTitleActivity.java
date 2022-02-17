@@ -108,6 +108,7 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
                     if (mTouchX == -1)mTouchX = ev.getX();
                     mRoot.scrollTo((int) (mTouchX - ev.getX()),0);
                     break;
+                case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
                     final VelocityTracker velocityTracker = mVelocityTracker;
                     velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
@@ -118,12 +119,15 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
                     recycleVelocityTracker();
 
                     if (mScroller == null)mScroller = new OverScroller(this);
-                    Logger.d("initialXVelocity:%d,mMinimumVelocity:%d,getScrollX:%d",initialXVelocity,mMinimumVelocity,mRoot.getScrollX());
                     if (Math.abs(initialXVelocity) > mMinimumVelocity){
-                        mScroller.fling(mRoot.getScrollX(),0,-initialXVelocity,0,0,mRoot.getWidth(),0,0);
-                    }else {
-                        calculateScrollX();
-                    }
+                        int scrollX = mRoot.getScrollX();
+                        int distance = mRoot.getWidth() - Math.abs(scrollX);
+                        if (initialXVelocity > 0){
+                            mScroller.fling(scrollX,0,  -initialXVelocity * 2,0,-distance ,0,0,0);
+                        }else {
+                            mScroller.fling(scrollX,0,-initialXVelocity * 2,0,0,distance,0,0);
+                        }
+                    }else calculateScrollX();
                     startScroll();
                     break;
             }
@@ -153,7 +157,7 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
             int cur_x = mScroller.getCurrX();
             int finalX = mScroller.getFinalX();
             int right = mRoot.getRight();
-            if (finalX != 0 && Math.abs(cur_x) == mScroller.getFinalX() && Math.abs(cur_x) < right){
+            if (finalX != 0 && Math.abs(cur_x) == Math.abs(finalX) && Math.abs(cur_x) < right){
                 calculateScrollX();
                 mRoot.postDelayed(this::startScroll,16);
             }else if (Math.abs(cur_x) < right) {

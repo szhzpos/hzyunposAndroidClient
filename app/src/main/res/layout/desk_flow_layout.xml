@@ -20,7 +20,7 @@
         android:gravity="center"
         android:tag="activity.mobile.cashierDesk.MobileCashierActivity"
         android:text="@string/fg_casher_sz"
-        android:textColor="#795548"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
         app:layout_weight_width="0.5"
         app:verSpacing="@dimen/default_vertical" />
@@ -46,7 +46,7 @@
         android:drawableTop="@drawable/m_fg_refund"
         android:gravity="center"
         android:text="@string/fg_refund_sz"
-        android:textColor="#616161"
+        android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
         android:visibility="visible"
         app:layout_weight_width="0.5"

@@ -36,10 +36,12 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        hideNavigationBar();
         if (NotchUtils.hasNotchScreen(this)){
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        }else getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }else {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            hideNavigationBar();
+        }
 
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O){
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

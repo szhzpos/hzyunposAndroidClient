@@ -91,7 +91,7 @@ public final class KeyboardView extends LinearLayout implements View.OnClickList
     public void onClick(View v) {
         if (mCurrentFocusListener != null){
             final EditText view =  mCurrentFocusListener.getFocusEditText();
-            if (view != null) {
+            if (view != null && view.isEnabled()) {
                 int index = view.getSelectionStart();
                 final Editable editable = view.getText();
                 final String sz_button = ((Button) v).getText().toString();

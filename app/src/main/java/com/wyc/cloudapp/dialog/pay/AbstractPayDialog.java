@@ -30,7 +30,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
     protected JSONObject mPayMethod;
     protected onYesOnclickListener mYesOnclickListener;
     protected double mOriginalPayAmt = 0.0;
-    protected Window mDialogWindow;
     private onCancelListener mCancelListener;
     private boolean modifyPayAmt = true;
     public AbstractPayDialog(@NonNull MainActivity context, final String title) {
@@ -61,16 +60,6 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
     @Override
     protected int getContentLayoutId(){
         return R.layout.pay_method_dialog_layout;
-    }
-    @Override
-    public void onAttachedToWindow(){
-        super.onAttachedToWindow();
-        mDialogWindow = getWindow();
-    }
-    @Override
-    public void onDetachedFromWindow(){
-        super.onDetachedFromWindow();
-        mDialogWindow = getWindow();
     }
 
     @Override

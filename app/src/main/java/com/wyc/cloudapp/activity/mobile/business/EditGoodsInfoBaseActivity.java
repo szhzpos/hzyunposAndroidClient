@@ -1095,7 +1095,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
                     err.append(e);
                     return;
                 }
-            }
+            }else data.remove("pic_id");
 
             data.put("operation_mode",1);//判断后台操作员权限
             data.put("pt_user_id",getPtUserId());

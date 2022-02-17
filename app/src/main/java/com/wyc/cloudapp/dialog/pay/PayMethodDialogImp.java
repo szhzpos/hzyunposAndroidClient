@@ -122,7 +122,7 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
                     }
                     if (Double.parseDouble(editable.toString()) - mOriginalPayAmt> 0){
                         refreshContent();
-                        MyDialog.SnackBarMessage(mDialogWindow,getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
+                        MyDialog.SnackBarMessage(getWindow(),getTitle().concat(mContext.getString(R.string.not_zl_hint_sz)),null);
                     }
                 }
             }
