@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.bean;
 
 import androidx.annotation.NonNull;
-
 import com.alibaba.fastjson.annotation.JSONField;
 import com.wyc.cloudapp.utils.http.callback.Result;
 
@@ -160,8 +159,8 @@ public class UnifiedPayResult extends Result {
         return Objects.hash(order_code, order_code_son);
     }
 
-    @NonNull
 
+    @NonNull
     @Override
     public String toString() {
         return "UnifiedPayResult{" +

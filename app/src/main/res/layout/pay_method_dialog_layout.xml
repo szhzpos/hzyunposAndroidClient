@@ -48,7 +48,7 @@
             android:background="@drawable/left_separator"
             android:drawableEnd="@drawable/scan"
             android:hint="@string/space_sz"
-            android:inputType="number"
+            android:inputType="text"
             android:paddingStart="@dimen/margin_5"
             android:paddingEnd="0dp"
             android:textColor="@color/text_color"

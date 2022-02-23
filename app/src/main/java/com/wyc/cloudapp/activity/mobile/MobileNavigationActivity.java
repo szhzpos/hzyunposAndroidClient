@@ -105,7 +105,9 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
 
                     Logger.d("x2:%f,y2:%f",x2,y2);
 
-                    if(x1_tmp-x2 > Math.abs(y2-y1_tmp + 88)) {//左划
+                    final int offsetTouchSlop = 168;
+
+                    if(x1_tmp-x2 > Math.abs(y2-y1_tmp + offsetTouchSlop)) {//左划
                         if ((current_index += 1) > mBtnId.size() - 1){
                             current_index = 0;
                         }
@@ -115,7 +117,7 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
                             return true;
                         }
 
-                    } else if(x2-x1_tmp > Math.abs(y2-y1_tmp) + 88) {//右划
+                    } else if(x2-x1_tmp > Math.abs(y2-y1_tmp) + offsetTouchSlop) {//右划
                         if ((current_index -= 1) < 0){
                             current_index = mBtnId.size() - 1;
                         }

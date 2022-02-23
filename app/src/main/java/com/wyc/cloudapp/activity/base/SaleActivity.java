@@ -12,6 +12,7 @@ import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
 import com.wyc.cloudapp.adapter.AbstractSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.MobileSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
+import com.wyc.cloudapp.bean.DiscountCouponInfo;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -44,6 +45,10 @@ public class SaleActivity extends MainActivity{
 
     public void addBuyFullGiveGoods(final @NonNull JSONObject goods){
         mSaleGoodsAdapter.addSaleGoods(goods);
+    }
+
+    public boolean applyCoupon(@NonNull final DiscountCouponInfo couponDetail){
+        return mSaleGoodsAdapter.applyCoupon(couponDetail);
     }
 
     public boolean allDiscount(double v){

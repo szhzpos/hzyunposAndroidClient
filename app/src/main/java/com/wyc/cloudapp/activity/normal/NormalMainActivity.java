@@ -371,7 +371,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         if (other_linearLayout != null)other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
         if (cloud_background_layout != null)cloud_background_layout.setOnClickListener(v -> {
             try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(getUrl())));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.hzyunpos.com/login")));
             }catch (ActivityNotFoundException e){
                 MyDialog.ToastMessage("系统未安装浏览器!", getWindow());
             }

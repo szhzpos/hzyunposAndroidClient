@@ -14,15 +14,25 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.mobile.cashierDesk.MobileCashierActivity;
+import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
+import com.wyc.cloudapp.bean.CouponResult;
+import com.wyc.cloudapp.bean.DiscountCouponInfo;
+import com.wyc.cloudapp.constants.InterfaceURL;
+import com.wyc.cloudapp.dialog.CustomProgressDialog;
+import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.cloudapp.utils.http.HttpRequest;
+import com.wyc.cloudapp.utils.http.HttpUtils;
+import com.wyc.cloudapp.utils.http.callback.TypeCallback;
 
 import static com.wyc.cloudapp.constants.ScanCallbackCode.PAY_REQUEST_CODE;
 
 import java.util.Objects;
 
 public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashierActivity.ScanCallback {
+    private DiscountCouponInfo mCouponDetail;
     public PayMethodDialogImp(@NonNull MainActivity context, @NonNull final JSONObject pay_method) {
         super(context,Utils.getNullStringAsEmpty(pay_method,"name"));
         mPayMethod = Objects.requireNonNull(pay_method);
@@ -44,11 +54,72 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
         mPayMethod.put("v_num",mPayCode.getText().toString());
          return mPayMethod;
     }
+
+    @Override
+    protected boolean verifyValid() {
+        if (PayMethodViewAdapter.isDiscountCouponPay(mPayMethod)){
+            final String member_id = Utils.getNullStringAsEmpty(mPayMethod,"member_id");
+            if (Utils.isNotEmpty(member_id)){
+                final JEventLoop loop = new JEventLoop();
+
+                final JSONObject param = new JSONObject();
+                param.put("appid",mContext.getAppId());
+                param.put("stores_id",mContext.getStoreId());
+                param.put("member_id",member_id);
+                param.put("cas_id",mContext.getCashierId());
+                param.put("logno",mPayCode.getText().toString());
+
+                final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,mContext.getString(R.string.query_coupon_info));
+                final String sz_param = HttpRequest.generate_request_parma(param,mContext.getAppSecret());
+                HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.COUPON_CHECK,sz_param).enqueue(new TypeCallback<CouponResult>(CouponResult.class) {
+                    @Override
+                    protected void onError(String msg) {
+                        MyDialog.toastMessage(msg);
+                        loop.done(0);
+                    }
+
+                    @Override
+                    protected void onSuccess(CouponResult data) {
+                        if (data.isSuccess()){
+                            final DiscountCouponInfo discountCouponDetails = data.getDetail();
+                            Logger.d(discountCouponDetails);
+                            if (discountCouponDetails != null){
+                                if (discountCouponDetails.hasValid()){
+                                    mCouponDetail = discountCouponDetails;
+                                    loop.done(1);
+                                }else {
+                                    loop.done(0);
+                                }
+                            }else {
+                                MyDialog.toastMessage(R.string.not_exist_coupon_hint);
+                                loop.done(0);
+                            }
+                        }else {
+                            MyDialog.toastMessage(data.getInfo());
+                            loop.done(0);
+                        }
+                    }
+                });
+                boolean code = loop.exec() == 1;
+                progressDialog.dismiss();
+                return code;
+            }else {
+                MyDialog.toastMessage(R.string.discount_coupon_hints);
+                return false;
+            }
+        }else mCouponDetail = null;
+
+        return super.verifyValid();
+    }
+    public DiscountCouponInfo getCouponDetail(){
+        return mCouponDetail;
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void initPayMethod(){
         if (mPayMethod != null) {
-            if (mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
+            if (PayMethodViewAdapter.isDiscountCouponPay(mPayMethod) || mPayMethod.getIntValue("is_check") != 2){ //显示付款码输入框
                 if (mContext.lessThan7Inches()){
                     mPayCode.setOnTouchListener((view, motionEvent) -> {
                         if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {

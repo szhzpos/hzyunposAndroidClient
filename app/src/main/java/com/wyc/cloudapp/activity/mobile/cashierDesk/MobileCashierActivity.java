@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -44,6 +46,7 @@ import com.wyc.cloudapp.dialog.pay.MobileSettlementDialog;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.utils.NotchUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.ref.WeakReference;
@@ -64,6 +67,7 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mobile_cashier);
+        adaptiveTitle();
 
         mSaleSumAmtTv = findViewById(R.id.mobile_sale_amt);
 
@@ -83,6 +87,12 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         initOtherFunction();
 
         initTitle();
+    }
+    private void adaptiveTitle(){
+        final LinearLayout main = findViewById(R.id.main);
+        FrameLayout.LayoutParams layoutParams = (FrameLayout.LayoutParams) main.getLayoutParams();
+        layoutParams.topMargin = NotchUtils.getNotchHeight(this);
+        main.setLayoutParams(layoutParams);
     }
 
     @Override

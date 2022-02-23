@@ -4,12 +4,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import butterknife.ButterKnife
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.databinding.BindingActivityBinding
+import com.wyc.cloudapp.utils.NotchUtils.Companion.getNotchHeight
 
 /**
  *
@@ -37,8 +39,14 @@ abstract class AbsBindingActivity: MainActivity(), ITitle {
         mContentView = View.inflate(this, getBindingLayoutId(), null)
         if (null == mContentView){
             Log.e(localClassName, "mContentView is null...")
-        }else
-            findViewById<LinearLayout>(R.id._main)?.addView(mContentView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+        }else{
+            findViewById<LinearLayout>(R.id._main)?.apply {
+                val layoutParams:FrameLayout.LayoutParams = layoutParams as FrameLayout.LayoutParams
+                layoutParams.topMargin = getNotchHeight(this@AbsBindingActivity)
+                setLayoutParams(layoutParams)
+                addView(mContentView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+            }
+        }
     }
 
     protected  fun <T : ViewDataBinding> getBindingData():T? {

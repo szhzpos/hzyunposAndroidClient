@@ -26,4 +26,6 @@ public final class InterfaceURL {
     public static final String ENQUIRY_ORDER_DETAIL = "/api/api_yaohuo/xinfo";
     public static final String O_OUT_IN_UPLOAD = "/api/bgd/add";
     public static final String OUT_IN_SH= "/api/bgd/sh";
+    public static final String COUPON_CHECK = "/api/coupon_check/details";
+    public static final String COUPON_VERIFY = "/api/coupon_check/verify";
 }

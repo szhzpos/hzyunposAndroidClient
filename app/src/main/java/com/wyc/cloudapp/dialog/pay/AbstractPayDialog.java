@@ -123,11 +123,20 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
 
     protected abstract void initPayMethod();
 
+    /**
+     * 返回支付方式对象之前先验证是否有效,针对某些需要线上验证支付方式，如优惠券等。
+     * */
+    protected boolean verifyValid(){
+        return true;
+    }
 
     protected static String getPayCode(final String pos_num) {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date()) + pos_num + Utils.getNonce_str(8);
     }
 
+    /**
+     * 验证必填参数
+     * */
     protected boolean verify(){
         if (mPayAmtEt.getVisibility() == View.VISIBLE &&(mPayAmtEt.length() == 0 || Utils.equalDouble(getPayAmt(),0.0))){
             mPayAmtEt.requestFocus();
@@ -183,7 +192,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         });
         view.setCancelListener(v -> closeWindow());
         view.setOkListener(v -> {
-            if (verify()){
+            if (verify() && verifyValid()){
                 if (mYesOnclickListener != null)
                     mYesOnclickListener.onYesClick(AbstractPayDialog.this);
                 else

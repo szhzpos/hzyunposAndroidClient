@@ -18,6 +18,7 @@ import androidx.annotation.CallSuper;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.NotchUtils;
 
 public abstract class AbstractDefinedTitleActivity extends MainActivity {
     public static final String TITLE_KEY = "TL";
@@ -196,7 +197,9 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
         setContentView(R.layout.mobile_activity_main);
         final LinearLayout main_layout = findViewById(R.id._main);
         if (null != main_layout) {
-            main_layout.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+            layoutParams.topMargin = NotchUtils.getNotchHeight(this);
+            main_layout.setLayoutParams(layoutParams);
             View.inflate(this,getContentLayoutId(), main_layout);
         }
     }

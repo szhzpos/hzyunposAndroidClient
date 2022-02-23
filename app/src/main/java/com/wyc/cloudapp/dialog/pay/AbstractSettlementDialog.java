@@ -32,6 +32,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.PayDetailViewAdapter;
 import com.wyc.cloudapp.adapter.PayMethodViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.DiscountCouponInfo;
 import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
@@ -76,6 +77,10 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
     private boolean isPayMethodMol = false,isManualMol = false;
     private final CustomProgressDialog mProgressDialog;
     private FullReduceRulesAdapter mFullReduceRuleAdapter;
+    /**
+     * 折扣优惠券，每一单只能存在一张
+     * */
+    private DiscountCouponInfo mDiscountCoupon;
 
     public AbstractSettlementDialog(final SaleActivity context, final String title){
         super(context,title);
@@ -447,9 +452,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                         if (Utils.equalDouble(mPay_balance, 0) && mPayDetailViewAdapter.findPayDetailById(pay_method_id) == null) {//剩余金额为零，同时不存在此付款方式的记录。
                             MyDialog.SnackBarMessage(mWindow, "剩余金额为零！", getCurrentFocus());
                         } else {
-                            boolean isVipPay = false;
                             if (PayMethodViewAdapter.isVipPay(pay_method_copy)){
-                                isVipPay = true;
                                 if (mVip != null){
                                     pay_method_copy.put("card_code",mVip.getString("card_code"));
                                 }else {
@@ -459,15 +462,25 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                     }
                                 }
                             }
+                            if (PayMethodViewAdapter.isDiscountCouponPay(pay_method_copy)){
+                                if (mVip != null){
+                                    pay_method_copy.put("member_id",mVip.getString("member_id"));
+                                }else {
+                                    MyDialog.toastMessage(R.string.discount_coupon_hints);
+                                    mPayMethodViewAdapter.showDefaultPayMethod();
+                                    return;
+                                }
+                            }
+
                             final PayMethodDialogImp payMethodDialogImp = new PayMethodDialogImp(mContext, pay_method_copy);
                             final JSONObject default_method = mPayMethodViewAdapter.getDefaultPayMethod();
                             boolean isNotMol = !PayMethodViewAdapter.isMolForPayMethod(pay_method_copy),isDefaultMol = PayMethodViewAdapter.isMolForPayMethod(default_method);
 
                             if (isPayMethodMol){
                                 if (isNotMol){
-                                    if (isMoled())deleteMolDiscountRecord();//删除抹零金额
+                                    if (isMol())deleteMolDiscountRecord();//删除抹零金额
                                 }else {
-                                    if (!isMoled()){
+                                    if (!isMol()){
                                         reCalculateMolAmt(pay_method_copy);
                                     }
                                 }
@@ -475,8 +488,15 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                             payMethodDialogImp.setPayAmt(mPay_balance);
 
                             payMethodDialogImp.setYesOnclickListener(dialog -> {
-                                final JSONObject jsonObject = payMethodDialogImp.getContent();
-                                if (jsonObject != null)mPayDetailViewAdapter.addPayDetail(jsonObject);
+                                final JSONObject payDetail = payMethodDialogImp.getContent();
+                                if (payDetail != null){
+                                    final DiscountCouponInfo coupon = payMethodDialogImp.getCouponDetail();
+                                    Logger.d(coupon);
+                                    if (coupon != null){
+                                        handleCoupon(coupon,payDetail);
+                                    }else
+                                        mPayDetailViewAdapter.addPayDetail(payDetail);
+                                }
                                 //付款之后的抹零金额计算放在支付明细registerAdapterDataObserver回调中进行，因为还要处理删除支付方式的情况
                                 mPayMethodViewAdapter.showDefaultPayMethod();
                                 dialog.dismiss();
@@ -511,8 +531,71 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         recyclerView.setAdapter(mPayMethodViewAdapter);
         mPayMethodView = recyclerView;
     }
+    private void handleCoupon(@NonNull final DiscountCouponInfo coupon,final JSONObject payDetail){
+        if (mDiscountCoupon != null && coupon.isAttainDiscountCoupon()){
+            MyDialog.toastMessage(R.string.discount_coupon_only_one);
+        }else {
+            if (mContext.applyCoupon(coupon)){
+                final String couponNo = coupon.getLogno();
+                if (coupon.isAttainDiscountCoupon() && mDiscountCoupon == null){
+                    if (verifyCoupon(couponNo))mDiscountCoupon = coupon;
+                }else {
+                    if (coupon.isCashCoupon() || coupon.isAttainReductionCoupon()){
+                        /*满减券、现金券需要添加支付方式*/
+                        if (verifyCoupon(couponNo)){
+                            double payed = payDetail.getDoubleValue("pamt");
+                            double coupon_amt = coupon.getCouponMoney();
+                            payDetail.put("pamt",Math.min(payed,coupon_amt));
+                            payDetail.put("pay_status",2);
+                            mPayDetailViewAdapter.addPayDetail(payDetail);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-    private boolean isMoled(){
+    private boolean verifyCoupon(final String couponId){
+        if (mVip != null){
+            final JEventLoop loop = new JEventLoop();
+
+            final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,mContext.getString(R.string.verify_coupon_info));
+
+            CustomApplication.execute(()->{
+
+                final JSONObject param = new JSONObject();
+                param.put("appid",mContext.getAppId());
+                param.put("stores_id",mContext.getStoreId());
+                param.put("member_id",mVip.getString("member_id"));
+                param.put("cas_id",mContext.getCashierId());
+                param.put("logno",couponId);
+                param.put("order_code",mContext.getOrderCode());
+
+                JSONObject ret = HttpUtils.sendPost(mContext.getUrl() + InterfaceURL.COUPON_VERIFY,HttpUtils.generate_request_param(param),true);
+                if (HttpUtils.checkRequestSuccess(ret)){
+                    ret = ret.getJSONObject("info");
+                    if (HttpUtils.checkBusinessSuccess(ret)){
+                        MyDialog.toastMessage(ret.getString("info"));
+                        loop.done(1);
+                    }else {
+                        MyDialog.toastMessage(ret.getString("info"));
+                        loop.done(0);
+                    }
+                }else {
+                    MyDialog.toastMessage(ret.getString("info"));
+                    loop.done(0);
+                }
+            });
+            boolean code = loop.exec() == 1;
+            progressDialog.dismiss();
+            return code;
+        }else {
+            MyDialog.toastMessage(R.string.discount_coupon_hints);
+        }
+        return false;
+    }
+
+    private boolean isMol(){
         return (PayMethodViewAdapter.isMolForPayMethod(mPayMethodViewAdapter.getDefaultPayMethod())
                 || mPayMethodViewAdapter.isMolWithPayed());
     }

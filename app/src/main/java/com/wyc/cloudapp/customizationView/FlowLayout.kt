@@ -460,10 +460,10 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
     }
 
     override fun generateLayoutParams(lp:ViewGroup.LayoutParams):ViewGroup.LayoutParams{
-        if (lp is FrameLayout.LayoutParams) {
-            return FrameLayout.LayoutParams((lp as FrameLayout.LayoutParams?)!!)
+        if (lp is LayoutParams) {
+            return LayoutParams(lp)
         } else if (lp is MarginLayoutParams) {
-            return FrameLayout.LayoutParams((lp as MarginLayoutParams?)!!)
+            return LayoutParams(lp)
         }
         return LayoutParams(lp)
     }

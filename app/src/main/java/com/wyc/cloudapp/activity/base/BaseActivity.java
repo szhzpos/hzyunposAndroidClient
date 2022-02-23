@@ -40,8 +40,8 @@ public class BaseActivity extends AppCompatActivity implements IHookKey {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
         }else {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            hideNavigationBar();
         }
+        hideNavigationBar();
 
         if (Build.VERSION.SDK_INT != Build.VERSION_CODES.O){
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

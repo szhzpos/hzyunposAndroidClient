@@ -53,6 +53,9 @@ public class Result implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return super.toString();
+        return "Result{" +
+                "info='" + info + '\'' +
+                ", status='" + status + '\'' +
+                '}';
     }
 }

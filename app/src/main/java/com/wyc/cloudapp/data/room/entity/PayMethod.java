@@ -71,6 +71,8 @@ public final class PayMethod implements Serializable,Cloneable {
     @Ignore
     public static final int VIP_METHOD_ID = 5;//会员支付方式id
     @Ignore
+    private static final int DISCOUNT_COUPON = 531;//优惠券支付方式id
+    @Ignore
     private boolean isCur = false;
     @Ignore
     private boolean isDefault;

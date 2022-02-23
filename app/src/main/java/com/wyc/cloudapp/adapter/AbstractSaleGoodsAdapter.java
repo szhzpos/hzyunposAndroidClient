@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.DiscountCouponInfo;
 import com.wyc.cloudapp.bean.FullReduceRule;
 import com.wyc.cloudapp.bean.PromotionRule;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -194,6 +195,115 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             stringBuilder.append(String.format(Locale.CHINA,"%s(%.2f)",Utils.getNullStringAsEmpty(obj,"kw_name"),Utils.getNotKeyAsNumberDefault(obj,"kw_price",0.0)));
         }
         return stringBuilder.toString();
+    }
+
+    public boolean applyCoupon(@NonNull final DiscountCouponInfo couponDetail){
+        boolean code = true;
+        final JSONArray satisfyingGoods = getSatisfyingCouponGoods(couponDetail);
+        Logger.d_json(satisfyingGoods);
+        double condition = couponDetail.getCouponCondition();
+        if (couponDetail.isMoneyOff()){//是否满足满减条件
+            double satisfyAmt = 0.0;
+
+            for (int i = 0,size = satisfyingGoods.size();i < size;i ++){
+                final JSONObject goods = satisfyingGoods.getJSONObject(i);
+                satisfyAmt += goods.getDoubleValue("sale_amt");
+            }
+
+            if (!(code =Utils.notLessDouble(satisfyAmt,condition))){
+                double finalSatisfyAmt = satisfyAmt;
+                CustomApplication.postAtFrontOfQueue(()->{
+                    MyDialog.displayErrorMessage(mContext,mContext.getString(R.string.coupon_dissatisfy_hint,String.format(Locale.CHINA,"%.2f", finalSatisfyAmt)
+                            ,String.format(Locale.CHINA,"%.2f",condition)));
+                });
+            }
+        }
+
+        if (code){
+            if (couponDetail.isAttainDiscountCoupon()){
+                //目前不处理折扣券
+                MyDialog.toastMessage("目前不支持满折券!");
+                code = false;
+            }
+        }
+
+        return code;
+    }
+    private JSONArray getSatisfyingCouponGoods(@NonNull final DiscountCouponInfo couponDetail){
+        final JSONArray array = new JSONArray();
+        List<String> notParticipateId = null,participateId;
+        String notParticipate_goods_id,notParticipate_category_id,id_key = "";
+        JSONObject goods;
+        if (couponDetail.isAllGoodsParticipate()){
+            if (couponDetail.isGoodsNotParticipate()){
+                notParticipateId = couponDetail.getNoGoodsTypeToArray();
+                id_key = "barcode_id";
+            }else if (couponDetail.isCategoryNotParticipate()){
+                notParticipateId = couponDetail.getNoGoodsTypeToArray();
+                id_key = "category_id";
+            }
+            if (notParticipateId != null){
+                for (int i = 0,size = mData.size();i < size;i ++){
+                    goods = mData.getJSONObject(i);
+                    notParticipate_goods_id = Utils.getNullStringAsEmpty(goods,id_key);
+
+                    if (notParticipateId.contains(notParticipate_goods_id))continue;
+
+                    array.add(goods);
+                }
+            }
+        }else if (couponDetail.isCategoryParticipate()){
+            participateId = couponDetail.getGoodsTypeValToArray();
+            notParticipateId = couponDetail.getNoGoodsTypeToArray();
+            if (couponDetail.isGoodsNotParticipate()){
+                for (int i = 0,size = mData.size();i < size;i ++){
+                    goods = mData.getJSONObject(i);
+                    notParticipate_goods_id = Utils.getNullStringAsEmpty(goods,"barcode_id");
+                    if (!notParticipateId.contains(notParticipate_goods_id)){
+                        notParticipate_category_id = Utils.getNullStringAsEmpty(goods,"category_id");
+                        if (participateId.contains(notParticipate_category_id)){
+                            array.add(goods);
+                        }
+                    }
+                }
+            }else if (couponDetail.isCategoryNotParticipate()){
+                for (int i = 0,size = mData.size();i < size;i ++){
+                    goods = mData.getJSONObject(i);
+                    notParticipate_category_id = Utils.getNullStringAsEmpty(goods,"category_id");
+                    if (!notParticipateId.contains(notParticipate_category_id)){
+                        if (participateId.contains(notParticipate_category_id)){
+                            array.add(goods);
+                        }
+                    }
+                }
+            }
+        }else if (couponDetail.isGoodsParticipate()){
+            participateId = couponDetail.getGoodsTypeValToArray();
+            notParticipateId = couponDetail.getNoGoodsTypeToArray();
+            if (couponDetail.isGoodsNotParticipate()){
+                for (int i = 0,size = mData.size();i < size;i ++){
+                    goods = mData.getJSONObject(i);
+                    notParticipate_goods_id = Utils.getNullStringAsEmpty(goods,"barcode_id");
+                    if (!notParticipateId.contains(notParticipate_goods_id)){
+                        if (participateId.contains(notParticipate_goods_id)){
+                            array.add(goods);
+                        }
+                    }
+                }
+            }else if (couponDetail.isCategoryNotParticipate()){
+                for (int i = 0,size = mData.size();i < size;i ++){
+                    goods = mData.getJSONObject(i);
+                    notParticipate_category_id = Utils.getNullStringAsEmpty(goods,"category_id");
+                    if (!notParticipateId.contains(notParticipate_category_id)){
+                        notParticipate_goods_id = Utils.getNullStringAsEmpty(goods,"barcode_id");
+                        if (participateId.contains(notParticipate_goods_id)){
+                            array.add(goods);
+                        }
+                    }
+                }
+            }
+        }
+        return array;
     }
 
     public interface OnDataChange{

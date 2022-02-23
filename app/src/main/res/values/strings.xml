@@ -56,6 +56,16 @@
     <string name="forbid_del_hints">不能删除已付款的支付方式!</string>
     <string name="del_pay_detail_err">删除支付明细错误:%1$s</string>
     <string name="exist_pay_detail_hints">已存在部分付款,不能退出!</string>
+    <string name="discount_coupon_hints">使用优惠券前，请先刷会员卡!</string>
+    <string name="not_exist_coupon_hint">不存在此优惠券,请确认是否已过期或是否属于当前会员卡</string>
+    <string name="coupon_disable_hint">此优惠券已停用</string>
+    <string name="coupon_expire_hint">此优惠券已过期</string>
+    <string name="coupon_not_use_hint">此优惠券不能在当前门店使用</string>
+    <string name="coupon_not_use_offline">此优惠券不能在线下门店使用</string>
+    <string name="query_coupon_info">正在查询优惠券信息…</string>
+    <string name="verify_coupon_info">正在验证优惠券信息…</string>
+    <string name="coupon_dissatisfy_hint">当前满足条件的销售金额[%1$s]不满足优惠券使用金额[%2$s]</string>
+    <string name="discount_coupon_only_one">折扣券每单只能使用一张!</string>
     <string name="order_amt_sz">单据金额</string>
     <string name="discount_amt_sz">优惠金额</string>
     <string name="rec_amt_sz">应收金额</string>

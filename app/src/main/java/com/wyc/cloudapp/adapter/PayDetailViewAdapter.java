@@ -155,6 +155,11 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     private void deletePayDetail(int index){
         int size = mDatas.size();
         if (0 <= index && index < size){
+            final JSONObject object = mDatas.getJSONObject(index);
+            if (PayMethodViewAdapter.isDiscountCouponPay(object) && object.getIntValue("pay_status") == 2){
+                MyDialog.toastMessage(R.string.forbid_del_hints);
+                return;
+            }
             mDatas.remove(index);
             if (mCurrentItemIndex == index){//如果删除的是当前选择的item则重置当前index以及View
                 if (index == size - 1){
@@ -265,6 +270,26 @@ public class PayDetailViewAdapter extends RecyclerView.Adapter<RecyclerView.View
     public boolean hasPayMethodPayed(){
         for (int i = 0,size = mDatas.size();i < size;i++){
             if (Utils.getNotKeyAsNumberDefault(mDatas.getJSONObject(i),"pay_status",1) == 2)return true;
+        }
+        return false;
+    }
+    public boolean hasCouponPayed(){
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            final JSONObject detail = mDatas.getJSONObject(i);
+            if (PayMethodViewAdapter.isDiscountCouponPay(detail)){
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean isExistCouponId(@NonNull String coupon_id){
+        for (int i = 0,size = mDatas.size();i < size;i++){
+            final JSONObject detail = mDatas.getJSONObject(i);
+            if (PayMethodViewAdapter.isDiscountCouponPay(detail)){
+                if (Utils.getNullStringAsEmpty(detail,"v_num").equals(coupon_id)){
+                    return true;
+                }
+            }
         }
         return false;
     }
