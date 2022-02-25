@@ -53,9 +53,11 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.ModulePermission;
 import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 import com.wyc.cloudapp.customizationView.TmpOrderButton;
 import com.wyc.cloudapp.customizationView.WeightInfoView;
 import com.wyc.cloudapp.data.SQLiteHelper;
@@ -296,7 +298,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 final TextView last_order_code = constraintLayout.findViewById(R.id.last_order_code),last_reality_amt = constraintLayout.findViewById(R.id.last_reality_amt),
                         last_rec_amt = constraintLayout.findViewById(R.id.last_rec_amt),last_zl = constraintLayout.findViewById(R.id.last_zl),close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
 
-                final Button last_reprint_btn = constraintLayout.findViewById(R.id.last_reprint_btn);
+                final JumpTextView last_reprint_btn = constraintLayout.findViewById(R.id.last_reprint_btn);
 
                 last_order_code.setText(order_info.getString("order_code"));
                 last_rec_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pay_amt")));
@@ -338,14 +340,17 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     }
 
     private void initFunctionBtn(){
-        final Button minus_num_btn = findViewById(R.id.minus_num),add_num_btn = findViewById(R.id.add_num),num_btn = findViewById(R.id.num),
-                discount_btn = findViewById(R.id.discount),change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
-                vip_btn = findViewById(R.id.vip),del = findViewById(R.id.del);
+        final Button minus_num_btn = findViewById(R.id.minus_num),add_num_btn = findViewById(R.id.add_num),discount_btn = findViewById(R.id.discount),
+                change_price_btn = findViewById(R.id.change_price),check_out_btn = findViewById(R.id.check_out),
+                vip_btn = findViewById(R.id.vip);
+
+        final JumpTextView del = findViewById(R.id.del),num_btn = findViewById(R.id.num);
 
         if (null != del)del.setOnClickListener(v -> delSingleGoods());
+        if (num_btn != null)num_btn.setOnClickListener(view -> alterGoodsNumber());//数量
+
         if (minus_num_btn != null)minus_num_btn.setOnClickListener(v -> minusOneGoods());//数量减
         if (add_num_btn != null)add_num_btn.setOnClickListener(v -> addOneSaleGoods());//数量加
-        if (num_btn != null)num_btn.setOnClickListener(view -> alterGoodsNumber());//数量
         if (discount_btn != null)discount_btn.setOnClickListener(v-> discount());//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> alterGoodsPrice());//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{
@@ -362,11 +367,14 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
         final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout);
         if (q_deal_linerLayout != null)q_deal_linerLayout.setOnClickListener(v -> {
-            if (verifyQueryBtnPermissions()){
-                final QueryRetailOrderDialog queryRetailOrderDialog = new QueryRetailOrderDialog(this);
-                queryRetailOrderDialog.show();
-                queryRetailOrderDialog.triggerQuery();
-            }
+            if (hasCheckDealOrderModule()){
+                if (verifyQueryBtnPermissions()){
+                    final QueryRetailOrderDialog queryRetailOrderDialog = new QueryRetailOrderDialog(this);
+                    queryRetailOrderDialog.show();
+                    queryRetailOrderDialog.triggerQuery();
+                }
+            }else q_deal_linerLayout.setVisibility(View.GONE);
+
         });//查交易
         if (other_linearLayout != null)other_linearLayout.setOnClickListener(v -> new MoreFunDialog(this,getString(R.string.more_fun_dialog_sz)).show());//更多功能
         if (cloud_background_layout != null)cloud_background_layout.setOnClickListener(v -> {
@@ -376,6 +384,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 MyDialog.ToastMessage("系统未安装浏览器!", getWindow());
             }
         });
+    }
+    private boolean hasCheckDealOrderModule(){
+        return ModulePermission.checkModulePermission(26);
     }
 
     private void initMoreFunBtn(){
@@ -449,17 +460,25 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     private void initTransferBtn(){
         final LinearLayout shift_exchange_linearLayout = findViewById(R.id.shift_exchange_linearLayout);
-        if (shift_exchange_linearLayout != null)
-            shift_exchange_linearLayout.setOnClickListener(v -> {
-                final NormalMainActivity activity = NormalMainActivity.this;
-                if (AbstractTransferDialog.verifyTransferPermissions(activity)){
-                    final AbstractTransferDialog transferDialog = new NormalTransferDialog(activity);
-                    transferDialog.verifyTransfer();
-                }
-            });
+        if (shift_exchange_linearLayout != null){
+            if (hasCheckShiftExchangeModule()){
+                shift_exchange_linearLayout.setOnClickListener(v -> {
+                    final NormalMainActivity activity = NormalMainActivity.this;
+                    if (AbstractTransferDialog.verifyTransferPermissions(activity)){
+                        final AbstractTransferDialog transferDialog = new NormalTransferDialog(activity);
+                        transferDialog.verifyTransfer();
+                    }
+                });
+            }else shift_exchange_linearLayout.setVisibility(View.GONE);
+        }
     }
+
+    private boolean hasCheckShiftExchangeModule(){
+        return ModulePermission.checkModulePermission(6);
+    }
+
     private void initClearBtn(){
-        final Button clearBtn = findViewById(R.id.clear);
+        final JumpTextView clearBtn = findViewById(R.id.clear);
         if (null != clearBtn){
             clearBtn.setOnClickListener(v -> {
                 if (!mSaleGoodsAdapter.isEmpty()){

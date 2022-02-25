@@ -467,9 +467,9 @@ public class DiscountCouponInfo {
         return "2".equals(goodsType);
     }
     /**
-     * 不参与商品
+     * 没有不参与内容
      * */
-    public boolean isAllGoodsNotParticipate(){
+    public boolean isNothingParticipate(){
         return "1".equals(noGoodsType);
     }
     /**

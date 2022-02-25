@@ -16,6 +16,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.RetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -109,7 +110,7 @@ public class NormalRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
     }
     @Override
     protected void initReprint(){
-        final Button reprint_btn = findViewById(R.id.reprint_btn);
+        final JumpTextView reprint_btn = findViewById(R.id.reprint_btn);
         if (null != reprint_btn){
             reprint_btn.setOnClickListener(v -> {
                 AbstractSettlementDialog.printObj(Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false);

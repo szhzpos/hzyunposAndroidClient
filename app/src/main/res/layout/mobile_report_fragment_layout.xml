@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -127,6 +128,7 @@
                 android:gravity="center_vertical"
                 android:tag="activity.mobile.report.MobileStockQueryActivity"
                 android:text="@string/commodity_stocks_sz"
+                app:moduleId="8"
                 android:textColor="@color/colorPrimary"
                 android:textSize="@dimen/font_size_16" />
 

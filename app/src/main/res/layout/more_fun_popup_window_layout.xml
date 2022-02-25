@@ -28,13 +28,14 @@
         android:padding="@dimen/margin_2"
         android:visibility="visible">
 
-        <Button
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/pop_present_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/fun_button_width_size"
             android:layout_height="@dimen/fun_button_height_size"
             android:background="@drawable/button_green"
             android:text="@string/present_sz"
+            app:moduleId="4"
             android:textColor="@color/black_white"
             android:textSize="@dimen/font_size_14" />
 
@@ -45,6 +46,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:background="@drawable/button_green"
             android:text="@string/o_cashbox_sz"
+            app:moduleId="5"
             android:textColor="@color/black_white"
             android:textSize="@dimen/font_size_14"
             app:hide="true"
@@ -67,6 +69,7 @@
             android:layout_height="@dimen/fun_button_height_size"
             android:background="@drawable/button_green"
             android:text="@string/time_card_business"
+            app:moduleId="27"
             android:textColor="@color/black_white"
             android:textSize="@dimen/font_size_14"
             app:hide="true"
@@ -81,6 +84,7 @@
             android:text="@string/single_refund_sz"
             app:perId="@string/refund_order_per_id"
             app:hide="true"
+            app:moduleId="13"
             android:textColor="@color/black_white"
             android:textSize="@dimen/font_size_14" />
 

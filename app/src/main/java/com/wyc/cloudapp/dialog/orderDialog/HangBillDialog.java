@@ -29,6 +29,7 @@ import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -97,7 +98,7 @@ public class HangBillDialog extends AbstractDialogSaleActivity {
     }
 
     private void initDelHangBill(){
-        final Button del_hang_b = findViewById(R.id.del_hang_b);
+        final JumpTextView del_hang_b = findViewById(R.id.del_hang_b);
         if (null != del_hang_b)
             del_hang_b.setOnClickListener(v -> deleteOrder());
     }

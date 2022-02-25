@@ -32,6 +32,7 @@
     <declare-styleable name="JumpTextView">
         <attr name="perId" format="string" />
         <attr name="hide" format="boolean"/>
+        <attr name="moduleId" format="integer" />
     </declare-styleable>
 
     <declare-styleable name="FlowLayout_Layout">

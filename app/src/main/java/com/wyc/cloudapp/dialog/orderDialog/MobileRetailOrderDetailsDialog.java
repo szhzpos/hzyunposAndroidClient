@@ -14,6 +14,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.MobileRetailDetailsGoodsInfoAdapter;
 import com.wyc.cloudapp.adapter.RetailDetailsPayInfoAdapter;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 import com.wyc.cloudapp.dialog.pay.AbstractSettlementDialog;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -87,7 +88,7 @@ public class MobileRetailOrderDetailsDialog extends AbstractRetailOrderDetailsDi
 
     @Override
     protected void initReprint() {
-        final Button m_print_btn = findViewById(R.id.m_print_btn);
+        final JumpTextView m_print_btn = findViewById(R.id.m_print_btn);
         if (m_print_btn != null)m_print_btn.setOnClickListener(v -> {
             AbstractSettlementDialog.printObj(Utils.getNullStringAsEmpty(mOrderInfo,"order_code"),false);
         });

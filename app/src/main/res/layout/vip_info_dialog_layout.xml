@@ -58,13 +58,14 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
 
-            <Button
+            <com.wyc.cloudapp.customizationView.JumpTextView
                 android:id="@+id/vip_add"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/width_88"
                 android:layout_height="@dimen/height_58"
                 android:background="@drawable/button_blue"
                 android:text="@string/add_sz"
+                app:moduleId="22"
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_16" />
 
@@ -74,13 +75,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <Button
+            <com.wyc.cloudapp.customizationView.JumpTextView
                 android:id="@+id/vip_modify"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/width_88"
                 android:layout_height="@dimen/height_58"
                 android:background="@drawable/button_blue"
                 android:text="@string/modify_sz"
+                app:moduleId="22"
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_16"
                 android:visibility="visible" />
@@ -90,13 +92,14 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1" />
 
-            <Button
+            <com.wyc.cloudapp.customizationView.JumpTextView
                 android:id="@+id/vip_charge"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="@dimen/width_88"
                 android:layout_height="@dimen/height_58"
                 android:background="@drawable/button_blue"
                 android:text="@string/charge_sz"
+                app:moduleId="23"
                 android:textColor="@color/blue_white"
                 android:textSize="@dimen/font_size_16"
                 android:visibility="visible" />

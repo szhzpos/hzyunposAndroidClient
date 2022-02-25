@@ -248,29 +248,33 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
         val space = mVerticalSpacing / 2
         val offset = (mHorizontalSpacing + mSeparatorSize / 2f )/ 2f
         mChildContainer.forEach {sub ->
-            val view = getMaxHeightViewOfRow(sub)
-            val bottom = (if (view != null) view.bottom + view.marginBottom else 0) + space
-            sub.forEachIndexed{index,it ->
-                if (index != sub.size - 1){
-                    val startX = it.right.toFloat() + it.marginRight + offset
-                    val stopX = it.right.toFloat() + it.marginRight + offset
-                    canvas.drawLine(startX,it.top.toFloat() - it.marginTop - space,stopX, bottom,mSeparatorPaint)
+            if (sub.size > 0){
+                val view = getMaxHeightViewOfRow(sub)
+                val bottom = (if (view != null) view.bottom + view.marginBottom else 0) + space
+                sub.forEachIndexed{index,it ->
+                    if (index != sub.size - 1){
+                        val startX = it.right.toFloat() + it.marginRight + offset
+                        val stopX = it.right.toFloat() + it.marginRight + offset
+                        canvas.drawLine(startX,it.top.toFloat() - it.marginTop - space,stopX, bottom,mSeparatorPaint)
+                    }
                 }
             }
         }
     }
     private fun drawVerticalSeparator(canvas: Canvas){
-        val offset = (mVerticalSpacing + mSeparatorSize / 2f )/ 2f
-        var bottom: Float
-        mChildContainer.forEachIndexed {index,sub ->
-            val view = getMaxHeightViewOfRow(sub)
-            view?.let {
-                if (index != mChildContainer.size - 1){
-                    bottom = it.bottom.toFloat() + it.marginBottom + offset
-                    if (mClosing)
-                        canvas.drawLine(left.toFloat() + paddingTop,bottom,right.toFloat() - paddingRight, bottom,mSeparatorPaint)
-                    else
-                        canvas.drawLine(left.toFloat() ,bottom,right.toFloat() , bottom,mSeparatorPaint)
+        if (mChildContainer.size > 0){
+            val offset = (mVerticalSpacing + mSeparatorSize / 2f )/ 2f
+            var bottom: Float
+            mChildContainer.forEachIndexed {index,sub ->
+                val view = getMaxHeightViewOfRow(sub)
+                view?.let {
+                    if (index != mChildContainer.size - 1){
+                        bottom = it.bottom.toFloat() + it.marginBottom + offset
+                        if (mClosing)
+                            canvas.drawLine(left.toFloat() + paddingTop,bottom,right.toFloat() - paddingRight, bottom,mSeparatorPaint)
+                        else
+                            canvas.drawLine(left.toFloat() ,bottom,right.toFloat() , bottom,mSeparatorPaint)
+                    }
                 }
             }
         }

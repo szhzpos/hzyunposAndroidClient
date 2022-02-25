@@ -6,6 +6,7 @@
     android:background="@color/white"
     android:clickable="true"
     android:focusable="true"
+    android:padding="@dimen/margin_5"
     android:scrollIndicators="right"
     android:scrollbars="vertical"
     app:item_horizontal_spacing="@dimen/margin_1"
@@ -35,6 +36,7 @@
         android:textSize="@dimen/font_size_16"
         android:visibility="visible"
         app:layout_weight_width="0.333"
+        app:moduleId="51"
         app:verSpacing="@dimen/margin_5" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -46,6 +48,7 @@
         android:text="@string/goods_record_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="52"
         android:visibility="visible"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_5" />
@@ -59,6 +62,7 @@
         android:text="@string/supplier_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="53"
         android:visibility="visible"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_5" />
@@ -89,6 +93,7 @@
         android:textSize="@dimen/font_size_16"
         android:visibility="visible"
         app:hide="false"
+        app:moduleId="56"
         app:layout_weight_width="0.333"
         app:perId="55"
         app:verSpacing="@dimen/margin_5" />
@@ -105,6 +110,7 @@
         android:textSize="@dimen/font_size_16"
         android:visibility="visible"
         app:hide="false"
+        app:moduleId="55"
         app:layout_weight_width="0.333"
         app:perId="56"
         app:verSpacing="@dimen/margin_5" />
@@ -129,6 +135,7 @@
         android:text="@string/purchase_order_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="10"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_5" />
 
@@ -144,6 +151,7 @@
         android:textSize="@dimen/font_size_16"
         android:visibility="visible"
         app:layout_weight_width="0.333"
+        app:moduleId="11"
         app:verSpacing="@dimen/margin_5" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -156,6 +164,7 @@
         android:text="@string/purchase_refund_order_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="47"
         android:visibility="visible"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_5" />
@@ -231,6 +240,7 @@
         android:text="@string/inventory_task_not_colon"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="48"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_5" />
 
@@ -242,6 +252,7 @@
         android:gravity="center"
         android:tag="activity.mobile.business.MobilePracticalInventoryOrderActivity"
         android:text="@string/inventory_order_sz"
+        app:moduleId="43"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
         android:visibility="visible"
@@ -256,6 +267,7 @@
         android:gravity="center"
         android:tag="activity.mobile.business.MobileInventoryOrderActivity"
         android:text="@string/inventory_audit_sz"
+        app:moduleId="49"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
         android:visibility="visible"
@@ -266,7 +278,6 @@
         android:id="@+id/other_inventory_tv"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/business_item_height"
-        android:background="@drawable/right_gray_separator"
         android:drawableTop="@drawable/other_inventory"
         android:tag="activity.mobile.business.MobileOtherWarehouseOrderActivity"
         android:text="@string/other_inventory_sz"
@@ -295,6 +306,7 @@
         android:text="@string/distribution_warehouse_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="46"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_5" />
 
@@ -306,6 +318,7 @@
         android:gravity="center"
         android:tag="activity.mobile.business.MobileTransferInOrderActivity"
         android:text="@string/distribution_warehousing_sz"
+        app:moduleId="45"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
         app:layout_weight_width="0.333"
@@ -321,6 +334,7 @@
         android:text="@string/enquiry_order"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:moduleId="44"
         android:visibility="visible"
         app:layout_weight_width="0.333"
         app:verSpacing="@dimen/margin_8" />

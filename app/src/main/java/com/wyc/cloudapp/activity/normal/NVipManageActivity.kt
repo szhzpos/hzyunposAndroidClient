@@ -36,6 +36,7 @@ import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.bean.ModulePermission
 import com.wyc.cloudapp.bean.VipInfo
 import com.wyc.cloudapp.customizationView.RoundCornerTabLayout
 import com.wyc.cloudapp.data.viewModel.VipInfoViewModel
@@ -105,8 +106,8 @@ class NVipManageActivity : MainActivity(){
                     AndroidViewBinding(FragmentPagerContainerBinding::inflate){
 
                         val fragments: MutableList<AbstractBaseFragment> = mutableListOf()
-                        fragments.add(VipStoreStuffFragment())
-                        fragments.add(VipPickStuffFragment())
+                        if (hasStorePermission())fragments.add(VipStoreStuffFragment())
+                        if (hasPickPermission())fragments.add(VipPickStuffFragment())
 
                         val adapter: FragmentPagerAdapter<AbstractBaseFragment> = FragmentPagerAdapter(fragments, this@NVipManageActivity)
                         val tabLayout = root.findViewById<RoundCornerTabLayout>(R.id._fragment_tab)
@@ -122,6 +123,12 @@ class NVipManageActivity : MainActivity(){
                 }
             }
         }
+    }
+    private fun hasStorePermission():Boolean{
+        return  ModulePermission.checkModulePermission(37)
+    }
+    private fun hasPickPermission():Boolean{
+        return  ModulePermission.checkModulePermission(38)
     }
 
     fun Number.toComposeSp()= (toFloat() / Resources.getSystem().displayMetrics.scaledDensity).sp

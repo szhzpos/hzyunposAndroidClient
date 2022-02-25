@@ -119,7 +119,7 @@
             android:textSize="@dimen/font_size_18" />
     </LinearLayout>
 
-    <Button
+    <com.wyc.cloudapp.customizationView.JumpTextView
         android:id="@+id/last_reprint_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/width_68"
@@ -129,6 +129,7 @@
         android:text="@string/reprint_order_sz"
         android:textColor="@color/blue_white"
         android:textSize="@dimen/font_size_14"
+        app:moduleId="34"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

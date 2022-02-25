@@ -569,7 +569,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
-        <Button
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/reprint_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/width_128"
@@ -577,6 +577,7 @@
             android:layout_margin="@dimen/margin_5"
             android:background="@drawable/button_blue"
             android:text="@string/reprint_order_sz"
+            app:moduleId="34"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_18" />
 

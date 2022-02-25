@@ -11,6 +11,7 @@ import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.activity.normal.NGiftSaleActivity;
 import com.wyc.cloudapp.activity.normal.NVipManageActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 import com.wyc.cloudapp.dialog.barcodeScales.BarCodeScaleDownDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogSaleActivity;
 import com.wyc.cloudapp.dialog.goods.GoodsManageDialog;
@@ -92,7 +93,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     }
 
     private void initPresentBtn(){
-        final Button btn = findViewById(R.id.present_btn);
+        final JumpTextView btn = findViewById(R.id.present_btn);
         btn.setOnClickListener(v -> {
             if (mContext.present())
                 this.dismiss();
@@ -206,7 +207,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         return mContext.verifyPermissions("32",null);
     }
     private void initPriceAdjustBtn(){
-        final Button btn = findViewById(R.id.price_adj_btn);
+        final JumpTextView btn = findViewById(R.id.price_adj_btn);
         btn.setOnClickListener(v -> {
             boolean code = true;
             if (!mContext.getSaleData().isEmpty())code = mContext.clearSaleGoods();

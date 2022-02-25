@@ -154,7 +154,7 @@
             android:textColor="@color/gray_7"
             android:textSize="@dimen/font_size_16" />
 
-        <Button
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/hang_del_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
@@ -168,7 +168,8 @@
             android:focusable="false"
             android:text="@string/delete_sz"
             android:textColor="@color/gray_7"
-            android:textSize="@dimen/font_size_14" />
+            android:textSize="@dimen/font_size_14"
+            app:moduleId="3" />
     </com.wyc.cloudapp.customizationView.InterceptLinearLayout>
 
 </LinearLayout>

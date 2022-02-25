@@ -33,7 +33,7 @@
             android:layout_width="@dimen/width_68"
             android:layout_height="wrap_content" />
 
-        <Button
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/del_hang_b"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="@dimen/width_88"
@@ -42,6 +42,7 @@
             android:layout_marginStart="@dimen/margin_18"
             android:background="@drawable/button_blue"
             android:text="@string/del_hang_bill"
+            app:moduleId="3"
             android:textColor="@color/blue_white"
             android:textSize="@dimen/font_size_16" />
 

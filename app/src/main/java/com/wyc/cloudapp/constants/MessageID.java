@@ -1,9 +1,10 @@
 package com.wyc.cloudapp.constants;
 
 public final  class MessageID {
-    private MessageID(){
+    private MessageID() {
 
     }
+
     public static final int DIS_ERR_INFO_ID = 35;
     public static final int SYNC_BASICS_ID = 1;
     public static final int SYNC_STORES_ID = 2;
@@ -28,7 +29,7 @@ public final  class MessageID {
     public static final int MODIFY_REPORT_PROGRESS_ID = 28;
     public static final int MARK_DOWNLOAD_RECORD_ID = 29;
     public static final int SYNC_PAUSE_ID = 30;
-    public static final int SYNC_THREAD_QUIT_ID= 31;
+    public static final int SYNC_THREAD_QUIT_ID = 31;
     public static final int CANCEL_LOGIN_ID = 32;
     public static final int UPLOAD_TRANS_ORDER_ID = 33;//交班单据
     public static final int OFF_LINE_LOGIN_ID = 34;
@@ -49,4 +50,5 @@ public final  class MessageID {
     public static final int GoodsCategory_CHANGE_ID = 50;
     public static final int PRINTER_ERROR = 51;
     public static final int PRINTER_SUCCESS = 52;
+    public static final int LOGIN_FINISH_ID = 53;
 }

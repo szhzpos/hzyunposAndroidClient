@@ -605,6 +605,12 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                     _json.put("parameter_desc","会员参数");
                                                     params.add(_json);
 
+                                                    _json = new JSONObject();
+                                                    _json.put("parameter_id","module_permission");
+                                                    _json.put("parameter_content",info_json.getJSONArray("cashier_module"));
+                                                    _json.put("parameter_desc","模块权限");
+                                                    params.add(_json);
+
                                                     if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1) && mApplication.initCashierInfoAndStoreInfo(err)){
                                                         if (CustomApplication.isPracticeMode()){
                                                             /*练习模式下直接登录不再进行同步数据*/
@@ -683,13 +689,17 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     }
 
     private void launchLogin(boolean isConnection){
-        mApplication.setNetworkStatus(isConnection);
+        loginFinish(isConnection);
+
         final Intent intent = new Intent();
         if (isSmallScreen){
             intent.setClass(this, MobileNavigationActivity.class);
         }else intent.setClass(this,NormalMainActivity.class);
         startActivity(intent);
         finish();
+    }
+    private void loginFinish(boolean isConnection){
+        CustomApplication.sendMessage(MessageID.LOGIN_FINISH_ID,isConnection);
     }
 
     private void offline_login(){

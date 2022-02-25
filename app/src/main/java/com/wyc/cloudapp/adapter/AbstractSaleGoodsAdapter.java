@@ -241,6 +241,8 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
             }else if (couponDetail.isCategoryNotParticipate()){
                 notParticipateId = couponDetail.getNoGoodsTypeToArray();
                 id_key = "category_id";
+            }else if (couponDetail.isNothingParticipate()){
+                array.addAll(mData);
             }
             if (notParticipateId != null){
                 for (int i = 0,size = mData.size();i < size;i ++){

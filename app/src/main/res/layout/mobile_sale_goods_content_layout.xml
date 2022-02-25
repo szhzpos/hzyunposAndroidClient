@@ -192,7 +192,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <Button
             android:id="@+id/mobile_alter_price_btn"
@@ -224,7 +224,7 @@
             android:textColor="@color/gray_7"
             android:textSize="@dimen/font_size_16" />
 
-        <Button
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/mobile_alter_num_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
@@ -236,10 +236,11 @@
             android:layout_weight="1"
             android:background="@drawable/button_sub_green"
             android:text="@string/num_not_colon_sz"
+            app:moduleId="25"
             android:textColor="@color/gray_7"
             android:textSize="@dimen/font_size_16" />
 
-        <Button
+        <com.wyc.cloudapp.customizationView.JumpTextView
             android:id="@+id/mobile_del_btn"
             style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="wrap_content"
@@ -251,6 +252,7 @@
             android:layout_weight="1"
             android:background="@drawable/button_sub_green"
             android:text="@string/delete_sz"
+            app:moduleId="1"
             android:textColor="@color/gray_7"
             android:textSize="@dimen/font_size_14" />
     </com.wyc.cloudapp.customizationView.InterceptLinearLayout>

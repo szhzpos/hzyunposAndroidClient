@@ -9,8 +9,11 @@ import android.view.MotionEvent;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.ModulePermission;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.util.List;
 
 /**
  * @ProjectName: CloudApp
@@ -19,13 +22,14 @@ import com.wyc.cloudapp.utils.Utils;
  * @Description: Fragment点击跳转叶节点并且做权限检查
  * @Author: wyc
  * @CreateDate: 2021/1/27 15:09
- * @UpdateUser: 更新者
- * @UpdateDate: 2021/1/27 15:09
- * @UpdateRemark: 更新说明
+ * @UpdateUser: wyc
+ * @UpdateDate: 2022/2/25 15:09
+ * @UpdateRemark: 增加模块检测功能
  * @Version: 1.0
  */
 public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
     private final String mPermissionId;
+    private final int mModuleId;
     private final boolean mHide;
     public JumpTextView(Context context) {
         this(context,null);
@@ -39,8 +43,18 @@ public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
         final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.JumpTextView,0,0);
         mPermissionId = typedArray.getString(R.styleable.JumpTextView_perId);
         mHide = typedArray.getBoolean(R.styleable.JumpTextView_hide,false);
-        verifyPermission(context);
+        mModuleId = typedArray.getInteger(R.styleable.JumpTextView_moduleId,-1);
         typedArray.recycle();
+
+        checkModuleStatus();
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (getVisibility() == VISIBLE){
+            verifyPermission(getContext());
+        }
     }
 
     private boolean verifyPermission(final Context context){
@@ -54,6 +68,17 @@ public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
             }
         }
         return code;
+    }
+    private void checkModuleStatus(){
+        if (mModuleId != -1 && getVisibility() == VISIBLE) {
+            final List<ModulePermission> permissionList = CustomApplication.self().getModulePermissions();
+            int index = permissionList.indexOf(new ModulePermission(mModuleId));
+            if (index >= 0){
+                if (permissionList.get(index).invalid()){
+                    setVisibility(GONE);
+                }
+            }else setVisibility(GONE);
+        }
     }
 
     public boolean isHide() {

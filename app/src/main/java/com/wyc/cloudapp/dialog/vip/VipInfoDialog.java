@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.wyc.cloudapp.customizationView.JumpTextView;
 import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
@@ -43,7 +44,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount;
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
-    private Button mAddBtn;
+    private JumpTextView mAddBtn;
     public VipInfoDialog(@NonNull MainActivity context) {
         super(context,context.getString(R.string.vip_dialog_title_sz));
     }
@@ -120,9 +121,9 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
 
 
     private void initModifyBtn(){
-        final Button modifiyBtn = findViewById(R.id.vip_modify);
-        if (null != modifiyBtn)
-            modifiyBtn.setOnClickListener(view -> {
+        final JumpTextView modifyBtn = findViewById(R.id.vip_modify);
+        if (null != modifyBtn)
+            modifyBtn.setOnClickListener(view -> {
                 if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){
                     if (mVip != null){
                         final AddVipInfoDialog dialog = new AddVipInfoDialog(mContext,mContext.getString(R.string.modify_vip_sz),mVObj);
@@ -133,14 +134,14 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
                             dialog14.dismiss();
                         }).show();
                     }else{
-                        searchVip(mSearchContent.getText().toString(),modifiyBtn.getId());
+                        searchVip(mSearchContent.getText().toString(),modifyBtn.getId());
                     }
                 }
             });
     }
 
     private void initAddVipBtn(){
-        final Button add_btn = findViewById(R.id.vip_add);
+        final JumpTextView add_btn = findViewById(R.id.vip_add);
         if (null != add_btn){
             add_btn.setOnClickListener(view -> {
                 if (AddVipInfoDialog.verifyVipModifyOrAddPermissions(mContext)){

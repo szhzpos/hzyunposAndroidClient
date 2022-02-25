@@ -22,11 +22,13 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.bean.ModulePermission;
 import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
@@ -70,6 +72,8 @@ public final class CustomApplication extends Application {
     private String mAppId, mAppSecret,mUrl;
 
     private long OfflineTime = 0;//离线时间戳
+
+    private List<ModulePermission> modulePermissions = new ArrayList<>();
 
     /*
     * 业务模式 true 正常模式 false 练习收银模式
@@ -129,6 +133,15 @@ public final class CustomApplication extends Application {
             StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder().detectAll().penaltyLog().build());
         }
     }
+
+    private void initModulePermission(){
+        modulePermissions = ModulePermission.getModulePermission();
+    }
+
+    public @NonNull List<ModulePermission> getModulePermissions(){
+        return modulePermissions;
+    }
+
     public static void showGlobalToast(final String message){
         if (Looper.myLooper() == Looper.getMainLooper()){
             showToast(message);
@@ -141,6 +154,7 @@ public final class CustomApplication extends Application {
         mGlobalToast.setText(message);
         mGlobalToast.show();
     }
+
     public static void cancelGlobalToast(){
         if (Looper.myLooper() == Looper.getMainLooper()){
             cancelToast();
@@ -344,7 +358,7 @@ public final class CustomApplication extends Application {
         return mApplication;
     }
 
-    public void setNetworkStatus(boolean b){
+    private void setNetworkStatus(boolean b){
         mNetworkStatus.set(b);
     }
     public boolean isConnection(){
@@ -479,6 +493,10 @@ public final class CustomApplication extends Application {
                             msg.arg1 = 1;
                         mApplication.executeMsg(msg);
                     }
+                    break;
+                case MessageID.LOGIN_FINISH_ID:
+                    mApplication.initModulePermission();
+                    mApplication.setNetworkStatus(msg.obj instanceof Boolean && (boolean) msg.obj);
                     break;
                 case MessageID.START_SYNC_ORDER_INFO_ID:
                     Toast.makeText(mApplication,"开始上传数据",Toast.LENGTH_SHORT).show();
