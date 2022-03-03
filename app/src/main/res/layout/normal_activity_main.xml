@@ -482,143 +482,138 @@
         app:layout_constraintStart_toEndOf="@id/main_middle_left"
         app:layout_constraintTop_toBottomOf="@+id/main_top">
 
-        <ScrollView
+        <com.wyc.cloudapp.customizationView.FlowLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/margin_18"
             android:layout_weight="1"
-            android:fillViewport="true">
+            android:paddingStart="@dimen/margin_1"
+            android:paddingEnd="@dimen/margin_1"
+            android:visibility="visible">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+            <Button
+                android:id="@+id/add_num"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:background="@drawable/dialog_button_blue"
+                android:text="@string/add"
+                android:textColor="@color/blue_white"
+                android:textSize="@dimen/fun_button_font_size_24" />
 
-                <Button
-                    android:id="@+id/add_num"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:background="@drawable/dialog_button_blue"
-                    android:text="@string/add"
-                    android:textColor="@color/blue_white"
-                    android:textSize="@dimen/fun_button_font_size_24" />
+            <Button
+                android:id="@+id/minus_num"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/dialog_button_pink"
+                android:text="@string/minus"
+                android:textAlignment="gravity"
+                android:textColor="@color/pink_white"
+                android:textSize="@dimen/fun_button_font_size_24" />
 
-                <Button
-                    android:id="@+id/minus_num"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/dialog_button_pink"
-                    android:text="@string/minus"
-                    android:textAlignment="gravity"
-                    android:textColor="@color/pink_white"
-                    android:textSize="@dimen/fun_button_font_size_24" />
+            <com.wyc.cloudapp.customizationView.JumpTextView
+                android:id="@+id/num"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/num_not_colon_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:moduleId="25" />
 
-                <com.wyc.cloudapp.customizationView.JumpTextView
-                    android:id="@+id/num"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/num_not_colon_sz"
-                    app:moduleId="25"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+            <com.wyc.cloudapp.customizationView.JumpTextView
+                android:id="@+id/del"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/delete_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:moduleId="1" />
 
-                <com.wyc.cloudapp.customizationView.JumpTextView
-                    android:id="@+id/del"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/delete_sz"
-                    app:moduleId="1"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+            <com.wyc.cloudapp.customizationView.JumpTextView
+                android:id="@+id/clear"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/clear_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16"
+                app:moduleId="2" />
 
-                <com.wyc.cloudapp.customizationView.JumpTextView
-                    android:id="@+id/clear"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/clear_sz"
-                    app:moduleId="2"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+            <Button
+                android:id="@+id/discount"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/discount_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16" />
 
-                <Button
-                    android:id="@+id/discount"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/discount_sz"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+            <Button
+                android:id="@+id/change_price"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/change_price_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16" />
 
-                <Button
-                    android:id="@+id/change_price"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/change_price_sz"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+            <com.wyc.cloudapp.customizationView.TmpOrderButton
+                android:id="@+id/tmp_order"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/tmp_order_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/font_size_16" />
 
-                <com.wyc.cloudapp.customizationView.TmpOrderButton
-                    android:id="@+id/tmp_order"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/tmp_order_sz"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/font_size_16" />
+            <Button
+                android:id="@+id/vip"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/vip_button_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16" />
 
-                <Button
-                    android:id="@+id/vip"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/vip_button_sz"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
+            <Button
+                android:id="@+id/more_fun_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/fun_button_width_size"
+                android:layout_height="@dimen/fun_button_height_size"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/margin_2"
+                android:background="@drawable/button_green"
+                android:text="@string/more_sz"
+                android:textColor="@color/black_white"
+                android:textSize="@dimen/fun_button_font_size_16" />
 
-                <Button
-                    android:id="@+id/more_fun_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/fun_button_width_size"
-                    android:layout_height="@dimen/fun_button_height_size"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/margin_2"
-                    android:background="@drawable/button_green"
-                    android:text="@string/more_sz"
-                    android:textColor="@color/black_white"
-                    android:textSize="@dimen/fun_button_font_size_16" />
-
-            </LinearLayout>
-        </ScrollView>
+        </com.wyc.cloudapp.customizationView.FlowLayout>
 
         <Button
             android:id="@+id/check_out"
@@ -660,558 +655,519 @@
 
     </com.wyc.cloudapp.customizationView.IndicatorRecyclerView>
 
-    <TableLayout
+    <com.wyc.cloudapp.customizationView.FlowLayout
         android:id="@+id/keyboard_layout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/white"
         android:visibility="gone"
+        app:item_horizontal_spacing="@dimen/margin_1"
+        app:item_vertical_spacing="@dimen/margin_1"
         app:layout_constraintBottom_toTopOf="@id/search_text_linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/main_middle_middle"
-        app:layout_constraintTop_toBottomOf="@id/goods_info_list">
+        app:layout_constraintTop_toBottomOf="@id/goods_info_list"
+        app:rowCount="10">
 
-        <TableRow
+        <Button
+            android:id="@+id/zero"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/zero_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/one"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/one_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/two"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/two_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/three"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/three_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/four"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/four_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/five"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/five_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/six"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/six_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/seven"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/seven_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/eight"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/eight_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/nine"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/nine_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/Q"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:background="@drawable/button_sub_blue"
+            android:text="Q"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/w"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="W"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/e"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="E"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/r"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="R"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/t"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="T"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/y"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="Y"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/u"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="U"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/i"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="I"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/o"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="O"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/p"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="P"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/A"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="A"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/S"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="S"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/D"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="D"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/F"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="F"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/G"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="G"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/H"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="H"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/J"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="J"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/K"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="K"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/L"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="L"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/back"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/del"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_18"
+            android:visibility="visible"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/Z"
+            style="@style/Widget.AppCompat.Button.Borderless.Colored"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:background="@drawable/button_sub_blue"
+            android:text="Z"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/X"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="X"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
+
+        <Button
+            android:id="@+id/C"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/margin_1">
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="C"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/zero"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/zero_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/_a_week"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/one_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/two"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/two_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/three"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/three_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/four"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/four_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/five"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/five_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/six"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/six_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/seven"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/seven_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/eight"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/eight_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/nine"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/nine_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-        </TableRow>
-
-        <TableRow
+        <Button
+            android:id="@+id/V"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/margin_1">
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="V"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/Q"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="Q"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/w"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="W"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/e"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="E"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/r"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="R"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/t"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="T"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/y"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="Y"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/u"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="U"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/i"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="I"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/o"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="O"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/p"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="P"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-        </TableRow>
-
-        <TableRow
+        <Button
+            android:id="@+id/B"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/margin_1">
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="B"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/A"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="A"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/S"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="S"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/D"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="D"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/F"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="F"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/G"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="G"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/H"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="H"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/J"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="J"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/K"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="K"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/L"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="L"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/back"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/del"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_18" />
-        </TableRow>
-
-        <TableRow
+        <Button
+            android:id="@+id/N"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="@dimen/margin_1">
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="N"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/Z"
-                style="@style/Widget.AppCompat.Button.Borderless.Colored"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="Z"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
+        <Button
+            android:id="@+id/M"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="M"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_24"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/X"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="X"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
+        <Button
+            android:id="@+id/hide"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
 
-            <Button
-                android:id="@+id/C"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="C"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_18"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/V"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="V"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
+        <Button
+            android:id="@+id/enter"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
 
-            <Button
-                android:id="@+id/B"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="B"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
+            android:text="@string/enter_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_18"
+            app:layout_weight_width="0.1" />
 
-            <Button
-                android:id="@+id/N"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="N"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/M"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="M"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_24" />
-
-            <Button
-                android:id="@+id/hide"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_18" />
-
-            <Button
-                android:id="@+id/enter"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-
-                android:text="@string/enter_sz"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_18" />
-
-            <Button
-                android:id="@+id/DEL"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/keyboard_button_height"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/margin_1"
-                android:layout_weight="1"
-                android:background="@drawable/button_sub_blue"
-                android:text="@string/clear"
-                android:textColor="@color/white"
-                android:textSize="@dimen/fun_button_font_size_18" />
-
-
-        </TableRow>
-    </TableLayout>
+        <Button
+            android:id="@+id/DEL"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/keyboard_button_height"
+            android:layout_gravity="center"
+            android:background="@drawable/button_sub_blue"
+            android:text="@string/clear"
+            android:textColor="@color/white"
+            android:textSize="@dimen/fun_button_font_size_18"
+            app:layout_weight_width="0.1" />
+    </com.wyc.cloudapp.customizationView.FlowLayout>
 
     <LinearLayout
         android:id="@+id/search_text_linearLayout"

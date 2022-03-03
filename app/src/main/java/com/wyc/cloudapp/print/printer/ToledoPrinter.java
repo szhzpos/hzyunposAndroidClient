@@ -315,6 +315,10 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
             boolean openCashBox = receipts.isOpenCashBox();
 
             if (ItemContent != null && !ItemContent.isEmpty() && mPrintFormatInfo != null){
+                if (openCashBox){
+                    openCashBox();
+                }
+
                 MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
 
                 final MtPrintResult result = new MtPrintResult();
@@ -357,9 +361,6 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
                     mtPrintApi.printBlankLine(mPrintFormatInfo.getFooterSpace(),result);
                 }
                 printSuccess();
-                if (openCashBox){
-                    openCashBox();
-                }
             }
         }
     }

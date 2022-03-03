@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
+import com.wyc.cloudapp.activity.mobile.report.GoodsStockActivity;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.activity.normal.NGiftSaleActivity;
 import com.wyc.cloudapp.activity.normal.NVipManageActivity;
@@ -63,6 +64,12 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     void manage(){
         dismiss();
         NVipManageActivity.start(mContext);
+    }
+
+    @OnClick(R.id.goods_stock)
+    void stock(){
+        dismiss();
+        GoodsStockActivity.start(mContext);
     }
 
     @OnClick(R.id.practice)
@@ -124,7 +131,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         return mContext.verifyPermissions("15",null);
     }
     private void initBarcodeScaleDownLoadBtn(){
-        final Button btn = findViewById(R.id.barcode_scale);
+        final JumpTextView btn = findViewById(R.id.barcode_scale);
         btn.setOnClickListener(v -> {
             if (verifyBSdownloadPermissions()){
                 final BarCodeScaleDownDialog barCodeScaleDownDialog = new BarCodeScaleDownDialog(mContext);
@@ -138,7 +145,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
         return mContext.verifyPermissions("16",null);
     }
     private void initSetupBtn(){
-        final Button btn = findViewById(R.id.setup_btn);
+        final JumpTextView btn = findViewById(R.id.setup_btn);
         btn.setOnClickListener(v -> {
             if (verifySetupPermissions()){
                 final ParameterSettingDialog parameterSettingDialog = new ParameterSettingDialog(mContext);
@@ -192,7 +199,7 @@ public final class MoreFunDialog extends AbstractDialogSaleActivity {
     }
 
     private void initVipDepositOrderBtn(){
-        final Button btn = findViewById(R.id.vip_deposit_order);
+        final JumpTextView btn = findViewById(R.id.vip_deposit_order);
         btn.setOnClickListener(v -> {
             if (VipInfoDialog.verifyVipDepositOrderPermissions(mContext)){
                 final VipDepositOrderDialog vipDepositOrderDialog = new VipDepositOrderDialog(mContext);

@@ -46,5 +46,6 @@
         <attr name="separator_size" format="dimension"/>
         <attr name="closing" format="boolean"/>
         <attr name="rowCount" format="integer"/>
+        <attr name="hasTitle" format="boolean"/>
     </declare-styleable>
 </resources>

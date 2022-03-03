@@ -66,12 +66,13 @@ public class BluetoothPrinter extends AbstractPrinter {
                                     bluetoothSocket.connect();
 
                                     if (hasContent){
+                                        if (open)outputStream.write(Printer.OPEN_CASHBOX);
+
                                         int footerSpace = format_info.getFooterSpace();
                                         int count = format_info.getPrintCount();
                                         while (count-- > 0){
                                             print(outputStream,items,footerSpace);
                                         }
-                                        if (open)outputStream.write(Printer.OPEN_CASHBOX);
                                         printSuccess();
                                     }else {
                                         outputStream.write(Printer.OPEN_CASHBOX);

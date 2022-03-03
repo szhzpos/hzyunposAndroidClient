@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/order_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/table_header_height"
+        android:background="@color/table_header_color"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="@dimen/width_45"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/row_id_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="@dimen/width_118"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/manage_item_no_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="@dimen/size_188"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/manage_barcode_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="@dimen/size_328"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/manage_name_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="@dimen/width_128"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/inventory_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="@dimen/width_88"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="@string/unit_sz"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingTop="@dimen/margin_8"
+            android:paddingBottom="@dimen/margin_8"
+            android:text="存货属性"
+            android:textColor="@color/white"
+            android:textSize="@dimen/font_size_18" />
+
+    </LinearLayout>
+
+    <com.wyc.cloudapp.customizationView.IndicatorRecyclerView
+        android:id="@+id/stock_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

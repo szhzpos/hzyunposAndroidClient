@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="fun_button_width_size">@dimen/width_85</dimen>
+    <dimen name="fun_button_width_size">@dimen/size_86</dimen>
     <dimen name="fun_button_height_size">@dimen/height_50</dimen>
     <dimen name="margin_0">@dimen/size_0</dimen>
     <dimen name="margin_2">@dimen/size_2</dimen>
@@ -99,6 +99,7 @@
     <dimen name="size_78">78dp</dimen>
     <dimen name="size_88">88dp</dimen>
     <dimen name="size_85">85dp</dimen>
+    <dimen name="size_86">86dp</dimen>
     <dimen name="size_75">75dp</dimen>
     <dimen name="size_328">328dp</dimen>
     <dimen name="size_118">118dp</dimen>
@@ -117,6 +118,7 @@
     <dimen name="size_300">300dp</dimen>
     <dimen name="size_288">288dp</dimen>
     <dimen name="size_560">560dp</dimen>
+    <dimen name="size_564">564dp</dimen>
     <dimen name="size_908">908dp</dimen>
     <dimen name="size_528">528dp</dimen>
     <dimen name="size_532">532dp</dimen>
@@ -159,7 +161,7 @@
     <dimen name="d_dialog_button_height">@dimen/height_122</dimen>
     <dimen name="drop_down_height">@dimen/height_45</dimen>
     <dimen name="more_fun_dialog_height">@dimen/size_288</dimen>
-    <dimen name="more_fun_dialog_width">@dimen/size_560</dimen>
+    <dimen name="more_fun_dialog_width">@dimen/size_564</dimen>
     <dimen name="main_top_fun_btn_width">@dimen/width_80</dimen>
     <dimen name="more_fun_btn_height">@dimen/height_58</dimen>
     <dimen name="more_fun_btn_width">@dimen/width_88</dimen>

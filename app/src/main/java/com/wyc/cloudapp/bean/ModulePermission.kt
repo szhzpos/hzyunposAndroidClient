@@ -13,8 +13,8 @@ data class ModulePermission(var mdl_snid:Int,var mdl_id:Int,var mdl_pid:Int,var 
 
     constructor(snid:Int):this(snid,0,0,"",1)
 
-    fun invalid():Boolean{
-        return mdl_status == 2
+    fun valid():Boolean{
+        return mdl_status == 1
     }
 
     companion object{
@@ -25,7 +25,6 @@ data class ModulePermission(var mdl_snid:Int,var mdl_id:Int,var mdl_pid:Int,var 
                 "select parameter_content from local_parameter where parameter_id = 'module_permission'"
             if (SQLiteHelper.execSql(`object`, sql)) {
                 val ids = Utils.getNullObjectAsEmptyJsonArray(`object`, "parameter_content")
-                Logger.d_json(ids)
                 return ids.toJavaList(
                     ModulePermission::class.java
                 )
@@ -34,13 +33,16 @@ data class ModulePermission(var mdl_snid:Int,var mdl_id:Int,var mdl_pid:Int,var 
             }
             return mutableListOf()
         }
-
+        /**
+         * 检查模块是否有效
+         * @return true 模块有效 false 模块不能使用
+         * */
         @JvmStatic
         fun checkModulePermission(moduleId:Int):Boolean{
             val permissionList = CustomApplication.self().modulePermissions
             val index = permissionList.indexOf(ModulePermission(moduleId))
             if (index >= 0) {
-                return permissionList[index].invalid()
+                return permissionList[index].valid()
             }
             return false
         }

@@ -244,6 +244,7 @@
     <string name="time_sz">时间</string>
     <string name="barcode_sz">商品条码</string>
     <string name="g_name_sz">商品名称</string>
+    <string name="only_code">商品货号</string>
     <string name="hangbill_sz">挂单</string>
     <string name="to_checkout_sz">去结账</string>
     <string name="del_hang_bill">删除挂单</string>

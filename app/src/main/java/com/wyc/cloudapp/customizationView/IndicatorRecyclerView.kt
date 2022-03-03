@@ -102,7 +102,6 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         super.onLayout(changed, l, t, r, b)
         if (changed){
             calculate(layoutManager as? LinearLayoutManager)
-            initLoadIndicatorPoint()
         }
     }
 
@@ -120,7 +119,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         }
     }
 
-    private fun initLoadIndicatorPoint(){
+    private fun calculateLoadIndicatorPoint(){
         if (hasContinueLoad()){
             val diameter = CustomApplication.getDimension(R.dimen.size_18).toInt()
             val radius = diameter shr 1
@@ -189,6 +188,9 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     }
 
     private fun drawRaindrop(c: Canvas){
+
+        calculateLoadIndicatorPoint()
+
         val orientationUp = hasSlideUp()
         val orientationLeft = hasSlideLeft()
         val indicatorMoveX = mIndicatorMoveX
@@ -628,7 +630,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
                     launch {
                         (adapter as OnLoad).onLoad(if (isHorOrientation() && hasSlideRight() || isVerOrientation() && hasSlideDown()) OnLoad.LOADMODE.FRONT else OnLoad.LOADMODE.BEHIND)
                         endLoad()
-                        withContext(Dispatchers.Main){
+                        withContext(Dispatchers.Main){ 
                             if (isVerOrientation() && hasSlideUp())
                                 scrollBy(0,28)
                             else if (isHorOrientation() && hasSlideLeft()){
@@ -690,6 +692,10 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
     override fun setAdapter(adapter: Adapter<*>?) {
         super.setAdapter(adapter)
         continueFlag((adapter as? OnLoad)?.continueLoad()?:false)
+    }
+
+    override fun setLayoutManager(layout: LayoutManager?) {
+        super.setLayoutManager(layout)
     }
 
     /**

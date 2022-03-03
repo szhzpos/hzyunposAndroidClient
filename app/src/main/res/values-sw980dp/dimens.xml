@@ -101,6 +101,7 @@
     <dimen name="size_78">99.684dp</dimen>
     <dimen name="size_88">112.464dp</dimen>
     <dimen name="size_85">108.63dp</dimen>
+    <dimen name="size_86">109.908dp</dimen>
     <dimen name="size_75">95.85dp</dimen>
     <dimen name="size_328">419.184dp</dimen>
     <dimen name="size_118">150.804dp</dimen>
@@ -119,6 +120,7 @@
     <dimen name="size_300">383.4dp</dimen>
     <dimen name="size_288">368.064dp</dimen>
     <dimen name="size_560">715.68dp</dimen>
+    <dimen name="size_564">720.792dp</dimen>
     <dimen name="size_908">1160.424dp</dimen>
     <dimen name="size_528">674.784dp</dimen>
     <dimen name="size_532">679.896dp</dimen>

@@ -1,215 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/more_dialog"
-        android:layout_width="@dimen/more_fun_dialog_width"
-        android:layout_height="@dimen/more_fun_dialog_height">
+<com.wyc.cloudapp.customizationView.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/more_dialog"
+    android:layout_width="@dimen/more_fun_dialog_width"
+    android:layout_height="@dimen/more_fun_dialog_height"
+    android:background="@color/white"
+    android:padding="@dimen/margin_5"
+    app:item_horizontal_spacing="@dimen/margin_5"
+    app:item_vertical_spacing="@dimen/margin_5"
+    app:separator_color="@color/white">
 
-        <com.wyc.cloudapp.customizationView.JumpTextView
-            android:id="@+id/present_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/present_sz"
-            app:moduleId="4"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/sync_btn"
+    <com.wyc.cloudapp.customizationView.JumpTextView
+        android:id="@+id/present_btn"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/more_fun_btn_width"
         android:layout_height="@dimen/more_fun_btn_height"
-        android:layout_marginStart="@dimen/margin_5"
-        android:layout_marginTop="@dimen/margin_5"
         android:background="@drawable/button_blue"
-        android:text="@string/sync_sz"
+        android:text="@string/present_sz"
         android:textColor="@color/blue_white"
         android:textSize="@dimen/font_size_14"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/vip_manage" />
+        app:moduleId="4" />
+
+    <Button
+        android:id="@+id/all_refund_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/all_refund_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
+
+    <Button
+        android:id="@+id/single_refund_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/single_refund_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
+
+    <com.wyc.cloudapp.customizationView.JumpTextView
+        android:id="@+id/vip_deposit_order"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/vip_deposit_o_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:moduleId="24" />
 
     <Button
         android:id="@+id/vip_manage"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/more_fun_btn_width"
         android:layout_height="@dimen/more_fun_btn_height"
-        android:layout_marginTop="@dimen/margin_5"
         android:background="@drawable/button_blue"
         android:text="@string/vip_manage"
         android:textColor="@color/blue_white"
-        android:textSize="@dimen/font_size_14"
-        app:layout_constraintStart_toStartOf="@id/present_btn"
-        app:layout_constraintTop_toBottomOf="@id/present_btn" />
-
-    <com.wyc.cloudapp.customizationView.JumpTextView
-        android:id="@+id/setup_btn"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="@dimen/more_fun_btn_width"
-        android:layout_height="@dimen/more_fun_btn_height"
-        android:layout_marginStart="@dimen/margin_5"
-        android:layout_marginTop="@dimen/margin_5"
-        android:background="@drawable/button_blue"
-        android:text="@string/setup_sz"
-        app:moduleId="16"
-        android:textColor="@color/blue_white"
-        android:textSize="@dimen/font_size_14"
-        app:layout_constraintStart_toEndOf="@id/gift_sold"
-        app:layout_constraintTop_toBottomOf="@id/goods_manage_btn" />
+        android:textSize="@dimen/font_size_14" />
 
     <Button
         android:id="@+id/o_cashbox"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/more_fun_btn_width"
         android:layout_height="@dimen/more_fun_btn_height"
-        android:layout_marginStart="@dimen/margin_5"
         android:background="@drawable/button_blue"
         android:text="@string/o_cashbox_sz"
         android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
+
+    <com.wyc.cloudapp.customizationView.JumpTextView
+        android:id="@+id/barcode_scale"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/b_code_s_d_sz"
+        android:textColor="@color/blue_white"
         android:textSize="@dimen/font_size_14"
-        app:layout_constraintStart_toEndOf="@id/vip_manage"
-        app:layout_constraintTop_toTopOf="@id/vip_manage" />
+        app:moduleId="15" />
 
-        <com.wyc.cloudapp.customizationView.JumpTextView
-            android:id="@+id/barcode_scale"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/b_code_s_d_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:moduleId="15"
-            app:layout_constraintStart_toEndOf="@id/o_cashbox"
-            app:layout_constraintTop_toTopOf="@id/o_cashbox" />
+    <com.wyc.cloudapp.customizationView.JumpTextView
+        android:id="@+id/price_adj_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/price_adjust_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:moduleId="32" />
 
-        <Button
-            android:id="@+id/all_refund_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/all_refund_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/present_btn"
-            app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/goods_manage_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/manage_goods_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
 
-        <Button
-            android:id="@+id/query_local_refund_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:layout_marginTop="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/local_refund_order_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/single_refund_btn"
-            app:layout_constraintTop_toTopOf="parent" />
+    <com.wyc.cloudapp.customizationView.JumpTextView
+        android:id="@+id/goods_stock"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/commodity_stocks_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:moduleId="8" />
 
-        <com.wyc.cloudapp.customizationView.JumpTextView
-            android:id="@+id/vip_deposit_order"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/vip_deposit_o_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:moduleId="24"
-            app:layout_constraintStart_toEndOf="@id/query_local_refund_btn"
-            app:layout_constraintTop_toTopOf="@id/query_local_refund_btn" />
+    <Button
+        android:id="@+id/sync_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/sync_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
 
-        <Button
-            android:id="@+id/single_refund_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/single_refund_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/all_refund_btn"
-            app:layout_constraintTop_toTopOf="@id/all_refund_btn" />
+    <Button
+        android:id="@+id/data_upload_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/data_upload_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
 
-        <Button
-            android:id="@+id/data_upload_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/data_upload_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/sync_btn"
-            app:layout_constraintTop_toTopOf="@id/sync_btn" />
-
-        <com.wyc.cloudapp.customizationView.JumpTextView
-            android:id="@+id/price_adj_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/price_adjust_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:moduleId="32"
-            app:layout_constraintStart_toEndOf="@id/barcode_scale"
-            app:layout_constraintTop_toTopOf="@id/barcode_scale" />
-
-        <Button
-            android:id="@+id/goods_manage_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/manage_goods_sz"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/price_adj_btn"
-            app:layout_constraintTop_toTopOf="@id/price_adj_btn" />
-
-        <Button
-            android:id="@+id/practice"
-            style="@style/Widget.AppCompat.Button.Borderless"
-            android:layout_width="@dimen/more_fun_btn_width"
-            android:layout_height="@dimen/more_fun_btn_height"
-            android:layout_marginStart="@dimen/margin_5"
-            android:background="@drawable/button_blue"
-            android:text="@string/practice"
-            android:textColor="@color/blue_white"
-            android:textSize="@dimen/font_size_14"
-            app:layout_constraintStart_toEndOf="@id/data_upload_btn"
-            app:layout_constraintTop_toTopOf="@id/sync_btn" />
+    <Button
+        android:id="@+id/practice"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/practice"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
 
     <com.wyc.cloudapp.customizationView.JumpTextView
         android:id="@+id/gift_sold"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="@dimen/more_fun_btn_width"
         android:layout_height="@dimen/more_fun_btn_height"
-        android:layout_marginStart="@dimen/margin_5"
         android:background="@drawable/button_blue"
         android:text="@string/gift_card_sale_sz"
         android:textColor="@color/blue_white"
         android:textSize="@dimen/font_size_14"
-        app:moduleId="30"
-        app:layout_constraintStart_toEndOf="@id/practice"
-        app:layout_constraintTop_toTopOf="@id/sync_btn" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        app:moduleId="30" />
+
+    <Button
+        android:id="@+id/query_local_refund_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/local_refund_order_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14" />
+
+    <com.wyc.cloudapp.customizationView.JumpTextView
+        android:id="@+id/setup_btn"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/more_fun_btn_width"
+        android:layout_height="@dimen/more_fun_btn_height"
+        android:background="@drawable/button_blue"
+        android:text="@string/setup_sz"
+        android:textColor="@color/blue_white"
+        android:textSize="@dimen/font_size_14"
+        app:moduleId="16" />
+
+</com.wyc.cloudapp.customizationView.FlowLayout>

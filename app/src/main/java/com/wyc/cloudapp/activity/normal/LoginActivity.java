@@ -607,7 +607,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
 
                                                     _json = new JSONObject();
                                                     _json.put("parameter_id","module_permission");
-                                                    _json.put("parameter_content",info_json.getJSONArray("cashier_module"));
+                                                    _json.put("parameter_content",Utils.getNullObjectAsEmptyJsonArray(info_json,"cashier_module"));
                                                     _json.put("parameter_desc","模块权限");
                                                     params.add(_json);
 

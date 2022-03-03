@@ -44,6 +44,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="n">
         <activity
+            android:name=".activity.mobile.report.GoodsStockActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.normal.NVipManageActivity"
             android:exported="false" />
         <activity android:name=".activity.normal.NGiftSaleActivity" />
@@ -137,8 +140,8 @@
             android:name=".activity.normal.NormalMainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme_no_translucent"
-            android:screenOrientation="landscape">
+            android:screenOrientation="landscape"
+            android:theme="@style/AppTheme_no_translucent">
 
             <!--
             <intent-filter>

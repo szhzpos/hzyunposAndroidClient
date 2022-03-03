@@ -18,6 +18,7 @@ import com.wyc.cloudapp.activity.mobile.report.MobileStockQueryActivity;
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.AbstractTableDataAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -108,7 +109,7 @@ public class MobileStockQueryAdapter extends AbstractDataAdapterForJson<MobileSt
                 object.put("limit",mLimit);
                 object.put("appid",mContext.getAppId());
 
-                final JSONObject retJson = HttpUtils.sendPost(mContext.getUrl() + "/api/goods_set/stock_query", HttpRequest.generate_request_parma(object, mContext.getAppSecret()),true);
+                final JSONObject retJson = HttpUtils.sendPost(mContext.getUrl() + InterfaceURL.STOCK_QUERY, HttpRequest.generate_request_parma(object, mContext.getAppSecret()),true);
 
                 switch (retJson.getIntValue("flag")) {
                     case 0:

@@ -74,7 +74,7 @@ public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
             final List<ModulePermission> permissionList = CustomApplication.self().getModulePermissions();
             int index = permissionList.indexOf(new ModulePermission(mModuleId));
             if (index >= 0){
-                if (permissionList.get(index).invalid()){
+                if (!permissionList.get(index).valid()){
                     setVisibility(GONE);
                 }
             }else setVisibility(GONE);

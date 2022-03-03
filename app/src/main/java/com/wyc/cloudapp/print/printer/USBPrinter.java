@@ -94,13 +94,14 @@ public class USBPrinter  extends AbstractPrinter {
                                                 connection.bulkTransfer(usbOutEndpoint,Printer.RESET,Printer.RESET.length, 100);
 
                                                 if (hasContent){
+                                                    if (open)connection.bulkTransfer(usbOutEndpoint,Printer.OPEN_CASHBOX,Printer.OPEN_CASHBOX.length, 100);
+
                                                     int footerSpace = format_info.getFooterSpace();
                                                     int count = format_info.getPrintCount();
                                                     while (count -- > 0){
                                                         print(connection,usbOutEndpoint,items,footerSpace);
                                                     }
                                                     printSuccess();
-                                                    if (open)connection.bulkTransfer(usbOutEndpoint,Printer.OPEN_CASHBOX,Printer.OPEN_CASHBOX.length, 100);
                                                 }else {
                                                     connection.bulkTransfer(usbOutEndpoint,Printer.OPEN_CASHBOX,Printer.OPEN_CASHBOX.length, 100);
                                                 }

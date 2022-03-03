@@ -8,7 +8,6 @@ import android.graphics.Paint
 import android.util.AttributeSet
 import android.view.*
 import android.widget.EdgeEffect
-import android.widget.FrameLayout
 import android.widget.OverScroller
 import androidx.core.view.*
 import com.wyc.cloudapp.R
@@ -44,8 +43,9 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
     private val mVerticalSpacing:Float
     private val mSeparatorSize:Float
     private val mRowCount:Int
+    private val hasTitle:Boolean
 
-    private val mSeparatorPaint = Paint()
+    private var mSeparatorPaint:Paint? = null
 
     private val mChildContainer = mutableListOf<MutableList<View>>()
 
@@ -64,15 +64,19 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
         val a: TypedArray = context.obtainStyledAttributes(attributes,R.styleable.FlowLayout)
         mHorizontalSpacing = a.getDimension(R.styleable.FlowLayout_item_horizontal_spacing, 0f)
         mVerticalSpacing = a.getDimension(R.styleable.FlowLayout_item_vertical_spacing, 0f)
-        mSeparatorSize = min(a.getDimension(R.styleable.FlowLayout_separator_size,context.resources.getDimension(R.dimen.margin_1)), min(mHorizontalSpacing,mVerticalSpacing))
+        mSeparatorSize = min(a.getDimension(R.styleable.FlowLayout_separator_size,0f), min(mHorizontalSpacing,mVerticalSpacing))
         mClosing = a.getBoolean(R.styleable.FlowLayout_closing,false)
+        hasTitle = a.getBoolean(R.styleable.FlowLayout_hasTitle,false)
 
         mRowCount = a.getInt(R.styleable.FlowLayout_rowCount,0)
 
-        mSeparatorPaint.color = a.getColor(R.styleable.FlowLayout_separator_color,Color.GRAY)
-        mSeparatorPaint.isAntiAlias = true
-        mSeparatorPaint.style = Paint.Style.STROKE
-        mSeparatorPaint.strokeWidth = mSeparatorSize
+        if (mSeparatorSize > 0f){
+            mSeparatorPaint = Paint()
+            mSeparatorPaint!!.color = a.getColor(R.styleable.FlowLayout_separator_color,Color.GRAY)
+            mSeparatorPaint!!.isAntiAlias = true
+            mSeparatorPaint!!.style = Paint.Style.STROKE
+            mSeparatorPaint!!.strokeWidth = mSeparatorSize
+        }
 
         a.recycle()
 
@@ -110,6 +114,35 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
         mEdgeEffectTop.setSize(w, h shr 2)
+    }
+
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        hide()
+    }
+    /**
+     * 判断除了标题之外的所有子视图是否可见。如果子视图都不可见，则不显示自己
+     * */
+    private fun hide(){
+        if (hasTitle){
+            if (childCount > 1) {
+                if (children.toMutableList().subList(1, childCount - 1)
+                        .all { it.visibility == GONE }
+                ) {
+                    visibility = GONE
+                }
+            } else visibility = GONE
+        }
+    }
+
+    override fun onScrollChanged(l: Int, t: Int, oldl: Int, oldt: Int) {
+        super.onScrollChanged(l, t, oldl, oldt)
+        scrollTitle(t - oldt)
+    }
+    private fun scrollTitle(dy:Int){
+        if (hasTitle && childCount > 1){
+            getChildAt(0).offsetTopAndBottom(dy)
+        }
     }
 
     override fun onDetachedFromWindow() {
@@ -234,13 +267,18 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        drawClosingBorder(canvas)
-        drawHorizontalSeparator(canvas)
-        drawVerticalSeparator(canvas)
+        drawSeparator(canvas)
+    }
+    private fun drawSeparator(canvas: Canvas){
+        if (mSeparatorSize > 0){
+            drawClosingBorder(canvas)
+            drawHorizontalSeparator(canvas)
+            drawVerticalSeparator(canvas)
+        }
     }
     private fun drawClosingBorder(canvas: Canvas){
         if (mClosing){
-            canvas.drawRect((left + paddingLeft).toFloat(),(top + paddingTop + scrollY).toFloat(),(right - paddingRight).toFloat(),(bottom - paddingBottom + scrollY).toFloat(),mSeparatorPaint)
+            canvas.drawRect((left + paddingLeft).toFloat(),(top + paddingTop + scrollY).toFloat(),(right - paddingRight).toFloat(),(bottom - paddingBottom + scrollY).toFloat(),mSeparatorPaint!!)
         }
     }
 
@@ -255,7 +293,7 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
                     if (index != sub.size - 1){
                         val startX = it.right.toFloat() + it.marginRight + offset
                         val stopX = it.right.toFloat() + it.marginRight + offset
-                        canvas.drawLine(startX,it.top.toFloat() - it.marginTop - space,stopX, bottom,mSeparatorPaint)
+                        canvas.drawLine(startX,it.top.toFloat() - it.marginTop - space,stopX, bottom,mSeparatorPaint!!)
                     }
                 }
             }
@@ -271,9 +309,9 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
                     if (index != mChildContainer.size - 1){
                         bottom = it.bottom.toFloat() + it.marginBottom + offset
                         if (mClosing)
-                            canvas.drawLine(left.toFloat() + paddingTop,bottom,right.toFloat() - paddingRight, bottom,mSeparatorPaint)
+                            canvas.drawLine(left.toFloat() + paddingTop,bottom,right.toFloat() - paddingRight, bottom,mSeparatorPaint!!)
                         else
-                            canvas.drawLine(left.toFloat() ,bottom,right.toFloat() , bottom,mSeparatorPaint)
+                            canvas.drawLine(left.toFloat() ,bottom,right.toFloat() , bottom,mSeparatorPaint!!)
                     }
                 }
             }
@@ -304,24 +342,21 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
             childWidthWeight = lp.weightWidth
             childHeightWeight = lp.weightHeight
 
-            if ((lp.height == ViewGroup.LayoutParams.WRAP_CONTENT || lp.height == 0) && childHeightWeight > 0f){
+            if (childHeightWeight > 0f){
                 lp.height = (childHeightWeight * (heightSize - (paddingTop + paddingBottom))).toInt()
             }
-            if (mRowCount == 0){
-                if ((lp.width == ViewGroup.LayoutParams.WRAP_CONTENT || lp.width == 0) && childWidthWeight > 0f){
+
+            if (childWidthWeight > 0f){
+                if (mRowCount == 0){
                     lp.width = (childWidthWeight * (widthSize - (paddingLeft + paddingRight))).toInt()
-                }
-            }else{
-                val horOffset = (mRowCount - 1) * mHorizontalSpacing
-                if ((lp.width == ViewGroup.LayoutParams.WRAP_CONTENT || lp.width == 0) && childWidthWeight > 0f){
-                    lp.width = (childWidthWeight * (widthSize - (paddingLeft + paddingRight + horOffset))).toInt()
+                }else{
+                    lp.width = (childWidthWeight * (widthSize - (paddingLeft + paddingRight + (mRowCount - 1) * mHorizontalSpacing))).toInt()
                 }
             }
-
             measureChild(it,widthMeasureSpec,heightMeasureSpec)
 
             lineWidth += it.measuredWidth + lp.leftMargin + lp.rightMargin
-            if (lineWidth > measuredWidth - paddingLeft - paddingRight){
+            if (lineWidth > widthSize - paddingLeft - paddingRight){
                 maxHeight += getMaxHeightOfRow(heightList)
                 lineWidth = it.measuredWidth
 

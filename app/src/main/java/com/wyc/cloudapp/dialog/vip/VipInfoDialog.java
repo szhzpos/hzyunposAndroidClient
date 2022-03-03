@@ -104,7 +104,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     }
 
     private void initChargeBtn(){
-        final Button chargeBtn = findViewById(R.id.vip_charge);
+        final JumpTextView chargeBtn = findViewById(R.id.vip_charge);
         if (null != chargeBtn)
             chargeBtn.setOnClickListener(view -> {
                 if (verifyVipDepositPermissions(mContext)){

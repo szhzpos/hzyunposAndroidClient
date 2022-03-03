@@ -55,6 +55,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.ModulePermission;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.customizationView.FlowLayout;
 import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
 import com.wyc.cloudapp.customizationView.JumpTextView;
@@ -101,7 +102,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private long mCurrentTimestamp = 0;
     private TextView mCurrentTimeViewTv, mSaleSumNumTv, mSaleSumAmtTv, mOrderCodeTv, mDisSumAmtTv;
     private ImageView mCloseBtn;
-    private TableLayout mKeyboard;
+    private FlowLayout mKeyboard;
     private SecondDisplay mSecondDisplay;
     private ConstraintLayout mLastOrderInfo;
     private ImageView mPrinterStatusIv;
@@ -653,7 +654,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 switch (motionEvent.getAction()){
                     case MotionEvent.ACTION_DOWN:
                         if (motionEvent.getX() > (search.getWidth() - search.getCompoundPaddingRight())){
-                            TableLayout keyboard = mKeyboard;
+                            FlowLayout keyboard = mKeyboard;
                             int visible = keyboard.getVisibility();
                             if (visible == View.VISIBLE ){
                                 keyboard.setVisibility(View.GONE);
@@ -664,20 +665,10 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                             View vObj;
                             for(int i = 0,childCounts = keyboard.getChildCount();i < childCounts;i ++){
                                 vObj = keyboard.getChildAt(i);
-                                if ( vObj instanceof TableRow){
-                                    final TableRow tableRow = (TableRow)vObj ;
-                                    int buttons = tableRow.getChildCount();
-                                    for (int j = 0;j < buttons;j ++){
-                                        vObj = tableRow.getChildAt(j);
-                                        if (vObj instanceof Button){
-                                            final Button button = (Button)vObj;
-                                            if (keyboard.getVisibility() == View.VISIBLE){
-                                                button.setOnClickListener(mKeyboardListener);
-                                            }else{
-                                                button.setOnClickListener(null);
-                                            }
-                                        }
-                                    }
+                                if (keyboard.getVisibility() == View.VISIBLE){
+                                    vObj.setOnClickListener(mKeyboardListener);
+                                }else{
+                                    vObj.setOnClickListener(null);
                                 }
                             }
                             return true;

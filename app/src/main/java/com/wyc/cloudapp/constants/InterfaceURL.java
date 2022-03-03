@@ -28,4 +28,5 @@ public final class InterfaceURL {
     public static final String OUT_IN_SH= "/api/bgd/sh";
     public static final String COUPON_CHECK = "/api/coupon_check/details";
     public static final String COUPON_VERIFY = "/api/coupon_check/verify";
+    public static final String STOCK_QUERY = "/api/goods_set/stock_query";
 }
