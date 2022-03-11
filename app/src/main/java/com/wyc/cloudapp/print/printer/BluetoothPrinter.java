@@ -10,9 +10,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.fragment.PrintFormatFragment;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
+import com.wyc.cloudapp.print.cashDrawer.UtilsOpenCashDrawer;
 import com.wyc.cloudapp.print.parameter.IParameter;
 import com.wyc.cloudapp.print.receipts.IReceipts;
 import com.wyc.cloudapp.utils.Utils;
@@ -38,60 +40,64 @@ import java.util.concurrent.locks.LockSupport;
 public class BluetoothPrinter extends AbstractPrinter {
     @Override
     public void printObj(@NonNull IReceipts<? extends IParameter> receipts) {
-        bluetooth_print(receipts.getPrintParameter(),receipts.getPrintItem(),receipts.isOpenCashBox());
+        final IParameter format_info = receipts.getPrintParameter();
+        final List<PrintItem> items = receipts.getPrintItem();
+        boolean hasContent = format_info != null && items != null && !items.isEmpty();
+
+        if (receipts.isOpenCashBox()){
+            UtilsOpenCashDrawer.open();
+        }
+        if (hasContent){
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
+            bluetooth_print(receipts.getPrintParameter(),receipts.getPrintItem(),false);
+            MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
+        }
     }
     private void bluetooth_print(final IParameter format_info,List<PrintItem> items,boolean open){
         Logger.d("mPrintFormatInfo:%s,ItemContent:%s",format_info,items);
-        boolean hasContent = format_info != null && items != null && !items.isEmpty();
-        if (hasContent || open){
 
-            final JSONObject object = new JSONObject();
-            if (Printer.getPrinterSetting(object)){
-                int status_id = object.getIntValue("id");
-                final String[] vals = Utils.getNullStringAsEmpty(object,"v").split("\t");
+        final JSONObject object = new JSONObject();
+        if (Printer.getPrinterSetting(object)){
+            int status_id = object.getIntValue("id");
+            final String[] vals = Utils.getNullStringAsEmpty(object,"v").split("\t");
 
-                if (vals.length < 2)return;
+            if (vals.length < 2)return;
 
-                final String deviceAddr = vals[1];
-                if (R.id.bluetooth_p == status_id && Utils.isNotEmpty(deviceAddr)){
-                    MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
-                    String errMsg = "";
-                    BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-                    if (bluetoothAdapter != null){
-                        if (bluetoothAdapter.isEnabled()){
-                            BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddr);
-                            synchronized (BluetoothPrinter.class){
-                                try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                                     BufferedOutputStream outputStream = new BufferedOutputStream(bluetoothSocket.getOutputStream())){
-                                    bluetoothSocket.connect();
+            final String deviceAddr = vals[1];
+            if (PrintFormatFragment.BLUETOOTH_TYPE_ID == status_id && Utils.isNotEmpty(deviceAddr)){
+                String errMsg = "";
+                BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                if (bluetoothAdapter != null){
+                    if (bluetoothAdapter.isEnabled()){
+                        BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(deviceAddr);
+                        synchronized (BluetoothPrinter.class){
+                            try (BluetoothSocket bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                                 BufferedOutputStream outputStream = new BufferedOutputStream(bluetoothSocket.getOutputStream())){
+                                bluetoothSocket.connect();
 
-                                    if (hasContent){
-                                        if (open)outputStream.write(Printer.OPEN_CASHBOX);
-
-                                        int footerSpace = format_info.getFooterSpace();
-                                        int count = format_info.getPrintCount();
-                                        while (count-- > 0){
-                                            print(outputStream,items,footerSpace);
-                                        }
-                                        printSuccess();
-                                    }else {
-                                        outputStream.write(Printer.OPEN_CASHBOX);
+                                if (!open){
+                                    int footerSpace = format_info.getFooterSpace();
+                                    int count = format_info.getPrintCount();
+                                    while (count-- > 0){
+                                        print(outputStream,items,footerSpace);
                                     }
-                                    MyDialog.toastMessage(CustomApplication.self().getString(R.string.end_print));
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                    errMsg = "打印错误：" + e.getMessage();
+                                    printSuccess();
+                                }else {
+                                    outputStream.write(Printer.OPEN_CASHBOX);
                                 }
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                errMsg = "打印错误：" + e.getMessage();
                             }
-                        }else{
-                            errMsg = "蓝牙已关闭！";
                         }
+                    }else{
+                        errMsg = "蓝牙已关闭！";
                     }
-                    showError(errMsg);
-                }else showError(CustomApplication.getStringByResId(R.string.printer_error,deviceAddr));
-            }else {
-                showError(CustomApplication.getStringByResId(R.string.printer_error,object.getString("info")));
-            }
+                }
+                showError(errMsg);
+            }else showError(CustomApplication.getStringByResId(R.string.printer_error,deviceAddr));
+        }else {
+            showError(CustomApplication.getStringByResId(R.string.printer_error,object.getString("info")));
         }
     }
 

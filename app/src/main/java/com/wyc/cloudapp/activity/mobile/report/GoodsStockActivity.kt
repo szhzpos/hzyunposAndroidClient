@@ -25,37 +25,24 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager2.widget.ViewPager2
 import butterknife.BindView
 import butterknife.ButterKnife
-import com.google.android.material.tabs.TabLayout
-import com.google.android.material.tabs.TabLayoutMediator
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.MainActivity
 import com.wyc.cloudapp.activity.normal.NVipManageActivity
-import com.wyc.cloudapp.adapter.AbstractDataAdapter.SuperViewHolder
-import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson
 import com.wyc.cloudapp.adapter.AbstractDataAdapterForList
-import com.wyc.cloudapp.adapter.FragmentPagerAdapter
-import com.wyc.cloudapp.adapter.report.MobileStockQueryAdapter
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.bean.GoodsStockInfo
 import com.wyc.cloudapp.customizationView.IndicatorRecyclerView
-import com.wyc.cloudapp.customizationView.RoundCornerTabLayout
 import com.wyc.cloudapp.data.viewModel.GoodsStockViewModel
-import com.wyc.cloudapp.databinding.FragmentPagerContainerBinding
 import com.wyc.cloudapp.databinding.NormalGoodsStockLayoutBinding
-import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.fragment.AbstractBaseFragment
-import com.wyc.cloudapp.fragment.VipPickStuffFragment
-import com.wyc.cloudapp.fragment.VipStoreStuffFragment
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 
 class GoodsStockActivity : MainActivity() {
@@ -63,7 +50,6 @@ class GoodsStockActivity : MainActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mAdapter = StockQueryAdapter(this)
 
         setContent { LayoutContent() }
     }
@@ -134,7 +120,7 @@ class GoodsStockActivity : MainActivity() {
                 }
                 val textFieldValue = remember { mutableStateOf(TextFieldValue("")) }
                 NVipManageActivity.SearchTextField(
-                    textFieldValue,placeholder = {Text(CustomApplication.self().getString(R.string.input_hint,menuText.value),fontSize = dimensionResource(R.dimen.font_size_16).value.sp)},
+                    textFieldValue,placeholder = {Text(getString(R.string.input_hint,menuText.value),fontSize = dimensionResource(R.dimen.font_size_16).value.sp)},
                     keyboardOptions = KeyboardOptions( keyboardType = KeyboardType.Text )
                 )
                 Button(onClick = {
@@ -246,7 +232,7 @@ class GoodsStockActivity : MainActivity() {
 
         @SuppressLint("NotifyDataSetChanged")
         private fun init(){
-            ViewModelProvider(mContext).get(GoodsStockViewModel::class.java).getCurrentModel().observe(mContext,{
+            ViewModelProvider(mContext).get(GoodsStockViewModel::class.java).getCurrentModel().observe(mContext){
                 when(mLoadMode){
                     IndicatorRecyclerView.OnLoad.LOADMODE.BEHIND ->{
                         mData?.addAll(it.data)
@@ -259,7 +245,7 @@ class GoodsStockActivity : MainActivity() {
                 }
                 mLoadMore = it.total > mCondition?.limit?:0 && it.total > mData.size
                 notifyDataSetChanged()
-            })
+            }
         }
         fun query(cond:GoodsStockViewModel.Condition){
             mLoadMode = IndicatorRecyclerView.OnLoad.LOADMODE.OVER

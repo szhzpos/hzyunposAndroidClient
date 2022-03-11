@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -33,33 +34,47 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.TreeListItem;
+import com.wyc.cloudapp.bean.VipGrade;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.print.printer.BluetoothPrinter;
+import com.wyc.cloudapp.print.printer.CWUsbPrinter;
 import com.wyc.cloudapp.print.printer.ToledoPrinter;
 import com.wyc.cloudapp.print.printer.USBPrinter;
 import com.wyc.cloudapp.print.receipts.TestReceipts;
 import com.wyc.cloudapp.utils.BluetoothUtils;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.wyc.cloudapp.utils.BluetoothUtils.REQUEST_BLUETOOTH__PERMISSIONS;
 
 public class PrintFormatFragment extends AbstractParameterFragment {
-    private static final String ToPrinter = "托利多 Plus U2";
     public static final int TIME_CARD_SALE_FORMAT_ID = 100;
     public static final int TIME_CARD_USE_FORMAT_ID = 101;
     public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
     public static final int CHECKOUt_FORMAT_ID = 103;
     public static final String ACTION_USB_PERMISSION = "com.wyc.cloudapp.USB_PERMISSION";
 
+    public static final int USB_TYPE_ID = 201;
+    public static final int BLUETOOTH_TYPE_ID = 202;
+    public static final int DRIVER_TYPE_ID = 203;
+
+
+    private static final int GENERAL_POS = 104;
+    private static final int CW_POS = 105;
+
+    private static final String ToPrinter = "托利多 Plus U2";
     private static final String mTitle = CustomApplication.self().getString(R.string.print_setting);
     private ArrayAdapter<String> mPrintIdAdapter;
     private Spinner mPrinterId;
@@ -122,6 +137,41 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         //保存参数
         if (null != save_btn)save_btn.setOnClickListener(v->saveContent());
         if (null != testBtn)testBtn.setOnClickListener(v -> TestReceipts.print());
+
+        initPos();
+    }
+    private void initPos(){
+        final TextView posView = findViewById(R.id.posId);
+        if (null != posView)posView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final TreeListDialogForObj treeListDialog = new TreeListDialogForObj(mContext,"收银机");
+                treeListDialog.setData(generate(),null,true);
+                if (treeListDialog.exec() == 1){
+                    final TreeListItem object = treeListDialog.getSingleContent();
+                    posView.setText(object.getItem_name());
+                    try {
+                        posView.setTag(Integer.parseInt(object.getItem_id()));
+                    }catch (NumberFormatException ignored){
+                    }
+                }
+            }
+            private List<TreeListItem> generate(){
+                List<TreeListItem> data = new ArrayList<>();
+
+                TreeListItem item = new TreeListItem();
+                item.setItem_id(String.valueOf(GENERAL_POS));
+                item.setItem_name(getString(R.string.general_pos));
+                data.add(item);
+
+                item = new TreeListItem();
+                item.setItem_id(String.valueOf(CW_POS));
+                item.setItem_name(getString(R.string.CW_pos));
+                data.add(item);
+
+                return data;
+            }
+        });
     }
 
     @Override
@@ -420,28 +470,31 @@ public class PrintFormatFragment extends AbstractParameterFragment {
         String cls_id = "";//驱动调用对应的实现类名
         JSONObject object = new JSONObject();
         RadioGroup radioGroup = findViewById(R.id.print_way);
+        TextView posView = findViewById(R.id.posId);
+        int posId =  Utils.getViewTagValue(posView,USB_TYPE_ID);
         if (way){
             if (checkPrinter()){
                 final String value = mPrinterId.getSelectedItem().toString();
                 switch (radioGroup.getCheckedRadioButtonId()){
                     case R.id.bluetooth_p:
-                        id = R.id.bluetooth_p;
+                        id = BLUETOOTH_TYPE_ID;
                         status = 1;
-                        cls_id = BluetoothPrinter.class.getSimpleName();
+                        cls_id = getPrinterByPos(posId,id);
                         break;
                     case R.id.usb_p:
-                        id = R.id.usb_p;
+                        id = USB_TYPE_ID;
                         status = 1;
-                        cls_id = USBPrinter.class.getSimpleName();
+                        cls_id = getPrinterByPos(posId,id);
                         break;
                     case R.id.innerDriver:
-                        id = R.id.innerDriver;
+                        id = DRIVER_TYPE_ID;
                         status = 1;
                         if (ToPrinter.equals(value)){
                             cls_id = ToledoPrinter.class.getSimpleName();
-                        }
+                        }else cls_id = getPrinterByPos(posId,id);
                         break;
                 }
+                object.put("posId",posId);
                 object.put("id",id);
                 object.put("s",status);
                 object.put("cls_id",cls_id);
@@ -454,6 +507,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             if (Printer.getPrinterSetting(object)){
                 String printer_info = Utils.getNullStringAsEmpty(object,"v");
                 int status_id = object.getIntValue("id");
+                int checkId = R.id.usb_p;
                 String[] vals = printer_info.split("\t");
 
                 if (Utils.isNotEmpty(printer_info)){
@@ -461,28 +515,57 @@ public class PrintFormatFragment extends AbstractParameterFragment {
                     mPrintIdAdapter.add(printer_info);
                 }
 
-                if (status_id == R.id.innerDriver){
+                if (status_id == DRIVER_TYPE_ID){
                     //咱不处理
+                    checkId = R.id.innerDriver;
                 }else {
                     if (vals.length > 1){
                         switch (status_id){
-                            case R.id.bluetooth_p:
+                            case BLUETOOTH_TYPE_ID:
                                 BluetoothUtils.bondBlueTooth(vals[1]);
+                                checkId = R.id.bluetooth_p;
                                 break;
-                            case R.id.usb_p:
+                            case USB_TYPE_ID:
                                 startUSBDiscoveryAndAuth(vals[0],vals[1]);
+                                checkId = R.id.usb_p;
                                 break;
                             default:
-                                status_id = R.id.usb_p;//默认usb
+
                         }
-                    }else  status_id = R.id.usb_p;//默认usb
+                    }
                 }
-                radioGroup.check(status_id);
+                if (posView != null){
+                    posId = object.getIntValue("posId");
+                    posView.setTag(posId);
+                    if (posId == CW_POS){
+                        posView.setText(R.string.CW_pos);
+                    }else {
+                        posView.setText(R.string.general_pos);
+                    }
+                }
+                radioGroup.check(checkId);
             }else
                 MyDialog.ToastMessage("加载打印机参数错误：" + object.getString("info"), null);
         }
 
         return object;
+    }
+    private String getPrinterByPos(int posId,int typeId){
+        String cls_id = "";
+        switch (typeId){
+            case BLUETOOTH_TYPE_ID:
+                cls_id = BluetoothPrinter.class.getSimpleName();
+                break;
+            case DRIVER_TYPE_ID:
+                break;
+            default://usb
+                if (posId == CW_POS){
+                    cls_id = CWUsbPrinter.class.getSimpleName();
+                }else {
+                    cls_id = USBPrinter.class.getSimpleName();
+                }
+        }
+       return cls_id;
     }
 
     private final BroadcastReceiver usb_bluetooth_receiver = new BroadcastReceiver() {

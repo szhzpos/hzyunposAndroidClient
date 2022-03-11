@@ -11,6 +11,7 @@ import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.ToledoScale;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
+import com.wyc.cloudapp.print.cashDrawer.UtilsOpenCashDrawer;
 import com.wyc.cloudapp.print.parameter.IParameter;
 import com.wyc.cloudapp.print.parameter.SalePrintParameter;
 import com.wyc.cloudapp.print.receipts.IReceipts;
@@ -316,7 +317,7 @@ public class ToledoPrinter extends AbstractPrinter implements IMtPrintView {
 
             if (ItemContent != null && !ItemContent.isEmpty() && mPrintFormatInfo != null){
                 if (openCashBox){
-                    openCashBox();
+                    UtilsOpenCashDrawer.open();
                 }
 
                 MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));

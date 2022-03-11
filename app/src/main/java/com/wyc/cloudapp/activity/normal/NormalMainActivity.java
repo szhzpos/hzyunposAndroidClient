@@ -82,10 +82,12 @@ import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.fragment.PrintFormatFragment;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrinterStatus;
+import com.wyc.cloudapp.print.cashDrawer.UtilsOpenCashDrawer;
 import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
@@ -198,7 +200,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             final String printer_info = Utils.getNullStringAsEmpty(object,"v");
             int status_id = object.getIntValue("id");
             final String[] vals = printer_info.split("\t");
-            if (status_id == R.id.usb_p && vals.length > 1){
+            if (status_id == PrintFormatFragment.USB_TYPE_ID && vals.length > 1){
                 final UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
                 if (null != manager){
                     HashMap<String, UsbDevice> deviceList = manager.getDeviceList();
@@ -423,7 +425,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     present();
                 }else if (id == R.id.pop_o_cashbox){
                     if (verifyOpenCashboxPermissions()){
-                        AbstractPrinter.openCashDrawer();
+                        UtilsOpenCashDrawer.open();
                     }
                 }else if (id == R.id.pop_sale_man_btn){
                     final JSONObject object = AbstractVipChargeDialog.showSaleInfo(NormalMainActivity.this);

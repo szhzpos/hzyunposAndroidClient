@@ -69,7 +69,6 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     @Override
     public void onClick(View v) {
         set_selected_status(v);
-        Utils.disableView(v,300);
         invokeListener(getSelectGoodsByIndex());
     }
 

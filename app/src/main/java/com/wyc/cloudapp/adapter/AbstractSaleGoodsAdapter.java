@@ -1730,7 +1730,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 }
             }
         }
-        notifyDataSetChanged();
     }
     @Deprecated
     private void deleteDiscountRecordForGoods(final JSONObject object,double del_num){
@@ -2421,7 +2420,6 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
                 mData.remove(i);
             }
         }
-        notifyDataSetChanged();
     }
 
     private @Nullable JSONArray getBuyFullGiveXInfo(final StringBuilder err){

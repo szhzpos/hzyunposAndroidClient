@@ -9,16 +9,23 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj;
+import com.wyc.cloudapp.print.cashDrawer.ConnPrinter;
 import com.wyc.cloudapp.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import android_serialport_api.SerialPortFinder;
 
@@ -27,6 +34,9 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
     private static final String NONE = "NONE";
     private ArrayAdapter<String> mSerialPortAdapter;
     private JSONArray mProTypes;
+
+    public static final String connPrinter = ConnPrinter.class.getSimpleName();
+
     public PeripheralSettingFragment() {
     }
 
@@ -39,6 +49,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
     public JSONObject loadContent() {
 
         get_or_show_serialScale_setting(false);
+        get_or_show_cashbox_setting(false);
         return null;
     }
 
@@ -48,11 +59,17 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         final JSONArray array = new JSONArray();
         final StringBuilder err = new StringBuilder();
 
-        final JSONObject content = new JSONObject();
+        JSONObject content = new JSONObject();
 
         content.put(p_id_key, "serial_port_scale");
         content.put(p_c_key, get_or_show_serialScale_setting(true));
         content.put(p_desc_key, "串口秤设置");
+        array.add(content);
+
+        content = new JSONObject();
+        content.put(p_id_key, "cashbox");
+        content.put(p_c_key, get_or_show_cashbox_setting(true));
+        content.put(p_desc_key, "钱箱设置");
         array.add(content);
 
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
@@ -69,7 +86,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         findViewById(R.id.save).setOnClickListener(v->saveContent());
         //初始化
         initSerialScale();
-
+        initCashDrawer();
         //加载参数
         loadContent();
     }
@@ -93,6 +110,40 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
     @Override
     public void onResume(){
         super.onResume();
+    }
+
+
+    private void initCashDrawer(){
+        final TextView c_box = findViewById(R.id.c_box);
+        if (c_box != null){
+            c_box.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final TreeListDialogForObj treeListDialog = new TreeListDialogForObj(mContext,"收银机");
+                    treeListDialog.setData(generate(),null,true);
+                    if (treeListDialog.exec() == 1){
+                        final TreeListItem object = treeListDialog.getSingleContent();
+                        c_box.setText(object.getItem_name());
+                        c_box.setTag(object.getItem_id());
+                    }
+                }
+                private List<TreeListItem> generate(){
+                    List<TreeListItem> data = new ArrayList<>();
+
+                    TreeListItem item = new TreeListItem();
+                    item.setItem_id(NONE);
+                    item.setItem_name("无");
+                    data.add(item);
+
+                    item = new TreeListItem();
+                    item.setItem_id(connPrinter);
+                    item.setItem_name(getString(R.string.conn_printer));
+                    data.add(item);
+
+                    return data;
+                }
+            });
+        }
     }
 
     private void initSerialScale(){
@@ -143,10 +194,12 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         JSONObject object;
         final Spinner pro_type_s = findViewById(R.id.pro_type),ser_port_s = findViewById(R.id.ser_port);
         final CheckBox auto_weigh_rb = findViewById(R.id.auto_weigh);
+        final TextView c_box = findViewById(R.id.c_box);
         if (way){
             object = mProTypes.getJSONObject(pro_type_s.getSelectedItemPosition());
             object.put("ser_port",ser_port_s.getSelectedItem());
             object.put("auto_weigh",auto_weigh_rb.isChecked());
+            object.put("c_box",Utils.getViewTagValue(c_box,""));
         }else{
             object = new JSONObject();
             if (SQLiteHelper.getLocalParameter("serial_port_scale",object)){
@@ -175,5 +228,35 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
                 MyDialog.ToastMessage("加载串口秤参数错误：" + object.getString("info"), null);
         }
         return object;
+    }
+
+    private JSONObject get_or_show_cashbox_setting(boolean way){
+        final JSONObject object = new JSONObject();
+        final TextView c_box = findViewById(R.id.c_box);
+        if (c_box != null){
+            if (way){
+                object.put("c_box",Utils.getViewTagValue(c_box,connPrinter));
+                object.put("c_box_name",c_box.getText().toString());
+            }else{
+                if (loadCashboxSetting(object)){
+                    if (object.isEmpty()){
+                        c_box.setTag(connPrinter);
+                        c_box.setText(R.string.conn_printer);
+                    }else {
+                        c_box.setTag(object.getString("c_box"));
+                        c_box.setText(object.getString("c_box_name"));
+                    }
+                }
+            }
+        }
+        return object;
+    }
+    public static boolean loadCashboxSetting(JSONObject object){
+        if (object == null)object = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("cashbox",object)){
+            return true;
+        }
+        MyDialog.ToastMessage("加载钱箱参数错误：" + object.getString("info"), null);
+        return false;
     }
 }

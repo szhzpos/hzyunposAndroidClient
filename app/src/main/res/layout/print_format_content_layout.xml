@@ -22,7 +22,28 @@
             android:background="@drawable/bottom_separator"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="@dimen/margin_2">
+            android:padding="@dimen/margin_2"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="0dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/POS"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_14" />
+
+            <TextView
+                android:id="@+id/posId"
+                android:layout_width="@dimen/width_118"
+                android:layout_height="@dimen/height_40"
+                android:background="@drawable/round_shape_blue"
+                android:drawableEnd="@drawable/content"
+                android:gravity="center_vertical"
+                android:padding="@dimen/margin_5"
+                android:tag="104"
+                android:text="@string/general_pos"
+                android:textColor="@color/text_color" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -167,7 +188,6 @@
             android:paddingEnd="@dimen/size_0">
 
             <TextView
-                android:id="@+id/textView20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/sel_f_sz"

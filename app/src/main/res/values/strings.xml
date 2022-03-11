@@ -138,6 +138,9 @@
     <string name="IllegalOrderSize">非法单据规格!</string>
     <string name="exist_goods_hint">存在已选商品,请先处理!</string>
     <string name="not_found_goods">未找到以下商品:%1$s</string>
+    <string name="POS">收银机：</string>
+    <string name="general_pos">通用</string>
+    <string name="CW_pos">CW1202</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -218,6 +221,8 @@
     <string name="ks_type_sz">客显：</string>
     <string name="cashbox_setting_sz">钱箱设置</string>
     <string name="cashbox_type_sz">钱箱：</string>
+    <string name="conn_printer">接打印机</string>
+    <string name="not_setting_c_box_hint">未设置开钱箱参数。请在系统设置->外设设置->钱箱选项，进行设置</string>
     <string name="interface_sz">USB接口：</string>
     <string name="f_58_sz">58小票</string>
     <string name="f_76_sz">76小票</string>
