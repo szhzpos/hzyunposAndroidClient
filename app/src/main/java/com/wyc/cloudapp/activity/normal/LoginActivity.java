@@ -115,7 +115,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
 
     public static void start(final Context context){
         final Intent intent = new Intent(context, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -252,9 +252,12 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         final Button login_btn = findViewById(R.id.b_login);
         if (null != login_btn)
             login_btn.setOnClickListener((View v)-> {
-                saveLastUser();
 
-                check_ver();
+                FormatActivity.start(this);
+
+                /*saveLastUser();
+
+                check_ver();*/
             });
         mLoginBtn = login_btn;
     }

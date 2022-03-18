@@ -639,6 +639,10 @@ public final class Utils {
         return (int) (dp * context.getResources().getDisplayMetrics().density);
     }
 
+    public static float dpToPxF(final Context context, final float dp) {
+        return   (dp * context.getResources().getDisplayMetrics().density);
+    }
+
     /**
      * 根据手机的分辨率从 px(像素) 的单位 转成为 dp
      */

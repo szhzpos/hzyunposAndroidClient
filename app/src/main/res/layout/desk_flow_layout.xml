@@ -104,10 +104,12 @@
         android:gravity="center"
         android:tag="activity.mobile.cashierDesk.TimeCardBusinessActivity"
         android:text="@string/once_card_sale_sz"
-        app:moduleId="27"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
+        app:hide="true"
         app:layout_weight_width="0.5"
+        app:moduleId="27"
+        app:perId="@string/time_card_per_id"
         app:verSpacing="@dimen/default_vertical" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -119,10 +121,12 @@
         android:gravity="center"
         android:tag="activity.mobile.cashierDesk.TimeCardQueryActivity"
         android:text="@string/once_card_query_sz"
-        app:moduleId="27"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
+        app:hide="true"
         app:layout_weight_width="0.5"
+        app:moduleId="27"
+        app:perId="@string/time_card_per_id"
         app:verSpacing="@dimen/default_vertical"
         tools:visibility="visible" />
 
@@ -135,10 +139,11 @@
         android:gravity="center"
         android:tag="activity.mobile.cashierDesk.GiftCardSaleActivity"
         android:text="@string/gift_card_sale_sz"
-        app:moduleId="30"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
+        app:hide="true"
         app:layout_weight_width="0.5"
+        app:moduleId="30"
         app:verSpacing="@dimen/default_vertical" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -150,10 +155,11 @@
         android:gravity="center"
         android:tag="activity.mobile.cashierDesk.GiftCardOrderQueryActivity"
         android:text="@string/gift_card_query_sz"
-        app:moduleId="30"
         android:textColor="@color/white"
         android:textSize="@dimen/font_size_18"
+        app:hide="true"
         app:layout_weight_width="0.5"
+        app:moduleId="30"
         app:verSpacing="@dimen/default_vertical" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView

@@ -44,6 +44,9 @@
         android:theme="@style/AppTheme"
         tools:targetApi="n">
         <activity
+            android:name=".activity.normal.FormatActivity"
+            android:exported="false" />
+        <activity
             android:name=".activity.mobile.report.GoodsStockActivity"
             android:exported="false" />
         <activity

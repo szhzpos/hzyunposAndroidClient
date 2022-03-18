@@ -552,7 +552,7 @@ public final class CustomApplication extends Application {
     * @return 返回目录全路径字符串
     * */
     @NonNull
-    private static String getSaveDirectory(String str) {
+    public static String getSaveDirectory(String str) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             final String rootDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + str + "/";
             final File file = new File(rootDir);
