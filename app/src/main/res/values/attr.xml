@@ -5,7 +5,7 @@
         <attr name="onFocusTime" />
         <attr name="showSoftKeyboard" format="boolean" />
     </declare-styleable>
-    <declare-styleable name="DrawableTextViewTopMargin">
+    <declare-styleable name="TopDrawableTextView">
         <attr name="verSpacing" format="dimension" />
         <attr name="bottomSpacing" format="dimension" />
         <attr name="animType" format="integer"/>

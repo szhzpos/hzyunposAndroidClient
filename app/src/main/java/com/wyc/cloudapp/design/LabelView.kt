@@ -6,13 +6,14 @@ import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
+import com.alibaba.fastjson.JSONArray
+import com.google.zxing.BarcodeFormat
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import java.io.File
 import java.io.FileOutputStream
-import kotlin.math.max
 
 
 /**
@@ -29,35 +30,32 @@ import kotlin.math.max
  * @Version:        1.0
  */
 
-class LayoutView: View {
-    private val mOffsetX = context.resources.getDimension(R.dimen.size_14)
-    private val mOffsetY = context.resources.getDimension(R.dimen.size_14)
+class LabelView: View {
+    private val mOffsetX = context.resources.getDimensionPixelOffset(R.dimen.size_14)
+    private val mOffsetY = context.resources.getDimensionPixelOffset(R.dimen.size_14)
 
     var physicsWidth = w_70
     var physicsHeight = h_40
 
-    private val contentWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, physicsWidth.toFloat(),context.resources.displayMetrics)
-    private val contentHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, physicsHeight.toFloat(),context.resources.displayMetrics)
+    private val contentWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, physicsWidth.toFloat(),context.resources.displayMetrics).toInt()
+    private val contentHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, physicsHeight.toFloat(),context.resources.displayMetrics).toInt()
 
-    private var realWidth = 1.0f
-    private var realHeight = 1.0f
+    private var realWidth = 1
+    private var realHeight = 1
 
-    private val contentList = mutableListOf<ItemBase<*>>()
+    private val contentList = mutableListOf<ItemBase>()
     private val mPaint = Paint()
 
     private val mTextBound = Rect()
     private var mBackground:Bitmap?  = null
     private val mMatrix = Matrix()
 
-    private var mCurItem:ItemBase<*>? = null
+    private var mCurItem:ItemBase? = null
 
     private var mLastX = 0f
     private var mLastY = 0f
     private var mMoveX = 0f
     private var mMoveY = 0f
-
-    private val mCurRect = RectF()
-    private val mActionRadius = context.resources.getDimension(R.dimen.size_3)
 
     constructor(context: Context):this(context, null)
     constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
@@ -66,6 +64,38 @@ class LayoutView: View {
         generateBackground()
         test()
     }
+    private fun toJson(){
+        val a =  JSONArray.toJSON(contentList) as JSONArray
+        Logger.d_json(a)
+    }
+    private fun toItem(){
+        val a =  JSONArray.toJSON(contentList) as JSONArray
+        Logger.d_json(a)
+
+        val list = mutableListOf<ItemBase>()
+        for (i in 0 until a.size){
+            val obj = a.getJSONObject(i)
+            when(obj.getString("clsType")){
+                TextItem::class.simpleName ->{
+                    list.add(obj.toJavaObject(TextItem::class.java))
+                }
+                LineItem::class.simpleName ->{
+                    list.add(obj.toJavaObject(LineItem::class.java))
+                }
+                RectItem::class.simpleName ->{
+                    list.add(obj.toJavaObject(RectItem::class.java))
+                }
+                CircleItem::class.simpleName ->{
+                    list.add(obj.toJavaObject(CircleItem::class.java))
+                }
+                BarcodeItem::class.simpleName ->{
+
+                }
+            }
+        }
+
+    }
+
     private fun initPaint(){
         mPaint.isAntiAlias = true
         /*绘制Drawable边框时会模糊，所以要关闭硬件加速*/
@@ -76,55 +106,105 @@ class LayoutView: View {
     }
     private fun test(){
         var item = TextItem()
-        item.content = "gAG吴9"
+        item.content = "gAG\n吴9"
         item.width = 128
         item.height = 88
+        item.mFontColor = Color.RED
         addTextItem(item)
 
         item = TextItem()
         item.content = "wypg舞"
         addTextItem(item)
+
+        addLineItem(LineItem())
+        addRectItem(RectItem())
+        addCircleItem(CircleItem())
+        addBarcodeItem(BarcodeItem())
+        addQRCodeItem(BarcodeItem())
     }
 
     private fun addTextItem(item:TextItem){
         if (Utils.isNotEmpty(item.content)){
-            val o = mPaint.textSize
-            val bound = Rect()
-            mPaint.textSize = item.fontSize
-            mPaint.getTextBounds(item.content,0,item.content!!.length,bound)
-            mPaint.textSize = o
-
-            item.width = max(item.width,bound.width())
-            item.height = max(item.height,bound.height())
             contentList.add(item)
         }
     }
+    private fun addLineItem(lineItem: LineItem){
+        contentList.add(lineItem)
+    }
+    private fun addRectItem(rect:RectItem){
+        contentList.add(rect)
+    }
+    private fun addCircleItem(circle:CircleItem){
+        contentList.add(circle)
+    }
+    private fun addBarcodeItem(barcode:BarcodeItem){
+        contentList.add(barcode)
+    }
+    private fun addQRCodeItem(barcode:BarcodeItem){
+        barcode.barcodeFormat = BarcodeFormat.QR_CODE
+        contentList.add(barcode)
+    }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        when(event.action){
-            MotionEvent.ACTION_DOWN->{
-                if (activeItem(event.x,event.y))return true
-            };
-            MotionEvent.ACTION_MOVE->{
-                moveCurItem(event.x,event.y)
-            };
-            MotionEvent.ACTION_UP->{
-                releaseCurItem()
-            };
+        if (checkTouchRegion(event.x,event.y)){
+            when(event.action){
+                MotionEvent.ACTION_DOWN->{
+                    mCurItem?.checkDeleteClick(event.x,event.y)
+                    if (activeItem(event.x,event.y)){
+                        mLastX = event.x
+                        mLastY = event.y
+                        return true
+                    }
+                };
+                MotionEvent.ACTION_MOVE->{
+                    mCurItem?.let {
+                        mMoveX = event.x - mLastX
+                        mMoveY = event.y - mLastY
+
+                        mLastX = event.x
+                        mLastY = event.y
+
+                        it.moveCurItem(realWidth,realHeight,event.x,event.y,mOffsetX,mOffsetY,mMoveX,mMoveY)
+                        invalidate()
+                    }
+                };
+                MotionEvent.ACTION_UP->{
+                    deleteItem(event.x,event.y);
+                    releaseCurItem()
+                }
+            }
         }
         return super.dispatchTouchEvent(event)
     }
+    private fun checkTouchRegion(clickX:Float,clickY:Float):Boolean{
+        return clickX - mOffsetX in 0f..realWidth.toFloat() && clickY - mOffsetY in 0f..realHeight.toFloat()
+    }
+    private fun deleteItem(clickX:Float,clickY:Float){
+        mCurItem?.let {
+            if (it.deletling){
+                it.checkDeleteClick(clickX,clickY)
+                if (it.deletling){
+                    contentList.remove(it)
+                    mCurItem = null
+                    invalidate()
+                }
+            }
+        }
+    }
+
     private fun activeItem(clickX:Float, clickY:Float):Boolean{
         for (i in contentList.size -1 downTo 0){
             val it = contentList[i]
             if (it.hasSelect(clickX - mOffsetX,clickY - mOffsetY)){
-                mLastX = clickX
-                mLastY = clickY
                 if (mCurItem != it){
+                    mCurItem?.apply {
+                        disableItem()
+                    }
                     it.active = true
+                    contentList[i] = contentList[contentList.size -1]
+                    contentList[contentList.size -1] = it
                     mCurItem = it
                 }
-                checkDeleteClick(clickX,clickY)
                 return true
             }
         }
@@ -134,52 +214,6 @@ class LayoutView: View {
             invalidate()
         }
         return false
-    }
-    private fun checkDeleteClick(clickX:Float,clickY:Float){
-        Logger.d("clickX:%f,clickY:%f,rect.left:%f,mCurRect.top:%f,mActionRadius:%f",clickX,clickY,mCurRect.left,mCurRect.top,mActionRadius)
-        if (clickX >= mCurRect.left && clickX <=mCurRect.left + mActionRadius * 2
-            && clickY >= mCurRect.top && clickY <= mCurRect.top + mActionRadius * 2){
-            contentList.remove(mCurItem)
-            mCurItem = null
-            invalidate()
-        }
-    }
-    private fun checkScaleClick(clickX:Float,clickY:Float):Boolean{
-        if (mCurItem!!.scaling || clickX >= mCurRect.right - mActionRadius * 2  && clickX <=mCurRect.right
-            && clickY >= mCurRect.bottom - mActionRadius * 2 && clickY <= mCurRect.bottom){
-
-            mCurItem!!.width += mMoveX.toInt()
-            mCurItem!!.height += mMoveY.toInt()
-
-            mCurItem!!.scaling = true
-
-            return true
-        }
-        return false
-    }
-    private fun moveCurItem(clickX:Float, clickY:Float){
-        Logger.d(mCurItem)
-        mCurItem?.let {
-
-            mMoveX = clickX - mLastX
-            mMoveY = clickY - mLastY
-
-            mLastX = clickX
-            mLastY = clickY
-
-            if (!checkScaleClick(clickX,clickY)){
-                val edgeX = clickX - it.left + mOffsetX
-                val edgeY = clickY - it.top + mOffsetY
-                it.move = true
-                if (edgeX >= 0 && edgeX + it.width <=  realWidth){
-                    it.left += mMoveX
-                }
-                if (edgeY >= 0 && edgeY + it.height <= realHeight){
-                    it.top += mMoveY
-                }
-            }
-            invalidate()
-        }
     }
 
     private fun releaseCurItem(){
@@ -205,10 +239,10 @@ class LayoutView: View {
                 resultHeightSize = heightSize
             }
             MeasureSpec.AT_MOST -> {
-                resultHeightSize = contentHeight.toInt()
+                resultHeightSize = contentHeight
             }
             MeasureSpec.UNSPECIFIED -> {
-                resultHeightSize = contentHeight.toInt()
+                resultHeightSize = contentHeight
             }
         }
         when(widthSpec){
@@ -216,25 +250,27 @@ class LayoutView: View {
                 resultWidthSize = widthSize
             }
             MeasureSpec.AT_MOST -> {
-                resultWidthSize = contentWidth.toInt()
+                resultWidthSize = contentWidth
             }
             MeasureSpec.UNSPECIFIED -> {
-                resultWidthSize = contentWidth.toInt()
+                resultWidthSize = contentWidth
             }
         }
         super.onMeasure(MeasureSpec.makeMeasureSpec(resultWidthSize,widthSpec), MeasureSpec.makeMeasureSpec(resultHeightSize,heightSpec))
+
+        calculateContentSize()
+    }
+    private fun measureItem(){
+        contentList.forEach {
+            it.measure(realWidth.toInt(), realHeight,mPaint)
+        }
     }
 
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-        if (!isInEditMode)Logger.d("contentWidth:%f,contentHeight:%f,measuredWidth:%d,measuredHeight:%d",
-            contentWidth,contentHeight,measuredWidth,measuredHeight)
-
-        if(changed){
-            val rightMargin = context.resources.getDimension(R.dimen.size_5)
-            realWidth = measuredWidth.toFloat() - mOffsetX - rightMargin
-            realHeight = (realWidth / contentWidth) * contentHeight
-        }
+    private fun calculateContentSize(){
+        val rightMargin = context.resources.getDimensionPixelOffset(R.dimen.size_5)
+        realWidth = measuredWidth  - mOffsetX - rightMargin
+        realHeight = ((realWidth.toFloat() / contentWidth.toFloat()) * contentHeight).toInt()
+        measureItem()
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -243,61 +279,7 @@ class LayoutView: View {
             drawColor(context.resources.getColor(R.color.white,null))
             drawRule(this)
             drawBackground(this)
-
-
             drawContent(this)
-
-            drawAction(this)
-        }
-    }
-    private fun drawAction(canvas: Canvas) {
-        mCurItem?.let {
-            if (it.active){
-                val l = mOffsetX + it.left
-                val t = mOffsetX + it.top
-                val rc = Utils.dpToPxF(CustomApplication.self(),2f)
-
-                mCurRect.set(l,t,l + it.width,t + it.height)
-
-                mPaint.color = Color.BLUE
-                mPaint.style = Paint.Style.STROKE
-                canvas.drawRoundRect(mCurRect,rc,rc,mPaint)
-
-                val leftCenterX = l + mActionRadius
-                val topCenterY = t + mActionRadius
-
-                val rightCenterX = mCurRect.right - mActionRadius
-                val bottomCenterY = mCurRect.bottom - mActionRadius
-
-                mPaint.color = Color.RED
-                mPaint.style = Paint.Style.FILL
-                /* 左上角删除按钮 */
-                canvas.drawCircle(leftCenterX,topCenterY,mActionRadius,mPaint)
-                /*右下角缩放按钮*/
-                canvas.drawCircle(rightCenterX,bottomCenterY,mActionRadius,mPaint)
-
-                //删除图标
-                mPaint.color = Color.WHITE
-                canvas.save()
-                canvas.rotate(45f,leftCenterX,topCenterY)
-                canvas.scale(0.6f,0.6f,leftCenterX,topCenterY)
-                canvas.drawLine(leftCenterX,topCenterY - mActionRadius  ,leftCenterX,topCenterY + mActionRadius,mPaint)
-                canvas.drawLine(leftCenterX - mActionRadius,topCenterY,leftCenterX + mActionRadius,topCenterY,mPaint)
-                canvas.restore()
-
-                //缩放图标
-                canvas.save()
-                canvas.rotate(45f,rightCenterX,bottomCenterY)
-                canvas.scale(0.6f,0.6f,rightCenterX,bottomCenterY)
-                canvas.drawLine(rightCenterX - mActionRadius,bottomCenterY,rightCenterX + mActionRadius,bottomCenterY,mPaint)
-                val hypotenuse = Utils.dpToPx(context,3f)
-                val offset  = hypotenuse * 0.5f
-                canvas.drawLine(rightCenterX - mActionRadius,bottomCenterY,rightCenterX - mActionRadius + offset,bottomCenterY - offset,mPaint)
-                canvas.drawLine(rightCenterX - mActionRadius,bottomCenterY,rightCenterX - mActionRadius + offset,bottomCenterY + offset,mPaint)
-                canvas.drawLine(rightCenterX + mActionRadius,bottomCenterY,rightCenterX + mActionRadius - offset,bottomCenterY - offset,mPaint)
-                canvas.drawLine(rightCenterX + mActionRadius,bottomCenterY,rightCenterX + mActionRadius - offset,bottomCenterY + offset,mPaint)
-                canvas.restore()
-            }
         }
     }
 
@@ -318,12 +300,15 @@ class LayoutView: View {
                 i * perGap + mOffsetX
 
             if (i % 10 == 0){
-                canvas.drawLine(coordinate,mOffsetY,coordinate,mOffsetY - lineHeight * 2,mPaint)
+                canvas.drawLine(coordinate,
+                    mOffsetY.toFloat(),coordinate,mOffsetY - lineHeight * 2,mPaint)
                 canvas.drawText(num,coordinate - mPaint.measureText(num) / 2,mOffsetY - lineHeight * 2,mPaint)
             }else
-                canvas.drawLine(coordinate,mOffsetY,coordinate,mOffsetY - lineHeight,mPaint)
+                canvas.drawLine(coordinate,
+                    mOffsetY.toFloat(),coordinate,mOffsetY - lineHeight,mPaint)
         }
-        canvas.drawLine(mOffsetX,mOffsetY, realWidth + mOffsetX,mOffsetY,mPaint)
+        canvas.drawLine(mOffsetX.toFloat(), mOffsetY.toFloat(),
+            (realWidth + mOffsetX).toFloat(), mOffsetY.toFloat(),mPaint)
 
         perGap = realHeight / physicsHeight.toFloat()
         for (i in 0..physicsHeight){
@@ -334,7 +319,7 @@ class LayoutView: View {
                 i * perGap + mOffsetY
 
             if (i % 10 == 0) {
-                canvas.drawLine(mOffsetY, coordinate, mOffsetY - lineHeight * 2, coordinate, mPaint)
+                canvas.drawLine(mOffsetY.toFloat(), coordinate, mOffsetY - lineHeight * 2, coordinate, mPaint)
 
                 mPaint.getTextBounds(num,0,num.length,mTextBound)
                 canvas.save()
@@ -342,23 +327,26 @@ class LayoutView: View {
                 canvas.drawText(num,mOffsetY - lineHeight * 2 - mPaint.measureText(num) / 2,coordinate,mPaint)
                 canvas.restore()
             }else
-                canvas.drawLine(mOffsetY,coordinate,mOffsetY - lineHeight,coordinate,mPaint)
+                canvas.drawLine(mOffsetY.toFloat(),coordinate,mOffsetY - lineHeight,coordinate,mPaint)
         }
-        canvas.drawLine(mOffsetX,mOffsetY, mOffsetX, realHeight + mOffsetY,mPaint)
+        canvas.drawLine(mOffsetX.toFloat(), mOffsetY.toFloat(),
+            mOffsetX.toFloat(), (realHeight + mOffsetY).toFloat(),mPaint)
     }
     private fun drawBackground(canvas: Canvas){
         //画阴影
         val color = mPaint.color
         mPaint.color = Color.WHITE
         mPaint.setShadowLayer(15f,0f,8f,Color.GRAY)
-        canvas.drawRect(mOffsetX,mOffsetY,realWidth + mOffsetX,realHeight + mOffsetY,mPaint)
+        canvas.drawRect(
+            mOffsetX.toFloat(), mOffsetY.toFloat(),
+            (realWidth + mOffsetX).toFloat(), (realHeight + mOffsetY).toFloat(),mPaint)
         mPaint.color = color
         mPaint.setShadowLayer(0f,0f,0f,Color.GRAY)
 
         mBackground?.apply {
-            mMatrix.setScale(realWidth / width,realHeight / height)
+            mMatrix.setScale(realWidth.toFloat() / width.toFloat(),realHeight.toFloat() / height.toFloat())
             canvas.save()
-            canvas.translate(mOffsetX,mOffsetY)
+            canvas.translate(mOffsetX.toFloat(),mOffsetY.toFloat())
             canvas.drawBitmap(this,mMatrix,null)
             canvas.restore()
             mMatrix.reset()
@@ -403,7 +391,7 @@ class LayoutView: View {
         if (contentList.isNotEmpty()){
             canvas.clipRect(mOffsetX,mOffsetY,realWidth + mOffsetX,realHeight + mOffsetY)
             contentList.forEach {
-                it.draw(mOffsetX,mOffsetY,canvas,mPaint)
+                it.draw(mOffsetX.toFloat(),mOffsetY.toFloat(),canvas,mPaint)
             }
         }
     }

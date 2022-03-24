@@ -271,14 +271,14 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
     }
     private fun drawSeparator(canvas: Canvas){
         if (mSeparatorSize > 0){
-            drawClosingBorder(canvas)
             drawHorizontalSeparator(canvas)
             drawVerticalSeparator(canvas)
+            drawClosingBorder(canvas)
         }
     }
     private fun drawClosingBorder(canvas: Canvas){
         if (mClosing){
-            canvas.drawRect((left + paddingLeft).toFloat(),(top + paddingTop + scrollY).toFloat(),(right - paddingRight).toFloat(),(bottom - paddingBottom + scrollY).toFloat(),mSeparatorPaint!!)
+            canvas.drawRect(paddingLeft.toFloat(),(paddingTop + scrollY).toFloat(),(right - paddingRight).toFloat(),(bottom - paddingBottom + scrollY).toFloat(),mSeparatorPaint!!)
         }
     }
 
@@ -293,7 +293,7 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
                     if (index != sub.size - 1){
                         val startX = it.right.toFloat() + it.marginRight + offset
                         val stopX = it.right.toFloat() + it.marginRight + offset
-                        canvas.drawLine(startX,it.top.toFloat() - it.marginTop - space,stopX, bottom,mSeparatorPaint!!)
+                        canvas.drawLine(startX,it.top.toFloat() + paddingTop - it.marginTop - space,stopX, bottom,mSeparatorPaint!!)
                     }
                 }
             }
@@ -335,6 +335,13 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
         var heightList:MutableList<View> = mutableListOf()
         var lineWidth = 0
 
+        val validWidth = if (mRowCount == 0){
+            widthSize - (paddingLeft + paddingRight)
+        }else{
+            widthSize - (paddingLeft + paddingRight + (mRowCount - 1) * mHorizontalSpacing).toInt()
+        }
+        val validHeight = heightSize - paddingTop - paddingBottom
+
         forEach {
             if (it.isGone)return@forEach
 
@@ -343,15 +350,11 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
             childHeightWeight = lp.weightHeight
 
             if (childHeightWeight > 0f){
-                lp.height = (childHeightWeight * (heightSize - (paddingTop + paddingBottom))).toInt()
+                lp.height = (childHeightWeight * validHeight).toInt()
             }
 
             if (childWidthWeight > 0f){
-                if (mRowCount == 0){
-                    lp.width = (childWidthWeight * (widthSize - (paddingLeft + paddingRight))).toInt()
-                }else{
-                    lp.width = (childWidthWeight * (widthSize - (paddingLeft + paddingRight + (mRowCount - 1) * mHorizontalSpacing))).toInt()
-                }
+                lp.width = (childWidthWeight * validWidth).toInt()
             }
             measureChild(it,widthMeasureSpec,heightMeasureSpec)
 
@@ -439,11 +442,13 @@ class FlowLayout(context: Context, attributes: AttributeSet?, defStyleAttr:Int, 
                     setChildFrame(it,leftChild + paddingLeft,paddingTop + lineHeight + lp.topMargin,it.measuredWidth,it.measuredHeight)
 
                     horizontalSpace = if (index != sub.size - 1) mHorizontalSpacing else 0f
-                    leftChild += it.measuredWidth + lp.rightMargin + horizontalSpace.toInt()
+                    leftChild += (it.measuredWidth + lp.rightMargin + horizontalSpace).toInt()
                 }
-
                 leftChild = 0
             }
+
+
+
             if (mChildContainer.isNotEmpty()){
                 mTopBorder = getMinTopOfRow(mChildContainer[0]) - paddingTop
                 mBottomBorder = getMaxBottomOfRow(mChildContainer[mChildContainer.size - 1]) + paddingBottom

@@ -132,6 +132,8 @@
     <dimen name="size_368">368dp</dimen>
     <dimen name="size_228">228dp</dimen>
     <dimen name="size_480">480dp</dimen>
+    <dimen name="size_123">123dp</dimen>
+    <dimen name="size_77">77dp</dimen>
     <dimen name="transfer_dialog_width">1062dp</dimen>
 
     <dimen name="dialog_head_height">@dimen/height_45</dimen>

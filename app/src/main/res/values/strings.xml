@@ -987,4 +987,15 @@
     <string name="print_finished">打印完成：%1$s</string>
     <string name="feedPaperFinished">走纸完成：%1$s</string>
 
+    <!-- 标签编辑 -->
+    <string name="label_setting">标签设置</string>
+    <string name="text">文字</string>
+    <string name="preview">预览</string>
+    <string name="qrcode">二维码</string>
+    <string name="line">线条</string>
+    <string name="rect">矩形</string>
+    <string name="circle">圆形</string>
+    <string name="label_date">日期</string>
+    <string name="data">数据列</string>
+    <string name="image">图像</string>
 </resources>

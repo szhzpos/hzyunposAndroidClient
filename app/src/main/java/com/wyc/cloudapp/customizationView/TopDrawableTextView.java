@@ -38,17 +38,17 @@ public final class TopDrawableTextView extends JumpTextView{
         super(context, attrs, defStyleAttr);
         final int default_color = getResources().getColor(R.color.mobile_fun_view_click,null);
 
-        final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.DrawableTextViewTopMargin, 0, 0);
+        final TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.TopDrawableTextView, 0, 0);
         final int indexCount = typedArray.getIndexCount();
         for (int i = 0; i < indexCount; i++) {
             int index = typedArray.getIndex(i);
-            if (index == R.styleable.DrawableTextViewTopMargin_verSpacing) {
+            if (index == R.styleable.TopDrawableTextView_verSpacing) {
                 mVerSpacing = typedArray.getDimension(index, 28);
-            }else if (index == R.styleable.DrawableTextViewTopMargin_animType){
+            }else if (index == R.styleable.TopDrawableTextView_animType){
                 mAnimType = typedArray.getInt(index, 0);
-            }else if (index == R.styleable.DrawableTextViewTopMargin_selectTextColor){
+            }else if (index == R.styleable.TopDrawableTextView_selectTextColor){
                 mSelectTextColor = typedArray.getColor(index,default_color);
-            }else if (index == R.styleable.DrawableTextViewTopMargin_bottomSpacing){
+            }else if (index == R.styleable.TopDrawableTextView_bottomSpacing){
                 mBottomSpacing = typedArray.getDimension(index, 0);
             }
         }

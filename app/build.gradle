@@ -76,8 +76,7 @@ android {
     }
 
     productFlavors {
-        releaseTest_ {}
-        release_{}
+
     }
 
     applicationVariants.all {
@@ -86,10 +85,10 @@ android {
                 //在这里修改apk文件名
                 outputFileName = "${"yunpos_pad_" + defaultConfig.versionCode + "_v" + defaultConfig.versionName}.apk"
                 if (variant.buildType.name == 'release') {
-                    def flavor =  variant.productFlavors[0].name
+/*                    def flavor =  variant.productFlavors[0].name
                     if (flavor != null){
                         outputFileName = "${flavor + "yunpos_pad_" + defaultConfig.versionCode + "_v" + defaultConfig.versionName}.apk"
-                    }
+                    }*/
                     variant.assembleProvider.get().doLast {
                         copy {
                             duplicatesStrategy = 'include'

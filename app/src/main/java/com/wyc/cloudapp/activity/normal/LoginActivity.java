@@ -253,11 +253,9 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
         if (null != login_btn)
             login_btn.setOnClickListener((View v)-> {
 
-                FormatActivity.start(this);
+                saveLastUser();
 
-                /*saveLastUser();
-
-                check_ver();*/
+                check_ver();
             });
         mLoginBtn = login_btn;
     }
