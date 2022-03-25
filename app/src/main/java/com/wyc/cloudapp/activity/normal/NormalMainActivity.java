@@ -93,9 +93,20 @@ import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
+
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.core.ObservableEmitter;
+import io.reactivex.rxjava3.core.ObservableOnSubscribe;
+import io.reactivex.rxjava3.core.Scheduler;
+import io.reactivex.rxjava3.functions.Consumer;
+import io.reactivex.rxjava3.internal.schedulers.IoScheduler;
+import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback {
     private RecyclerView mSaleGoodsRecyclerView;
@@ -283,14 +294,19 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private void showLastOrderInfo() {
         final ConstraintLayout constraintLayout = (ConstraintLayout) View.inflate(this,R.layout.last_order_info,null);
         if (constraintLayout != null){
-            final JSONObject order_info = new JSONObject();
-            if (SQLiteHelper.execSql(order_info,"SELECT order_code,sum(pre_sale_money) pre_amt,sum(pay_money) pay_amt,sum(pre_sale_money - pay_money) zl_amt FROM " +
-                    "retail_order_pays where order_code = '" + mOrderCodeTv.getText() +"' group by order_code")){
-
-                final CountDownTimer countDownTimer = new CountDownTimer(30000,1000){
+            final String orderId = (String) mOrderCodeTv.getText();
+            Observable.create((ObservableOnSubscribe<JSONObject>) emitter -> {
+                final JSONObject order_info = new JSONObject();
+                if (SQLiteHelper.execSql(order_info,"SELECT order_code,sum(pre_sale_money) pre_amt,sum(pay_money) pay_amt,sum(pre_sale_money - pay_money) zl_amt FROM " +
+                        "retail_order_pays where order_code = '" + orderId +"' group by order_code")){
+                    emitter.onNext(order_info);
+                }else emitter.onError(new Exception(order_info.getString("info")));
+            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(order_info -> {
+                final CountDownTimer countDownTimer = new CountDownTimer(30000, 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) {
                     }
+
                     @Override
                     public void onFinish() {
                         hideLastOrderInfo();
@@ -298,27 +314,25 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 };
                 constraintLayout.setTag(countDownTimer);
 
-                final TextView last_order_code = constraintLayout.findViewById(R.id.last_order_code),last_reality_amt = constraintLayout.findViewById(R.id.last_reality_amt),
-                        last_rec_amt = constraintLayout.findViewById(R.id.last_rec_amt),last_zl = constraintLayout.findViewById(R.id.last_zl),close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
+                final TextView last_order_code = constraintLayout.findViewById(R.id.last_order_code), last_reality_amt = constraintLayout.findViewById(R.id.last_reality_amt),
+                        last_rec_amt = constraintLayout.findViewById(R.id.last_rec_amt), last_zl = constraintLayout.findViewById(R.id.last_zl), close_tv = constraintLayout.findViewById(R.id.order_info_close_tv);
 
                 final JumpTextView last_reprint_btn = constraintLayout.findViewById(R.id.last_reprint_btn);
 
                 last_order_code.setText(order_info.getString("order_code"));
-                last_rec_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pay_amt")));
-                last_reality_amt.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("pre_amt")));
-                last_zl.setText(String.format(Locale.CHINA,"%.2f",order_info.getDoubleValue("zl_amt")));
+                last_rec_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("pay_amt")));
+                last_reality_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("pre_amt")));
+                last_zl.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("zl_amt")));
 
-                close_tv.setOnClickListener(v ->{
+                close_tv.setOnClickListener(v -> {
                     hideLastOrderInfo();
                     countDownTimer.cancel();
                 });
-                last_reprint_btn.setOnClickListener(v -> AbstractSettlementDialog.printObj(last_order_code.getText().toString(),false));
+                last_reprint_btn.setOnClickListener(v -> AbstractSettlementDialog.printObj(last_order_code.getText().toString(), false));
 
-                getWindowManager().addView(constraintLayout,createPopupLayoutParams(mSaleGoodsRecyclerView));
+                getWindowManager().addView(constraintLayout, createPopupLayoutParams(mSaleGoodsRecyclerView));
                 countDownTimer.start();
-            }else {
-                MyDialog.ToastMessage(order_info.getString("info"), getWindow());
-            }
+            }, throwable -> MyDialog.ToastMessage(throwable.getMessage(), getWindow()));
         }
         mLastOrderInfo = constraintLayout;
     }

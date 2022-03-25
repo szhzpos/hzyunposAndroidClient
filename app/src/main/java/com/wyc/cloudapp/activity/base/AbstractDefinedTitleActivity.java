@@ -24,7 +24,8 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
     public static final String TITLE_KEY = "TL";
     private TextView mLeft,mMiddle,mRight;
     private View mRoot;
-    private float mTouchX = -1;
+    private float downX = 0;
+    private float downY = 0;
     private OverScroller mScroller;
     private int mStatusBarAlpha;
 
@@ -96,40 +97,48 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
     public boolean onTouchEvent(MotionEvent ev) {
         if (hasSlide()){
             initVelocityTrackerIfNotExists();
+
+            float xDiff = Math.abs(ev.getX() - downX);
+            float yDiff = Math.abs(ev.getY() - downY);
+            double squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff));
+            double degreeX = Math.asin(yDiff / squareRoot) * 180 / Math.PI;
+
             switch (ev.getAction()){
                 case MotionEvent.ACTION_DOWN:
-                    mTouchX = ev.getX();
-
+                    downX = ev.getX();
+                    downY = ev.getY();
                     mActivePointerId = ev.getPointerId(0);
                     mVelocityTracker.addMovement(ev);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    mVelocityTracker.addMovement(ev);
-
-                    if (mTouchX == -1)mTouchX = ev.getX();
-                    mRoot.scrollTo((int) (mTouchX - ev.getX()),0);
+                    if (degreeX < 45){
+                        mVelocityTracker.addMovement(ev);
+                        mRoot.scrollTo((int) (downX - ev.getX()),0);
+                    }
                     break;
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
-                    final VelocityTracker velocityTracker = mVelocityTracker;
-                    velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
-                    int initialXVelocity = (int) velocityTracker.getXVelocity(mActivePointerId);
 
-                    mActivePointerId = -1;
-                    mTouchX = -1;
-                    recycleVelocityTracker();
+                    if (degreeX < 45){
+                        final VelocityTracker velocityTracker = mVelocityTracker;
+                        velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+                        int initialXVelocity = (int) velocityTracker.getXVelocity(mActivePointerId);
 
-                    if (mScroller == null)mScroller = new OverScroller(this);
-                    if (Math.abs(initialXVelocity) > mMinimumVelocity){
-                        int scrollX = mRoot.getScrollX();
-                        int distance = mRoot.getWidth() - Math.abs(scrollX);
-                        if (initialXVelocity > 0){
-                            mScroller.fling(scrollX,0,  -initialXVelocity * 2,0,-distance ,0,0,0);
-                        }else {
-                            mScroller.fling(scrollX,0,-initialXVelocity * 2,0,0,distance,0,0);
-                        }
-                    }else calculateScrollX();
-                    startScroll();
+                        mActivePointerId = -1;
+                        recycleVelocityTracker();
+
+                        if (mScroller == null)mScroller = new OverScroller(this);
+                        if (Math.abs(initialXVelocity) > mMinimumVelocity){
+                            int scrollX = mRoot.getScrollX();
+                            int distance = mRoot.getWidth() - Math.abs(scrollX);
+                            if (initialXVelocity > 0){
+                                mScroller.fling(scrollX,0,  -initialXVelocity * 2,0,-distance ,0,0,0);
+                            }else {
+                                mScroller.fling(scrollX,0,-initialXVelocity * 2,0,0,distance,0,0);
+                            }
+                        }else calculateScrollX();
+                        startScroll();
+                    }
                     break;
             }
         }

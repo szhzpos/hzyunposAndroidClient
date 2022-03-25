@@ -14,6 +14,7 @@ import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
+import com.wyc.cloudapp.mobileFragemt.LabelPrintFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileBusinessPrintFragment;
 import com.wyc.cloudapp.mobileFragemt.MobilePrintFormatFragment;
 
@@ -68,6 +69,9 @@ public class MobileSetupActivity extends AbstractDefinedTitleActivity {
             case "BPS":
                 current = new MobileBusinessPrintFragment();
                 break;
+            case "LPS":
+                current = new LabelPrintFragment();
+                break;
             default:
                 break;
         }
@@ -90,5 +94,8 @@ public class MobileSetupActivity extends AbstractDefinedTitleActivity {
     }
     public static void startBusinessPrintSetting(final String title){
         start("BPS",title);
+    }
+    public static void startLabelPrintSetting(final String title){
+        start("LPS",title);
     }
 }

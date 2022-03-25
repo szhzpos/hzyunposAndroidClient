@@ -182,6 +182,7 @@
 -keep class com.wyc.cloudapp.print.printer.* { *; }
 -keep class com.wyc.cloudapp.print.receipts.*{ *; }
 -keep class com.wyc.cloudapp.print.parameter.*{ *; }
+-keep class com.wyc.cloudapp.design.*{*;}
 
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**

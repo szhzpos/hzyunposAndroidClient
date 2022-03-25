@@ -2,6 +2,7 @@ package com.wyc.cloudapp.design
 
 import android.graphics.*
 import androidx.annotation.CallSuper
+import androidx.core.graphics.transform
 import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
@@ -27,8 +28,8 @@ import kotlin.math.sqrt
  */
 
 abstract class ItemBase{
-    var top = 0
-    var left = 0
+    var top = 88
+    var left = 88
     var width = ACTION_RADIUS.toInt()
         set(value) {
             field = max(value, 0)
@@ -37,24 +38,55 @@ abstract class ItemBase{
         set(value) {
             field = max(value, 0)
         }
-    var radian = 0
+    var radian = 0f
 
     var clsType = this::class.simpleName
 
     @JSONField(serialize = false)
-    var active:Boolean = false
+    private var active:Boolean = false
     @JSONField(serialize = false)
-    var move:Boolean = false
+    private var move:Boolean = false
     @JSONField(serialize = false)
-    var scaling:Boolean = false
+    private var scaling:Boolean = false
     @JSONField(serialize = false)
-    var deletling:Boolean = false
+    private var deletling:Boolean = false
 
-    @CallSuper
-    open fun draw(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint){
+    fun draw(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint){
         if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint)
+
+        val r = radian != 0f
+        if (r){
+            canvas.save()
+            canvas.rotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
+        }
+
         if (active)drawAction(offsetX, offsetY,canvas,paint)
+        drawItem(offsetX, offsetY,canvas,paint)
+
+        if (r){
+            canvas.restore()
+        }
+        if (radian != 0f){
+            val matrix = Matrix()
+            matrix.setRotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
+            DEL_RECT.transform(matrix)
+            matrix.reset()
+            matrix.setRotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
+            SCALE_RECT.transform(matrix)
+        }
     }
+
+    protected open fun drawItem(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint){
+
+    }
+
+    open fun zoom(){
+        scale(width * 0.2f,height * 0.2f)
+    }
+    open  fun shrink(){
+        scale(-width * 0.2f,-height * 0.2f)
+    }
+
     open fun measure(w:Int, h:Int, paint: Paint){
         width = min(width,w)
         height = min(height, h)
@@ -130,16 +162,15 @@ abstract class ItemBase{
     }
     private fun checkScaleClick(clickX:Float, clickY:Float, scaleX:Float, scaleY:Float):Boolean{
         if (scaling || SCALE_RECT.contains(clickX,clickY)){
-
-            val directRadius = (asin(scaleY / sqrt((scaleX * scaleX + scaleY * scaleY).toDouble())) * 180 / Math.PI).toFloat()
-            if (!directRadius.isNaN()){
-                SCALE_DIRECT = directRadius
-            }
             if ((scaleX > 0.0f || scaleY > 0f)  || !DEL_RECT.intersect(SCALE_RECT)){
+                val directRadius = (asin(scaleY / sqrt((scaleX * scaleX + scaleY * scaleY).toDouble())) * 180 / Math.PI).toFloat()
+                if (!directRadius.isNaN()){
+                    SCALE_DIRECT = directRadius
+                }
                 scale(scaleX,scaleY)
                 scaling = true
-            }
-            return true
+                return true
+            }else scaling =false
         }
         return false
     }
@@ -150,7 +181,11 @@ abstract class ItemBase{
 
     @CallSuper
     open fun moveCurItem(rWidth:Int,rHeight:Int,clickX:Float, clickY:Float,offsetX:Int, offsetY:Int,moveX:Float,moveY:Float){
-        if (!deletling && !checkScaleClick(clickX,clickY,moveX,moveY)){
+        val hScale = if(top + height + ACTION_RADIUS * 2 < rHeight && left + width + ACTION_RADIUS * 2 < rWidth){
+            checkScaleClick(clickX,clickY,moveX,moveY)
+        }else false
+
+        if (!deletling && !hScale){
             left += moveX.toInt()
             top += moveY.toInt()
             move = true
@@ -165,7 +200,8 @@ abstract class ItemBase{
     }
     fun hasSelect(x:Float,y:Float):Boolean{
         val diameter = ACTION_RADIUS * 2
-        return x >= left - diameter && x <= left + width + diameter && y >= top - diameter && y <= top + height + diameter
+        active = x >= left - diameter && x <= left + width + diameter && y >= top - diameter && y <= top + height + diameter
+        return active
     }
     fun disableItem(){
         active = false
@@ -175,8 +211,25 @@ abstract class ItemBase{
         CUR_RECT.setEmpty()
     }
 
+    fun releaseItem() {
+        move = false
+        scaling = false
+    }
+
+    fun hasDelete():Boolean{
+        return deletling
+    }
+
+    fun activeItem(){
+        active = true
+    }
+
     override fun toString(): String {
         return "ItemBase(top=$top, left=$left, width=$width, height=$height, radian=$radian, clsType=$clsType, active=$active, move=$move)"
+    }
+
+    protected fun finalize(){
+        Logger.d("%s has finalized",javaClass.simpleName)
     }
 
     companion object{
@@ -193,5 +246,4 @@ abstract class ItemBase{
         @JvmField
         val MIN_BORDER_WIDTH = CustomApplication.self().resources.getDimension(R.dimen.size_1)
     }
-
 }

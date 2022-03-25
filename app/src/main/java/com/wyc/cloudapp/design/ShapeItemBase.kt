@@ -34,7 +34,7 @@ open class ShapeItemBase:ItemBase() {
     var hasfill = false
     var hasDash = false
 
-    override fun draw(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
+    override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         paint.strokeWidth = borderWidth
         paint.color = borderColor
 
@@ -49,8 +49,6 @@ open class ShapeItemBase:ItemBase() {
         paint.strokeWidth = MIN_BORDER_WIDTH
         if (hasfill)paint.style = Paint.Style.STROKE
         if (hasDash)paint.pathEffect = null
-
-        super.draw(offsetX, offsetY, canvas, paint)
     }
     open fun drawShape(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint){
 

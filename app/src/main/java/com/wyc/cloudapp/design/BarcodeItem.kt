@@ -42,15 +42,13 @@ open class BarcodeItem(var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
     @JSONField(serialize = false)
     private var mBottomMarge = Rect()
 
-    override fun draw(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
+    override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         mBitmap?.let {
             val l = left + offsetX
             val t = top + offsetY
             canvas.drawBitmap(it, null,RectF(l,t,l + width,t + height),paint)
 
             drawContent(l,t,canvas,paint)
-
-            super.draw(offsetX, offsetY, canvas, paint)
         }
     }
     private fun drawContent(l: Float, t: Float,canvas: Canvas, paint: Paint){

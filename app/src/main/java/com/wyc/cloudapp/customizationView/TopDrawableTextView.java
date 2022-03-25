@@ -140,6 +140,7 @@ public final class TopDrawableTextView extends JumpTextView{
     public void triggerAnimation(boolean b){
         final BitmapDrawable drawable = getTopBitmapDrawable();
         if (drawable != null){
+            mAnimationFlag = b;
             if (b) {
                 final Bitmap bitmap = drawable.getBitmap();
                 final int w = bitmap.getWidth(),h = bitmap.getHeight(),font_color = mSelectTextColor;
@@ -162,8 +163,8 @@ public final class TopDrawableTextView extends JumpTextView{
                 mDrawableStartScale = 1.0f;
                 mDrawRotate = 0;
                 removeCallbacks(updateRunnable);
+                postInvalidate();
             }
-            mAnimationFlag = b;
         }
     }
     private void updateDrawableStartScale(){

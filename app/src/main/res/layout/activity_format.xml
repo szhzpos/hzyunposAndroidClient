@@ -16,6 +16,81 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_45"
+        android:background="@drawable/top_separator"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/flowLayout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.wyc.cloudapp.customizationView.TopDrawableTextView
+            android:id="@+id/delete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/delete"
+            android:onClick="onClick"
+            android:padding="@dimen/margin_5"
+            android:text="@string/delete"
+            android:textSize="@dimen/font_size_12"
+            app:verSpacing="@dimen/margin_5"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.wyc.cloudapp.customizationView.TopDrawableTextView
+            android:id="@+id/shrink"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/shrink"
+            android:onClick="onClick"
+            android:padding="@dimen/margin_5"
+            android:text="@string/shrink"
+            android:textSize="@dimen/font_size_12"
+            app:verSpacing="@dimen/margin_5"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.wyc.cloudapp.customizationView.TopDrawableTextView
+            android:id="@+id/zoom"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/zoom"
+            android:onClick="onClick"
+            android:padding="@dimen/margin_5"
+            android:text="@string/zoom"
+            android:textSize="@dimen/font_size_12"
+            app:verSpacing="@dimen/margin_5"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.wyc.cloudapp.customizationView.TopDrawableTextView
+            android:id="@+id/rotate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/rotate"
+            android:onClick="onClick"
+            android:padding="@dimen/margin_5"
+            android:text="@string/rotate"
+            android:textSize="@dimen/font_size_12"
+            app:verSpacing="@dimen/margin_5"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <com.wyc.cloudapp.customizationView.TopDrawableTextView
+            android:id="@+id/undo"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:drawableTop="@drawable/undo"
+            android:onClick="onClick"
+            android:padding="@dimen/margin_5"
+            android:text="@string/undo"
+            android:textSize="@dimen/font_size_12"
+            app:verSpacing="@dimen/margin_5"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+
     <com.wyc.cloudapp.customizationView.FlowLayout
         android:id="@+id/flowLayout"
         android:layout_width="match_parent"
@@ -37,6 +112,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/text"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/text"
             android:textSize="@dimen/font_size_14"
@@ -48,6 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/barcode"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/barcode"
             android:textSize="@dimen/font_size_14"
@@ -59,6 +136,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/qrcode"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/qrcode"
             android:textSize="@dimen/font_size_14"
@@ -70,6 +148,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/line"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/line"
             android:textSize="@dimen/font_size_14"
@@ -81,6 +160,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/rect"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/rect"
             android:textSize="@dimen/font_size_14"
@@ -92,6 +172,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/circle"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/circle"
             android:textSize="@dimen/font_size_14"
@@ -103,6 +184,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/date"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/label_date"
             android:textSize="@dimen/font_size_14"
@@ -114,6 +196,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/data"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/data"
             android:textSize="@dimen/font_size_14"
@@ -125,6 +208,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
             android:drawableTop="@drawable/image"
+            android:onClick="onClick"
             android:padding="@dimen/margin_12"
             android:text="@string/image"
             android:textSize="@dimen/font_size_14"
@@ -163,7 +247,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_2" />
+            app:verSpacing="@dimen/margin_2"
+            tools:ignore="TextContrastCheck" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
             android:id="@+id/preview"
@@ -177,7 +262,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/size_3" />
+            app:verSpacing="@dimen/size_3"
+            tools:ignore="TextContrastCheck" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
             android:id="@+id/preview2"
@@ -192,7 +278,8 @@
             app:layout_constraintEnd_toStartOf="@id/preview"
             app:layout_constraintStart_toEndOf="@+id/save"
             app:layout_constraintTop_toTopOf="parent"
-            app:verSpacing="@dimen/margin_2" />
+            app:verSpacing="@dimen/margin_2"
+            tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

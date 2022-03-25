@@ -28,7 +28,7 @@ import kotlin.math.min
  */
 
 class TextItem:ItemBase() {
-    var content = ""
+    var content = "编辑内容"
     var mFontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_18)
         set(value) {
             if (value <= 200f) {
@@ -66,7 +66,7 @@ class TextItem:ItemBase() {
         mRect.setEmpty()
     }
 
-    override fun draw(offsetX:Float,offsetY:Float,canvas: Canvas,paint: Paint) {
+    override fun drawItem(offsetX:Float,offsetY:Float,canvas: Canvas,paint: Paint) {
         if (Utils.isNotEmpty(content)){
             paint.textSize = mFontSize
             paint.color = mFontColor
@@ -88,10 +88,17 @@ class TextItem:ItemBase() {
                 canvas.drawText(content,left + offsetX,top + offsetY + mRect.height() - paint.fontMetrics.descent,paint)
             }
             mPaint = paint
-
-            super.draw(offsetX, offsetY, canvas, paint)
         }
     }
+
+    override fun shrink() {
+        scale(0f,-mFontSize * 0.2f)
+    }
+
+    override fun zoom() {
+        scale(0f,mFontSize * 0.2f)
+    }
+
     override fun scale(scaleX: Float, scaleY: Float) {
         mRect.setEmpty()
         if (abs(scaleY) >= scaleFactor){

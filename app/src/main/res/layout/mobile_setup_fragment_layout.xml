@@ -116,6 +116,19 @@
             android:textColor="@color/label_text_color"
             android:textSize="@dimen/font_size_18" />
 
+        <com.wyc.cloudapp.customizationView.JumpTextView
+            android:id="@+id/label_print_setting_tv"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/m_setup_item_height"
+            android:background="@drawable/bottom_separator"
+            android:drawableEnd="@drawable/small_fold"
+            android:gravity="center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="@dimen/margin_0"
+            android:text="@string/label_print_setting"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_18" />
+
     </LinearLayout>
 
 </LinearLayout>

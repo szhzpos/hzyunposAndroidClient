@@ -5,6 +5,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.activity.normal.LabelActivity;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity;
 import com.wyc.cloudapp.application.CustomApplication;
@@ -46,6 +47,8 @@ public final class MyFragment extends AbstractJumpFragment {
             MobileSetupActivity.startRetailPrintSetting(title);
         }else if (id == R.id.business_print_tv){
             MobileSetupActivity.startBusinessPrintSetting(title);
+        }else if (id == R.id.label_print_setting_tv){
+            MobileSetupActivity.startLabelPrintSetting(title);
         }
     }
 

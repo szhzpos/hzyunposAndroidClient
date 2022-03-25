@@ -11,7 +11,6 @@ import com.google.zxing.BarcodeFormat
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.logger.Logger
-import com.wyc.cloudapp.utils.Utils
 import java.io.File
 import java.io.FileOutputStream
 
@@ -48,7 +47,6 @@ class LabelView: View {
 
     private val mTextBound = Rect()
     private var mBackground:Bitmap?  = null
-    private val mMatrix = Matrix()
 
     private var mCurItem:ItemBase? = null
 
@@ -62,7 +60,6 @@ class LabelView: View {
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr){
         initPaint()
         generateBackground()
-        test()
     }
     private fun toJson(){
         val a =  JSONArray.toJSON(contentList) as JSONArray
@@ -104,48 +101,8 @@ class LabelView: View {
     private fun generateBackground(){
         mBackground = BitmapFactory.decodeFile(getBackgroundFileName())
     }
-    private fun test(){
-        var item = TextItem()
-        item.content = "gAG\n吴9"
-        item.width = 128
-        item.height = 88
-        item.mFontColor = Color.RED
-        addTextItem(item)
 
-        item = TextItem()
-        item.content = "wypg舞"
-        addTextItem(item)
-
-        addLineItem(LineItem())
-        addRectItem(RectItem())
-        addCircleItem(CircleItem())
-        addBarcodeItem(BarcodeItem())
-        addQRCodeItem(BarcodeItem())
-    }
-
-    private fun addTextItem(item:TextItem){
-        if (Utils.isNotEmpty(item.content)){
-            contentList.add(item)
-        }
-    }
-    private fun addLineItem(lineItem: LineItem){
-        contentList.add(lineItem)
-    }
-    private fun addRectItem(rect:RectItem){
-        contentList.add(rect)
-    }
-    private fun addCircleItem(circle:CircleItem){
-        contentList.add(circle)
-    }
-    private fun addBarcodeItem(barcode:BarcodeItem){
-        contentList.add(barcode)
-    }
-    private fun addQRCodeItem(barcode:BarcodeItem){
-        barcode.barcodeFormat = BarcodeFormat.QR_CODE
-        contentList.add(barcode)
-    }
-
-    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    override fun onTouchEvent(event: MotionEvent): Boolean {
         if (checkTouchRegion(event.x,event.y)){
             when(event.action){
                 MotionEvent.ACTION_DOWN->{
@@ -173,17 +130,17 @@ class LabelView: View {
                     releaseCurItem()
                 }
             }
-        }
-        return super.dispatchTouchEvent(event)
+        }else releaseCurItem()
+        return super.onTouchEvent(event)
     }
     private fun checkTouchRegion(clickX:Float,clickY:Float):Boolean{
         return clickX - mOffsetX in 0f..realWidth.toFloat() && clickY - mOffsetY in 0f..realHeight.toFloat()
     }
     private fun deleteItem(clickX:Float,clickY:Float){
         mCurItem?.let {
-            if (it.deletling){
+            if (it.hasDelete()){
                 it.checkDeleteClick(clickX,clickY)
-                if (it.deletling){
+                if (it.hasDelete()){
                     contentList.remove(it)
                     mCurItem = null
                     invalidate()
@@ -200,7 +157,6 @@ class LabelView: View {
                     mCurItem?.apply {
                         disableItem()
                     }
-                    it.active = true
                     contentList[i] = contentList[contentList.size -1]
                     contentList[contentList.size -1] = it
                     mCurItem = it
@@ -209,7 +165,7 @@ class LabelView: View {
             }
         }
         if (mCurItem != null){
-            mCurItem!!.active = false
+            mCurItem!!.disableItem()
             mCurItem = null
             invalidate()
         }
@@ -218,8 +174,7 @@ class LabelView: View {
 
     private fun releaseCurItem(){
         mCurItem?.let {
-            it.move = false
-            it.scaling = false
+            it.releaseItem()
             invalidate()
         }
     }
@@ -262,7 +217,7 @@ class LabelView: View {
     }
     private fun measureItem(){
         contentList.forEach {
-            it.measure(realWidth.toInt(), realHeight,mPaint)
+            it.measure(realWidth, realHeight,mPaint)
         }
     }
 
@@ -292,6 +247,7 @@ class LabelView: View {
         mPaint.textSize = context.resources.getDimension(R.dimen.font_size_6)
         mPaint.color = Color.GRAY
         mPaint.style = Paint.Style.FILL
+        mPaint.strokeWidth = 0f
         for (i in 0..physicsWidth){
             num = i.toString()
             coordinate = if (i == physicsWidth){
@@ -344,14 +300,24 @@ class LabelView: View {
         mPaint.setShadowLayer(0f,0f,0f,Color.GRAY)
 
         mBackground?.apply {
-            mMatrix.setScale(realWidth.toFloat() / width.toFloat(),realHeight.toFloat() / height.toFloat())
+            val matrix = Matrix()
+            matrix.setScale(realWidth.toFloat() / width.toFloat(),realHeight.toFloat() / height.toFloat())
             canvas.save()
             canvas.translate(mOffsetX.toFloat(),mOffsetY.toFloat())
-            canvas.drawBitmap(this,mMatrix,null)
+            canvas.drawBitmap(this,matrix,null)
             canvas.restore()
-            mMatrix.reset()
+            matrix.reset()
         }
     }
+    private fun drawContent(canvas: Canvas){
+        if (contentList.isNotEmpty()){
+            canvas.clipRect(mOffsetX,mOffsetY,realWidth + mOffsetX,realHeight + mOffsetY)
+            contentList.forEach {
+                it.draw(mOffsetX.toFloat(),mOffsetY.toFloat(),canvas,mPaint)
+            }
+        }
+    }
+
     /**
      * @param bg 背景位图。如果为null则清除当前背景
      * */
@@ -386,15 +352,76 @@ class LabelView: View {
     private fun getBackgroundFileName():String{
         return String.format("%s%s.jpg",CustomApplication.getSaveDirectory("hzYunPos/label"),String.format("%d_%d",physicsWidth,physicsHeight))
     }
+    private fun addItem(item: ItemBase){
+        if (mCurItem != null){
+            mCurItem!!.disableItem()
+        }
+        item.activeItem()
+        item.measure(realWidth, realHeight,mPaint)
+        mCurItem = item
 
-    private fun drawContent(canvas: Canvas){
-        if (contentList.isNotEmpty()){
-            canvas.clipRect(mOffsetX,mOffsetY,realWidth + mOffsetX,realHeight + mOffsetY)
-            contentList.forEach {
-                it.draw(mOffsetX.toFloat(),mOffsetY.toFloat(),canvas,mPaint)
-            }
+        contentList.add(item)
+
+        postInvalidate()
+    }
+    private fun swapCurItem(item: ItemBase){
+        if (mCurItem != null){
+            mCurItem!!.disableItem()
+        }
+        item.activeItem()
+        mCurItem = item
+        postInvalidate()
+    }
+
+    fun addTextItem(){
+        addItem(TextItem())
+    }
+    fun addLineItem(){
+        addItem(LineItem())
+    }
+
+    fun addRectItem(){
+        addItem(RectItem())
+    }
+
+    fun addCircleItem(){
+        addItem(CircleItem())
+    }
+
+    fun addBarcodeItem(){
+        addItem(BarcodeItem())
+    }
+
+    fun addQRCodeItem(){
+        addItem(BarcodeItem(BarcodeFormat.QR_CODE))
+    }
+
+    fun deleteItem(){
+        mCurItem?.apply {
+            contentList.remove(this)
+            swapCurItem(this)
         }
     }
+
+    fun shrinkItem(){
+        mCurItem?.apply {
+            shrink()
+            invalidate()
+        }
+    }
+    fun zoomItem(){
+        mCurItem?.apply {
+            zoom()
+            invalidate()
+        }
+    }
+    fun rotateItem(){
+        mCurItem?.apply {
+            radian += 15
+            invalidate()
+        }
+    }
+
 
     companion object{
         const val w_70 = 70
