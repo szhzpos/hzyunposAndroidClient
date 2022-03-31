@@ -1,10 +1,8 @@
 package com.wyc.cloudapp.design
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.DashPathEffect
-import android.graphics.Paint
+import android.graphics.*
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.logger.Logger
 import kotlin.math.max
 
 
@@ -52,6 +50,16 @@ open class ShapeItemBase:ItemBase() {
     }
     open fun drawShape(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint){
 
+    }
+
+    override fun createItemBitmap(): Bitmap {
+        val offset = borderWidth / 2
+        val bmp = Bitmap.createBitmap((width + offset).toInt(), (height + offset).toInt(), Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        c.translate(-left + offset, -top + offset)
+        c.drawColor(Color.WHITE)
+        draw(0f,0f,c, Paint())
+        return bmp
     }
 
     override fun toString(): String {

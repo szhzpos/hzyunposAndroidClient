@@ -7,6 +7,7 @@ import android.graphics.Rect
 import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.abs
 import kotlin.math.max
@@ -27,13 +28,14 @@ import kotlin.math.min
  * @Version:        1.0
  */
 
-class TextItem:ItemBase() {
-    var content = "编辑内容"
+open class TextItem:ItemBase() {
+    open var content = "编辑内容"
     var mFontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_18)
         set(value) {
             if (value <= 200f) {
                 field = value
 
+                mRect.setEmpty()
                 getBound(mRect)
                 if (width <= mRect.width()) {
                     width = mRect.width()
@@ -50,13 +52,13 @@ class TextItem:ItemBase() {
     @JSONField(serialize = false)
     private val scaleFactor = CustomApplication.self().resources.displayMetrics.scaledDensity
     @JSONField(serialize = false)
-    private var mPaint:Paint? = null
+    protected var mPaint:Paint? = null
     @JSONField(serialize = false)
-    private val mRect = Rect()
+    protected val mRect = Rect()
     @JSONField(serialize = false)
     private var mTextLastWidth = 0
 
-    override fun measure(w:Int,h:Int,paint: Paint) {
+    override fun measureItem(w:Int,h:Int,paint: Paint) {
         mPaint = paint
         getBound(mRect)
 
@@ -66,6 +68,12 @@ class TextItem:ItemBase() {
         mRect.setEmpty()
     }
 
+    override fun transform(scaleX: Float, scaleY: Float) {
+        super.transform(scaleX, scaleY)
+        mFontSize *= scaleX
+        mLetterSpacing *= scaleX
+    }
+
     override fun drawItem(offsetX:Float,offsetY:Float,canvas: Canvas,paint: Paint) {
         if (Utils.isNotEmpty(content)){
             paint.textSize = mFontSize
@@ -73,19 +81,18 @@ class TextItem:ItemBase() {
             paint.style = Paint.Style.FILL
             paint.letterSpacing = mLetterSpacing
 
-            mRect.setEmpty()
-
             if (content.contains("\n")){
                 val str = content.split("\n")
                 var currentY  = 0f
+                mRect.setEmpty()
                 str.forEach {
                     paint.getTextBounds(it,0,it.length,mRect)
                     canvas.drawText(it,left + offsetX,top + offsetY + mRect.height() + currentY,paint)
                     currentY += mRect.height() + paint.fontMetrics.descent + paint.fontMetrics.leading
                 }
             }else{
-                paint.getTextBounds(content,0,content.length,mRect)
-                canvas.drawText(content,left + offsetX,top + offsetY + mRect.height() - paint.fontMetrics.descent,paint)
+                val baseLineY = height / 2 + (abs(paint.fontMetrics.ascent) - paint.fontMetrics.descent) / 2
+                canvas.drawText(content,left + offsetX,top + offsetY + baseLineY,paint)
             }
             mPaint = paint
         }
@@ -101,8 +108,9 @@ class TextItem:ItemBase() {
 
     override fun scale(scaleX: Float, scaleY: Float) {
         mRect.setEmpty()
+
         if (abs(scaleY) >= scaleFactor){
-            mFontSize += scaleY
+            mFontSize += scaleY / 2f
         }else if (abs(scaleX) >= scaleFactor){
             width += scaleX.toInt()
 
@@ -126,13 +134,14 @@ class TextItem:ItemBase() {
         }
         mTextLastWidth = mRect.width()
     }
-    private fun getBound(b:Rect){
+    protected fun getBound(b:Rect,c:String = ""){
         mPaint?.let { paint ->
             paint.textSize = mFontSize
             paint.letterSpacing = mLetterSpacing
             val t = Rect()
-            if (content.contains("\n")){
-                val aStr = content.split("\n")
+            val tmp = if (Utils.isNotEmpty(c)) c else content
+            if (tmp.contains("\n")){
+                val aStr = tmp.split("\n")
                 var currentY: Float
                 var maxWidth = 0
                 aStr.forEach {
@@ -144,7 +153,7 @@ class TextItem:ItemBase() {
                 }
                 b.right += maxWidth
             }else{
-                paint.getTextBounds(content,0,content.length,t)
+                paint.getTextBounds(tmp,0,tmp.length,t)
                 b.right += t.width()
                 b.bottom += t.height()
             }
@@ -154,5 +163,6 @@ class TextItem:ItemBase() {
     override fun toString(): String {
         return "TextItem(content='$content', mFontSize=$mFontSize, mFontColor=$mFontColor, mLetterSpacing=$mLetterSpacing, scaleFactor=$scaleFactor, mPaint=$mPaint, mRect=$mRect, mTextLastWidth=$mTextLastWidth) ${super.toString()}"
     }
+
 
 }

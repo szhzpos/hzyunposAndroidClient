@@ -4,13 +4,16 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 
 public final class TopDrawableTextView extends JumpTextView{
@@ -25,6 +28,8 @@ public final class TopDrawableTextView extends JumpTextView{
     private int mSelectTextColor;
     private int mTopDrawablePosition,mTextPosition;
     private CharSequence mText;
+
+    private int status = 0;
 
     public TopDrawableTextView(Context context) {
         this(context, null);
@@ -155,11 +160,20 @@ public final class TopDrawableTextView extends JumpTextView{
                         }
                     }
                 }
-                mTopDrawable = new BitmapDrawable(getResources(),Bitmap.createBitmap(pixels,w,h,Bitmap.Config.ARGB_8888));
+                Bitmap t = Bitmap.createBitmap(pixels,w,h,Bitmap.Config.ARGB_8888);
+                if (status == 1){
+                    mTopDrawable = new BitmapDrawable(getResources(),PrintUtilsToBitbmp.drawWarnToBitmap(t));
+                }else mTopDrawable = new BitmapDrawable(getResources(),t);
+
                 mTopDrawable.setBounds(drawable.getBounds());
                 updateDrawableStartScale();
             }else{
-                mTopDrawable = drawable;
+                if (status == 1){
+                    mTopDrawable = new BitmapDrawable(getResources(),PrintUtilsToBitbmp.drawWarnToBitmap(drawable.getBitmap()));
+                    mTopDrawable.setBounds(drawable.getBounds());
+                }else
+                    mTopDrawable = drawable;
+
                 mDrawableStartScale = 1.0f;
                 mDrawRotate = 0;
                 removeCallbacks(updateRunnable);
@@ -180,4 +194,20 @@ public final class TopDrawableTextView extends JumpTextView{
         invalidate();
     }
     private final Runnable updateRunnable = this::updateDrawableStartScale;
+
+    public void normal(){
+        if (status != 0){
+            status = 0;
+            triggerAnimation(false);
+        }
+    }
+    public void warn(){
+        if (status == 0){
+            status = 1;
+            triggerAnimation(false);
+        }
+    }
+    public boolean hasNormal(){
+        return status == 0;
+    }
 }

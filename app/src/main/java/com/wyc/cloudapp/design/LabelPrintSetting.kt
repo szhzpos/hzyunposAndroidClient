@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.bean
+package com.wyc.cloudapp.design
 
 import com.alibaba.fastjson.JSONObject
 import com.alibaba.fastjson.annotation.JSONField
@@ -7,7 +7,6 @@ import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.dialog.MyDialog
 import kotlin.properties.Delegates
-
 
 /**
  *
@@ -36,13 +35,18 @@ class LabelPrintSetting {
         D_0(0),D_90(90),D_180(180),D_270(270);
         val description:String = degree.toString()
     }
-    var rotate:Rotate by change(Rotate.D_0)
+    /**
+     * 打印偏移 单位mm
+     * */
+    var offsetX = 0
+    var offsetY = 0
 
-    enum class LabelTemplate(s: String){
-        LABEL_70_40("70X40纸张"),LABEL_50_40("50X40纸张"),LABEL_30_20("30X20纸张");
-        val description:String = s
-    }
-    var labelTemplate:LabelTemplate by change(LabelTemplate.LABEL_70_40)
+    var dpi = 203
+
+    var rotate: Rotate by change(Rotate.D_0)
+
+    var labelTemplateId: Int by change(0)
+    var labelTemplateName:String by change("")
 
     var printNum by change(1)
 
@@ -60,9 +64,9 @@ class LabelPrintSetting {
             return String.format("%s@%s",n,a)
         }
         @JvmStatic
-        fun getSetting():LabelPrintSetting{
+        fun getSetting(): LabelPrintSetting {
             val para = JSONObject()
-            if (!SQLiteHelper.getLocalParameter("b_order_print", para)){
+            if (!SQLiteHelper.getLocalParameter("label_print", para)){
                 MyDialog.toastMessage(para.getString("info"))
                 return LabelPrintSetting()
             }
@@ -75,7 +79,7 @@ class LabelPrintSetting {
     fun saveSetting(){
         CustomApplication.execute {
             val err = StringBuilder()
-            if (!SQLiteHelper.saveLocalParameter("b_order_print", JSONObject.toJSON(this) as? JSONObject, "业务单据打印参数", err)){
+            if (!SQLiteHelper.saveLocalParameter("label_print", JSONObject.toJSON(this) as? JSONObject, "标签打印参数", err)){
                 MyDialog.toastMessage(err.toString())
             }else {
                 change = false
@@ -91,4 +95,10 @@ class LabelPrintSetting {
     private fun <T> change(iv:T) = Delegates.observable(iv) { _, oldValue, newValue ->
         if (oldValue != newValue) change = true
     }
+
+    override fun toString(): String {
+        return "LabelPrintSetting(way=$way, rotate=$rotate, labelTemplateId=$labelTemplateId, labelTemplateName='$labelTemplateName', printNum=$printNum, printer='$printer')"
+    }
+
+
 }

@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.wyc.cloudapp.data.room.entity.GiftCardPayDetail
-import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail
 
 @Dao
 interface GiftCardPayDetailDao {

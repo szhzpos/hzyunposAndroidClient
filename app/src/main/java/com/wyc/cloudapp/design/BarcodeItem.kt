@@ -30,7 +30,9 @@ import kotlin.math.max
  * @Version:        1.0
  */
 
-open class BarcodeItem(var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128):ItemBase() {
+open class BarcodeItem:ItemBase() {
+    var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
+    var fontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_14)
     var content: String = "6922711043401"
         set(value) {
             field = value
@@ -55,7 +57,7 @@ open class BarcodeItem(var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
         if (barcodeFormat == BarcodeFormat.CODE_128){
             paint.color = Color.WHITE
             paint.style = Paint.Style.FILL
-            paint.textSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_14)
+            paint.textSize = fontSize
             paint.getTextBounds(content,0,content.length,mBottomMarge)
 
             val textHeight = mBottomMarge.height()
@@ -80,7 +82,7 @@ open class BarcodeItem(var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
         }
     }
 
-    override fun measure(w: Int, h: Int, paint: Paint) {
+    override fun measureItem(w: Int, h: Int, paint: Paint) {
         if (mBitmap == null){
             when(barcodeFormat){
                 BarcodeFormat.QR_CODE ->{
@@ -95,6 +97,11 @@ open class BarcodeItem(var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
             }
             mBitmap = generateBitmap()
         }
+    }
+
+    override fun transform(scaleX: Float, scaleY: Float) {
+        super.transform(scaleX, scaleY)
+        fontSize *= scaleX
     }
 
     override fun scale(scaleX: Float, scaleY: Float) {

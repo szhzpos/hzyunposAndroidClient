@@ -1007,4 +1007,19 @@
     <string name="cur_label_model">当前默认模板</string>
     <string name="label_design">标签格式设计</string>
     <string name="rotate_degree_setting">标签旋转设置</string>
+    <string name="printer_not_init">打印机未初始化…</string>
+    <string name="status_fail">打印机状态获取失败，请检查打印机是否缺纸或开盖</string>
+    <string name="status_normal">状态正常</string>
+    <string name="status_feed">状态走纸、打印</string>
+    <string name="status_out_of_paper">状态缺纸</string>
+    <string name="status_open">状态开盖</string>
+    <string name="status_overheated">状态过热</string>
+    <string name="send_success">发送成功</string>
+    <string name="printer_connecting">正在连接打印…</string>
+    <string name="conn_fail">连接失败</string>
+    <string name="conn_success">连接成功</string>
+    <string name="printer_disconnect">打印机断开</string>
+    <string name="hor_offset">水平偏移</string>
+    <string name="ver_offset">垂直偏移</string>
+    <string name="dpi">分辨率</string>
 </resources>

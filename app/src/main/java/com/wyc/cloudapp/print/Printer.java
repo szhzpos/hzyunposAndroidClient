@@ -310,7 +310,7 @@ public final class Printer {
         }
     }
 
-    private static void bluetooth_print(final byte[] content, final String device_addr){
+    public static void bluetooth_print(final byte[] content, final String device_addr){
         if(content != null && Utils.isNotEmpty(device_addr)){
             MyDialog.toastMessage(CustomApplication.self().getString(R.string.begin_print));
             CustomApplication.execute(()->{

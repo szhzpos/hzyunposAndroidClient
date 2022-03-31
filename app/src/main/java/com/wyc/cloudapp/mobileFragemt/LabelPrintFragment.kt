@@ -17,13 +17,17 @@ import com.hjq.permissions.XXPermissions
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity
 import com.wyc.cloudapp.activity.normal.LabelActivity
-import com.wyc.cloudapp.bean.LabelPrintSetting
+import com.wyc.cloudapp.design.LabelPrintSetting
 import com.wyc.cloudapp.bean.TreeListItem
+import com.wyc.cloudapp.data.room.AppDatabase
+import com.wyc.cloudapp.data.room.dao.LabelTemplateDao
 import com.wyc.cloudapp.databinding.LabelPrintSettingBinding
+import com.wyc.cloudapp.design.LabelTemplate
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
 import com.wyc.cloudapp.utils.BluetoothUtils
+import java.lang.NumberFormatException
 
 
 /**
@@ -161,16 +165,21 @@ class LabelPrintFragment: AbstractMobileFragment() {
             (view as TextView).text = obj.item_name
 
             val setting: LabelPrintSetting? = DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)?.setting
-            setting?.labelTemplate = LabelPrintSetting.LabelTemplate.valueOf(obj.item_id)
+            try {
+                setting?.labelTemplateId = obj.item_id.toInt()
+            }catch (e:NumberFormatException){
+                e.printStackTrace()
+            }
+            setting?.labelTemplateName = obj.item_name
         }
     }
     private fun convertTemplate(): List<TreeListItem> {
         val data: MutableList<TreeListItem> = ArrayList()
-        val  values: Array<LabelPrintSetting.LabelTemplate> = LabelPrintSetting.LabelTemplate.values()
+        val  values: MutableList<LabelTemplate> = AppDatabase.getInstance().LabelTemplateDao().getAll()
         values.iterator().forEach {
             val item = TreeListItem()
-            item.item_id = it.name
-            item.item_name = it.description
+            item.item_id = it.templateId.toString()
+            item.item_name = it.templateName
             data.add(item)
         }
         return data
@@ -210,6 +219,32 @@ class LabelPrintFragment: AbstractMobileFragment() {
         val setting = bind?.setting
         val num = setting?.printNum?:0
         setting?.printNum = num - i
+        bind?.invalidateAll()
+    }
+
+    @OnClick(R.id.plusX, R.id.minusX)
+    fun offsetX(view: View){
+        var i = -1
+        if (view.id == R.id.minusX){
+            i = 1
+        }
+        val bind = DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)
+        val setting = bind?.setting
+        val num = setting?.offsetX?:0
+        setting?.offsetX = num - i
+        bind?.invalidateAll()
+    }
+
+    @OnClick(R.id.plusY, R.id.minusY)
+    fun offsetY(view: View){
+        var i = -1
+        if (view.id == R.id.minusY){
+            i = 1
+        }
+        val bind = DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)
+        val setting = bind?.setting
+        val num = setting?.offsetY?:0
+        setting?.offsetY = num - i
         bind?.invalidateAll()
     }
 

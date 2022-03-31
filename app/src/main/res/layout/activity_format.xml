@@ -8,15 +8,50 @@
     android:orientation="vertical"
     tools:context=".activity.normal.LabelActivity">
 
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/height_40"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_2"
+        app:layout_constraintBottom_toTopOf="@+id/labelView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/label_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="@dimen/margin_2"
+            android:layout_weight="1"
+            android:background="@drawable/edit_text_with_blue_border_style"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:paddingStart="@dimen/margin_5"
+            android:textSize="@dimen/font_size_14" />
+
+        <Spinner
+            android:id="@+id/label_size"
+            style="@style/Widget.AppCompat.Light.Spinner.DropDown.ActionBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.5"
+            android:foreground="@drawable/spinner_style"
+            tools:ignore="SpeakableTextPresentCheck" />
+    </LinearLayout>
+
     <com.wyc.cloudapp.design.LabelView
         android:id="@+id/labelView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/top" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="@dimen/size_45"
         android:background="@drawable/top_separator"
@@ -240,6 +275,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/save"
+            android:onClick="onClick"
             android:text="@string/business_save_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16"
@@ -247,6 +283,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:selectTextColor="@color/white"
             app:verSpacing="@dimen/margin_2"
             tools:ignore="TextContrastCheck" />
 
@@ -262,14 +299,16 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:selectTextColor="@color/white"
             app:verSpacing="@dimen/size_3"
             tools:ignore="TextContrastCheck" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
-            android:id="@+id/preview2"
+            android:id="@+id/printLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@drawable/print"
+            android:onClick="onClick"
             android:text="@string/m_print_sz"
             android:textColor="@color/white"
             android:textSize="@dimen/font_size_16"
@@ -278,6 +317,7 @@
             app:layout_constraintEnd_toStartOf="@id/preview"
             app:layout_constraintStart_toEndOf="@+id/save"
             app:layout_constraintTop_toTopOf="parent"
+            app:selectTextColor="@color/white"
             app:verSpacing="@dimen/margin_2"
             tools:ignore="TextContrastCheck" />
     </androidx.constraintlayout.widget.ConstraintLayout>

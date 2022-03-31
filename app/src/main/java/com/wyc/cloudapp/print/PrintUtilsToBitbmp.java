@@ -24,8 +24,10 @@ public final class PrintUtilsToBitbmp {
      * x轴：360个像素点（0-359）
      * 里面的每一组（24*360），每8个像素点为一个二进制，（每组有3个，3*8=24）
      **************************************************************************/
+
+
     /**
-     * 把一张Bitmap图片转化为打印机可以打印的bit(将图片压缩为360*360)
+     * 把一张Bitmap图片转化为打印机可以打印的bit
      * 效率很高（相对于下面）
      * @param bit
      * @return
@@ -37,7 +39,7 @@ public final class PrintUtilsToBitbmp {
         Logger.d("old_w:%d,old_height:%d,new_w:%d,new_h:%d",bit.getWidth(),bit.getHeight(),w,h);
         byte[] data = new byte[w * h + h / PER_POINT*6 + 8 ];//图片大小 + 指令字节 + 留空字节
         int k = 0;
-        byte n2 = WIDTH / 256,n1 = (byte)(w - 256*n2);
+        byte n2 = (byte) (w / 256),n1 = (byte)(w - 256*n2);
         for (int j = 0; j < h / PER_POINT; j++) {
             data[k++] = 0x1B;
             data[k++] = 0x2A;
@@ -140,10 +142,10 @@ public final class PrintUtilsToBitbmp {
         // 获取这个图片的宽和高
         int width = bitmapOrg.getWidth();
         int height = bitmapOrg.getHeight();
-        final Bitmap targetBmp = Bitmap.createBitmap(alignToN(WIDTH,8), alignToN(HEIGHT,PER_POINT), Bitmap.Config.ARGB_8888);
+        final Bitmap targetBmp = Bitmap.createBitmap(alignToN(width,8), alignToN(height,PER_POINT), Bitmap.Config.ARGB_8888);
         final Canvas targetCanvas = new Canvas(targetBmp);
         targetCanvas.drawColor(0xffffffff);
-        targetCanvas.drawBitmap(bitmapOrg, new Rect(0, 0, width, height), new Rect(0, 0,alignToN(WIDTH,8), alignToN(HEIGHT,PER_POINT)), null);
+        targetCanvas.drawBitmap(bitmapOrg, new Rect(0, 0, width, height), new Rect(0, 0,alignToN(width,8), alignToN(height,PER_POINT)), null);
         return targetBmp;
     }
 

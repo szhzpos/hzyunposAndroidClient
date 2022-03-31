@@ -190,4 +190,7 @@ dependencies {
 
     //托利多bPlus条码秤
     implementation files('libs/mtaoscaleapi.jar')
+
+    //佳博GP-M322条码打印机
+    implementation files('libs/GP_SDKLib.jar')
 }

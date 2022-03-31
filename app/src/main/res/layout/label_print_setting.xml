@@ -4,7 +4,7 @@
     <data >
         <variable
             name="setting"
-            type="com.wyc.cloudapp.bean.LabelPrintSetting" />
+            type="com.wyc.cloudapp.design.LabelPrintSetting" />
     </data>
 
     <com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout
@@ -120,8 +120,8 @@
                 android:layout_weight="1"
                 android:drawableEnd="@drawable/small_fold"
                 android:gravity="center_vertical|end"
-                android:tag="@{setting.labelTemplate.ordinal()}"
-                android:text="@{setting.labelTemplate.description}"
+                android:tag="@{setting.labelTemplateId}"
+                android:text="@{setting.labelTemplateName}"
                 android:textColor="@color/text_color"
                 android:textSize="@dimen/font_size_16" />
         </LinearLayout>
@@ -173,17 +173,127 @@
                 android:background="@drawable/plus" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/business_print_item_height"
+            android:background="@drawable/round_style"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="@string/hor_offset"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <Button
+                android:id="@+id/minusX"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/mobile_p_m_btn_size"
+                android:layout_height="@dimen/mobile_p_m_btn_size"
+                android:layout_marginStart="@dimen/margin_5"
+                android:background="@drawable/minus" />
+
+            <TextView
+                android:id="@+id/offsetX_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="@dimen/margin_8"
+                android:text="@{String.valueOf(setting.offsetX)}"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <Button
+                android:id="@+id/plusX"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/mobile_p_m_btn_size"
+                android:layout_height="@dimen/mobile_p_m_btn_size"
+                android:layout_marginEnd="@dimen/margin_18"
+                android:background="@drawable/plus" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:padding="5dp"
+                android:text="@string/hor_offset"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <Button
+                android:id="@+id/minusY"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/mobile_p_m_btn_size"
+                android:layout_height="@dimen/mobile_p_m_btn_size"
+                android:layout_marginStart="@dimen/margin_5"
+                android:background="@drawable/minus" />
+
+            <TextView
+                android:id="@+id/offsetY_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:padding="@dimen/margin_8"
+                android:text="@{String.valueOf(setting.offsetY)}"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_18" />
+
+            <Button
+                android:id="@+id/plusY"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="@dimen/mobile_p_m_btn_size"
+                android:layout_height="@dimen/mobile_p_m_btn_size"
+                android:layout_marginEnd="@dimen/margin_18"
+                android:background="@drawable/plus" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/business_print_item_height"
+            android:background="@drawable/round_style"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:padding="@dimen/margin_5"
+                android:text="@string/dpi"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16" />
+
+            <TextView
+                android:id="@+id/dpi_tv"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical|end"
+                android:text="@{String.valueOf(setting.dpi)}"
+                android:textColor="@color/text_color"
+                android:textSize="@dimen/font_size_16"
+                app:drawableEndCompat="@drawable/small_fold" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/print_template_tv"
             android:layout_width="match_parent"
             android:layout_height="@dimen/business_print_item_height"
             android:background="@drawable/round_style"
-            android:drawableEnd="@drawable/small_fold"
             android:gravity="center_vertical"
             android:padding="5dp"
             android:text="@string/label_design"
             android:textColor="@color/text_color"
-            android:textSize="@dimen/font_size_16" />
+            android:textSize="@dimen/font_size_16"
+            app:drawableEndCompat="@drawable/small_fold" />
 
     </com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout>
 </layout>

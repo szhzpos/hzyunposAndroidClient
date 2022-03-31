@@ -1,5 +1,9 @@
 package com.wyc.cloudapp.design
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import java.util.*
+
 
 /**
  *
@@ -14,11 +18,22 @@ package com.wyc.cloudapp.design
  * @UpdateRemark:   更新说明：
  * @Version:        1.0
  */
-
-class LabelTemplate {
-    var templateId:Int = 0
+@Entity(tableName = "labelTemplate")
+class LabelTemplate(w:Int = 70,h:Int = 40,name:String = "未命名") {
+    @PrimaryKey
+    var templateId:Int = UUID.randomUUID().toString().hashCode()
     var templateName:String = ""
     var width = 0
     var height = 0
-    var itemList:MutableList<ItemBase> = mutableListOf()
+    var itemList:String = "[]"
+
+    init {
+        width = w
+        height = h
+        templateName = String.format("%s_%d_%d",name,w,h)
+    }
+
+    override fun toString(): String {
+        return "LabelTemplate(templateId=$templateId, templateName='$templateName', width=$width, height=$height, itemList=$itemList)"
+    }
 }

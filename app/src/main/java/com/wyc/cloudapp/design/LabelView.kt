@@ -3,14 +3,22 @@ package com.wyc.cloudapp.design
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 import com.alibaba.fastjson.JSONArray
 import com.google.zxing.BarcodeFormat
+import com.gprinter.command.LabelCommand
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.bean.TreeListItem
+import com.wyc.cloudapp.data.room.AppDatabase
+import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
 import com.wyc.cloudapp.logger.Logger
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableOnSubscribe
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.io.File
 import java.io.FileOutputStream
 
@@ -33,11 +41,11 @@ class LabelView: View {
     private val mOffsetX = context.resources.getDimensionPixelOffset(R.dimen.size_14)
     private val mOffsetY = context.resources.getDimensionPixelOffset(R.dimen.size_14)
 
-    var physicsWidth = w_70
-    var physicsHeight = h_40
+    var physicsWidth = 0
+    var physicsHeight = 0
 
-    private val contentWidth = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, physicsWidth.toFloat(),context.resources.displayMetrics).toInt()
-    private val contentHeight = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_MM, physicsHeight.toFloat(),context.resources.displayMetrics).toInt()
+    private var contentWidth = 0
+    private var contentHeight = 0
 
     private var realWidth = 1
     private var realHeight = 1
@@ -55,20 +63,81 @@ class LabelView: View {
     private var mMoveX = 0f
     private var mMoveY = 0f
 
+    private var mSetting:LabelPrintSetting? = null
+    private var mLabelTemplate:LabelTemplate? = null
+
+    private val mLabelSize = mutableListOf<LabelSize>()
+
+    private var mLoadListener:OnLoaded? = null
+
     constructor(context: Context):this(context, null)
     constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr){
         initPaint()
-        generateBackground()
+        initSetting()
+        initLabelSize()
     }
-    private fun toJson(){
-        val a =  JSONArray.toJSON(contentList) as JSONArray
-        Logger.d_json(a)
+    private fun initLabelSize(){
+        mLabelSize.add(LabelSize(70,40))
+        mLabelSize.add(LabelSize(50,40))
+        mLabelSize.add(LabelSize(30,20))
     }
-    private fun toItem(){
-        val a =  JSONArray.toJSON(contentList) as JSONArray
-        Logger.d_json(a)
 
+    private fun initSetting(){
+        Observable.create<LabelTemplate> {
+            mSetting = LabelPrintSetting.getSetting()
+            mSetting?.let { setting->
+                var t = AppDatabase.getInstance().LabelTemplateDao()
+                    .getLabelTemplateById(setting.labelTemplateId)
+                if (t == null) t = LabelTemplate()
+                it.onNext(t)
+            }
+        }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe ({ temp->
+            mLabelTemplate = temp
+
+            updateLabelSize(temp.width,temp.height)
+
+            contentList.addAll(toItem(temp.itemList))
+
+            generateBackground()
+
+            mLoadListener?.loaded(temp)
+
+        },{err-> err.printStackTrace()
+            MyDialog.toastMessage(err.message)})
+    }
+    interface OnLoaded{
+        fun loaded(labelTemplate: LabelTemplate)
+    }
+    fun setLoadListener(l:OnLoaded){
+        mLoadListener = l;
+    }
+
+    private fun getPrinterDPI():Int{
+        return mSetting?.dpi?:0
+    }
+
+    private fun getPrintHorOffset():Int{
+        return mSetting?.offsetX?:0
+    }
+    private fun getPrintVerOffset():Int{
+        return mSetting?.offsetY?:0
+    }
+    fun getPrintNumber():Int{
+        return mSetting?.printNum?:0
+    }
+
+    private fun convertSize(){
+        val dpi = getPrinterDPI()
+        contentWidth = (physicsWidth * dpi * (1.0f / 25.4f)).toInt()
+        contentHeight = (physicsHeight * dpi * (1.0f / 25.4f)).toInt()
+    }
+
+    private fun toJson():JSONArray{
+        return JSONArray.toJSON(contentList) as? JSONArray?:JSONArray()
+    }
+    private fun toItem(json:String):MutableList<ItemBase>{
+        val a =  JSONArray.parseArray(json)
         val list = mutableListOf<ItemBase>()
         for (i in 0 until a.size){
             val obj = a.getJSONObject(i)
@@ -86,11 +155,17 @@ class LabelView: View {
                     list.add(obj.toJavaObject(CircleItem::class.java))
                 }
                 BarcodeItem::class.simpleName ->{
-
+                    list.add(obj.toJavaObject(BarcodeItem::class.java))
+                }
+                DateItem::class.simpleName ->{
+                    list.add(obj.toJavaObject(DateItem::class.java))
+                }
+                DataItem::class.simpleName ->{
+                    list.add(obj.toJavaObject(DataItem::class.java))
                 }
             }
         }
-
+        return list
     }
 
     private fun initPaint(){
@@ -99,7 +174,14 @@ class LabelView: View {
         setLayerType(LAYER_TYPE_SOFTWARE, null)
     }
     private fun generateBackground(){
-        mBackground = BitmapFactory.decodeFile(getBackgroundFileName())
+        Observable.create(ObservableOnSubscribe<Bitmap> {
+            val bmp = BitmapFactory.decodeFile(getBackgroundFileName())
+            if (bmp != null)it.onNext(bmp)
+        }).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe({bmp->
+            mBackground = bmp
+        },{err->
+            MyDialog.toastMessage(err.message)
+        })
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -306,7 +388,6 @@ class LabelView: View {
             canvas.translate(mOffsetX.toFloat(),mOffsetY.toFloat())
             canvas.drawBitmap(this,matrix,null)
             canvas.restore()
-            matrix.reset()
         }
     }
     private fun drawContent(canvas: Canvas){
@@ -348,10 +429,10 @@ class LabelView: View {
         val imgFile = File(getBackgroundFileName())
         imgFile.deleteOnExit()
     }
-
     private fun getBackgroundFileName():String{
         return String.format("%s%s.jpg",CustomApplication.getSaveDirectory("hzYunPos/label"),String.format("%d_%d",physicsWidth,physicsHeight))
     }
+
     private fun addItem(item: ItemBase){
         if (mCurItem != null){
             mCurItem!!.disableItem()
@@ -393,7 +474,36 @@ class LabelView: View {
     }
 
     fun addQRCodeItem(){
-        addItem(BarcodeItem(BarcodeFormat.QR_CODE))
+        val item = BarcodeItem()
+        item.barcodeFormat = BarcodeFormat.QR_CODE
+        addItem(item)
+    }
+
+    fun addDateItem(){
+        addItem(DateItem())
+    }
+
+    fun addDataItem(){
+        val item = DataItem()
+        val treeListDialog = TreeListDialogForObj(context, context.getString(R.string.data))
+        treeListDialog.setData(convertField(), null, true)
+        if (treeListDialog.exec() == 1) {
+            val obj = treeListDialog.singleContent
+            item.field = obj.item_id
+            item.content = obj.item_name
+            addItem(item)
+        }
+    }
+    private fun convertField(): List<TreeListItem> {
+        val data: MutableList<TreeListItem> = ArrayList()
+        val  values: Array<DataItem.FIELD> = DataItem.FIELD.values()
+        values.iterator().forEach {
+            val item = TreeListItem()
+            item.item_id = it.field
+            item.item_name = it.description
+            data.add(item)
+        }
+        return data
     }
 
     fun deleteItem(){
@@ -422,10 +532,159 @@ class LabelView: View {
         }
     }
 
+    fun getLabelName():String{
+        return mSetting?.labelTemplateName ?: ""
+    }
 
-    companion object{
-        const val w_70 = 70
-        const val h_40 = 40
-        const val w_50 = 50
+    fun updateLabelName(n:String){
+        mLabelTemplate?.templateName = n
+    }
+
+    fun updateLabelSize(w:Int,h: Int){
+        hasLabelSize(w,h)
+
+        physicsWidth = w
+        physicsHeight = h
+        convertSize()
+        calculateContentSize()
+        postInvalidate()
+    }
+    private fun hasLabelSize(w: Int,h: Int){
+        mLabelSize.forEachIndexed{index,size ->
+            if (size.rW == w && size.rH == h){
+                if (index != 0){
+                    val t = mLabelSize[0]
+                    mLabelSize[0] = mLabelSize[index]
+                    mLabelSize[index] = t
+                }
+                return
+            }
+        }
+        mLabelSize.add(0,LabelSize(w,h))
+    }
+
+    fun save(){
+        mSetting?.let {
+            CustomApplication.execute {
+                var template = mLabelTemplate
+                if (template == null){
+                    template = LabelTemplate(physicsWidth,physicsHeight)
+                }
+                template.width = physicsWidth
+                template.height = physicsHeight
+                template.itemList = toJson().toString()
+                AppDatabase.getInstance().LabelTemplateDao().insertTemplate(template)
+
+                it.labelTemplateId = template.templateId
+                it.labelTemplateName = template.templateName
+                it.saveSetting()
+            }
+        }
+    }
+
+    fun getLabelSize():MutableList<LabelSize>{
+        return mLabelSize
+    }
+
+    fun getPrintBitmap():Bitmap{
+        val bmp = Bitmap.createBitmap(contentWidth, contentHeight,Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        c.drawColor(Color.WHITE)
+        getPrintItem().forEach {
+            it.draw(0f,0f,c, Paint())
+        }
+        Logger.d("bWidth:%d,bHeight:%d",bmp.width,bmp.height)
+        return bmp
+    }
+
+    fun getPrintBitmap2():Bitmap{
+        val w = realWidth
+        val h = realHeight
+        val bmp = Bitmap.createBitmap(contentWidth, contentHeight,Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        c.drawColor(Color.WHITE)
+
+        c.clipRect(0,0, w,h)
+        c.scale(contentWidth.toFloat() / realWidth.toFloat(),contentHeight.toFloat() / realHeight.toFloat())
+        c.translate((-mOffsetX).toFloat(), (-mOffsetX).toFloat())
+
+        val b = mBackground
+        mBackground = null
+        draw(c)
+        mBackground = b
+
+        Logger.d("bWidth:%d,bHeight:%d",bmp.width,bmp.height)
+        return bmp
+    }
+
+    fun getPrintItem():MutableList<ItemBase>{
+        val scaleX = contentWidth.toFloat() / realWidth.toFloat()
+        val scaleY = contentHeight.toFloat() / realHeight.toFloat()
+        val sList = mutableListOf<ItemBase>()
+        contentList.forEach {
+            val item = it.clone()
+            item.transform(scaleX,scaleY)
+            sList.add(item)
+        }
+        return sList
+    }
+
+    fun getGPTscCommand():LabelCommand{
+        val offsetX = getPrintHorOffset()
+        val offsetY = getPrintVerOffset()
+        Logger.d("offsetX:%d,offsetY:%d",offsetX,offsetY)
+
+        val tsc = LabelCommand()
+        tsc.addSize(physicsWidth, physicsHeight)
+        tsc.addGap(5)
+        tsc.addDirection(LabelCommand.DIRECTION.FORWARD, LabelCommand.MIRROR.NORMAL)
+        tsc.addReference(offsetX, offsetY)
+        tsc.addDensity(LabelCommand.DENSITY.DNESITY4)
+        tsc.addCls()
+
+        getPrintItem().forEach {
+            val b = it.createItemBitmap()
+            tsc.drawImage(it.left,it.top,b.width,b)
+        }
+        tsc.addPrint(1, 1)
+        return tsc
+    }
+
+    fun getGPTscCommand2():LabelCommand{
+        val tsc = LabelCommand()
+        tsc.addSize(physicsWidth, physicsHeight)
+        tsc.addGap(5)
+        tsc.addDirection(LabelCommand.DIRECTION.FORWARD, LabelCommand.MIRROR.NORMAL)
+        tsc.addReference(0, 0)
+        tsc.addDensity(LabelCommand.DENSITY.DNESITY1)
+        tsc.addCls()
+        val b = getPrintBitmap()
+        tsc.drawJPGImage(0,0,b.width,b)
+        tsc.addPrint(1, 1)
+        return tsc
+    }
+
+    class LabelSize(w:Int,h:Int){
+        val rW = w
+        val rH = h
+        val description:String = String.format("%d*%d",w,h)
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as LabelSize
+
+            if (rW != other.rW) return false
+            if (rH != other.rH) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            var result = rW
+            result = 31 * result + rH
+            return result
+        }
+
     }
 }

@@ -18,6 +18,7 @@ import com.wyc.cloudapp.data.room.dao.GiftCardPayDetailDao;
 import com.wyc.cloudapp.data.room.dao.GiftCardSaleDetailDao;
 import com.wyc.cloudapp.data.room.dao.GiftCardSaleOrderDao;
 import com.wyc.cloudapp.data.room.dao.GoodsPracticeDao;
+import com.wyc.cloudapp.data.room.dao.LabelTemplateDao;
 import com.wyc.cloudapp.data.room.dao.PayMethodDao;
 import com.wyc.cloudapp.data.room.dao.PracticeAssociatedDao;
 import com.wyc.cloudapp.data.room.dao.TimeCardPayDetailDao;
@@ -31,13 +32,15 @@ import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
+import com.wyc.cloudapp.design.LabelTemplate;
 import com.wyc.cloudapp.logger.Logger;
 
 @Database(entities = {PayMethod.class, TimeCardSaleOrder.class,TimeCardSaleInfo.class, TimeCardPayDetail.class,
-        GiftCardSaleOrder.class,GiftCardSaleDetail.class, GiftCardPayDetail.class, GoodsPractice.class, PracticeAssociated.class},
+        GiftCardSaleOrder.class,GiftCardSaleDetail.class, GiftCardPayDetail.class, GoodsPractice.class, PracticeAssociated.class,
+        LabelTemplate.class},
         version = AppDatabase.DATABASE_VERSION,exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
-    public static final int DATABASE_VERSION = 14;
+    public static final int DATABASE_VERSION = 15;
 
     public abstract PayMethodDao PayMethodDao();
     public abstract TimeCardSaleOrderDao TimeCardSaleOrderDao();
@@ -51,6 +54,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract GoodsPracticeDao GoodsPracticeDao();
     public abstract PracticeAssociatedDao PracticeAssociatedDao();
 
+    public abstract LabelTemplateDao LabelTemplateDao();
+
     private static AppDatabase DB;
     public static AppDatabase getInstance(){
         return DB;
@@ -60,7 +65,7 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class){
                 if (DB == null){
                     DB = Room.databaseBuilder(CustomApplication.self(),AppDatabase.class,name)
-                            .addMigrations(migration_13_14)
+                            .addMigrations(migration_13_14).addMigrations(migration_14_15)
                             .allowMainThreadQueries()
                             .build();
                     Logger.d("roomVersion:%d",DB.getOpenHelper().getWritableDatabase().getVersion());
@@ -83,7 +88,14 @@ public abstract class AppDatabase extends RoomDatabase {
         return !result;
     }
 
-    private static final Migration migration_13_14 = new Migration(13,DATABASE_VERSION) {
+    private static final Migration migration_14_15 = new Migration(14,DATABASE_VERSION){
+        @Override
+        public void migrate(@NonNull SupportSQLiteDatabase database) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `labelTemplate` (`templateId` INTEGER NOT NULL, `templateName` TEXT NOT NULL, `width` INTEGER NOT NULL, `height` INTEGER NOT NULL, `itemList` TEXT NOT NULL, PRIMARY KEY(`templateId`))");
+        }
+    };
+
+    private static final Migration migration_13_14 = new Migration(13,14) {
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase db) {
             try {

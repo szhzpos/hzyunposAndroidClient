@@ -27,14 +27,14 @@ import kotlin.math.sqrt
  * @Version:        1.0
  */
 
-abstract class ItemBase{
+open class ItemBase:Cloneable{
     var top = 88
     var left = 88
-    var width = ACTION_RADIUS.toInt()
+    var width = -1
         set(value) {
             field = max(value, 0)
         }
-    var height = ACTION_RADIUS.toInt()
+    var height = -1
         set(value) {
             field = max(value, 0)
         }
@@ -47,38 +47,66 @@ abstract class ItemBase{
     @JSONField(serialize = false)
     private var move:Boolean = false
     @JSONField(serialize = false)
-    private var scaling:Boolean = false
+    protected var scaling:Boolean = false
     @JSONField(serialize = false)
-    private var deletling:Boolean = false
+    private var deleting:Boolean = false
+    @JSONField(serialize = false)
+    protected val cRECT = RectF()
 
     fun draw(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint){
-        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint)
+        updateContentRect(offsetX + left,offsetY + top)
 
-        val r = radian != 0f
+        val r = radian % 360 != 0f
         if (r){
             canvas.save()
             canvas.rotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
         }
-
-        if (active)drawAction(offsetX, offsetY,canvas,paint)
         drawItem(offsetX, offsetY,canvas,paint)
-
         if (r){
             canvas.restore()
         }
+        if (active)drawAction(offsetX, offsetY,canvas,paint)
+        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint)
+    }
+
+    public override fun clone(): ItemBase {
+        return super.clone() as ItemBase
+    }
+
+    @CallSuper
+    open fun transform(scaleX: Float,scaleY: Float){
+        left = (left * scaleX).toInt()
+        top = (top * scaleY).toInt()
+        width = (width * scaleX).toInt()
+        height = (height * scaleY).toInt()
+    }
+
+    private fun updateActionRect(l:Float,t:Float){
+        val diameter = ACTION_RADIUS * 2
+        CUR_RECT.set(l - diameter,t - diameter,l + width + diameter,t + height + diameter)
+        DEL_RECT.set(CUR_RECT.left,CUR_RECT.top,CUR_RECT.left + diameter,CUR_RECT.top + diameter)
+        SCALE_RECT.set(CUR_RECT.right - diameter, CUR_RECT.bottom - diameter, CUR_RECT.right, CUR_RECT.bottom)
+
         if (radian != 0f){
-            val matrix = Matrix()
-            matrix.setRotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
-            DEL_RECT.transform(matrix)
-            matrix.reset()
-            matrix.setRotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
-            SCALE_RECT.transform(matrix)
+            ROTATE_MATRIX.setRotate(radian,l + width / 2f,t + height / 2f)
+            DEL_RECT.transform(ROTATE_MATRIX)
+            SCALE_RECT.transform(ROTATE_MATRIX)
+            CUR_RECT.transform(ROTATE_MATRIX)
+        }
+    }
+
+    private fun updateContentRect(l: Float,t: Float){
+        cRECT.set(l,t,l + width,t + height)
+        if (radian != 0f){
+            ROTATE_MATRIX.setRotate(radian,l + width / 2f,t + height / 2f)
+            cRECT.transform(ROTATE_MATRIX)
         }
     }
 
     protected open fun drawItem(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint){
 
     }
+
 
     open fun zoom(){
         scale(width * 0.2f,height * 0.2f)
@@ -87,7 +115,16 @@ abstract class ItemBase{
         scale(-width * 0.2f,-height * 0.2f)
     }
 
-    open fun measure(w:Int, h:Int, paint: Paint){
+    fun measure(w:Int, h:Int, paint: Paint){
+        if (hasInit()){
+            measureItem(w,h,paint)
+        }
+    }
+    protected fun hasInit():Boolean{
+        return width == -1 && height == -1
+    }
+
+    protected open fun measureItem(w:Int, h:Int, paint: Paint) {
         width = min(width,w)
         height = min(height, h)
     }
@@ -96,25 +133,18 @@ abstract class ItemBase{
         paint.style = Paint.Style.STROKE
         paint.pathEffect = DashPathEffect(floatArrayOf(4f,4f),0f)
 
-        canvas.drawLine(offsetX,top + offsetY, canvas.width.toFloat(),top + offsetY,paint)
-        canvas.drawLine(offsetX,top + offsetY + height, canvas.width.toFloat(),top + offsetY + height,paint)
+        canvas.drawLine(offsetX,cRECT.top, canvas.width.toFloat(),cRECT.top,paint)
+        canvas.drawLine(offsetX,cRECT.top + cRECT.height(),canvas.width.toFloat(),cRECT.top + cRECT.height(),paint)
 
-        canvas.drawLine(offsetX + left,offsetY, offsetX + left,canvas.height.toFloat() + offsetY,paint)
-        canvas.drawLine(offsetX + left + width,offsetY, offsetX + left + width,canvas.height.toFloat() + offsetY,paint)
+        canvas.drawLine(cRECT.left,offsetY, cRECT.left,canvas.height + offsetY,paint)
+        canvas.drawLine(cRECT.left + cRECT.width(),offsetY,  cRECT.left + cRECT.width(),canvas.height + offsetY,paint)
 
         paint.pathEffect = null
     }
     private fun drawAction(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint) {
-        val l = offsetX + left
-        val t = offsetY + top
+        updateActionRect(offsetX + left,offsetY + top)
+
         val rc = Utils.dpToPxF(CustomApplication.self(),1f)
-
-        val diameter = ACTION_RADIUS * 2
-
-        CUR_RECT.set(l - diameter,t - diameter,l + width + diameter,t + height + diameter)
-        DEL_RECT.set(CUR_RECT.left,CUR_RECT.top,CUR_RECT.left + diameter,CUR_RECT.top + diameter)
-        SCALE_RECT.set(CUR_RECT.right - diameter, CUR_RECT.bottom - diameter,
-            CUR_RECT.right, CUR_RECT.bottom)
 
         paint.color = Color.GRAY
         paint.style = Paint.Style.STROKE
@@ -158,7 +188,7 @@ abstract class ItemBase{
     }
 
     fun checkDeleteClick(clickX:Float,clickY:Float){
-        deletling = active && DEL_RECT.contains(clickX,clickY)
+        deleting = active && DEL_RECT.contains(clickX,clickY)
     }
     private fun checkScaleClick(clickX:Float, clickY:Float, scaleX:Float, scaleY:Float):Boolean{
         if (scaling || SCALE_RECT.contains(clickX,clickY)){
@@ -167,8 +197,9 @@ abstract class ItemBase{
                 if (!directRadius.isNaN()){
                     SCALE_DIRECT = directRadius
                 }
-                scale(scaleX,scaleY)
                 scaling = true
+
+                scale(scaleX,scaleY)
                 return true
             }else scaling =false
         }
@@ -185,7 +216,7 @@ abstract class ItemBase{
             checkScaleClick(clickX,clickY,moveX,moveY)
         }else false
 
-        if (!deletling && !hScale){
+        if (!deleting && !hScale){
             left += moveX.toInt()
             top += moveY.toInt()
             move = true
@@ -200,15 +231,20 @@ abstract class ItemBase{
     }
     fun hasSelect(x:Float,y:Float):Boolean{
         val diameter = ACTION_RADIUS * 2
-        active = x >= left - diameter && x <= left + width + diameter && y >= top - diameter && y <= top + height + diameter
+        cRECT.set(left - diameter,top - diameter,left + width + diameter,top + height + diameter)
+        if (radian != 0f){
+            ROTATE_MATRIX.setRotate(radian,left + width / 2f,top + height / 2f)
+            cRECT.transform(ROTATE_MATRIX)
+        }
+        active = cRECT.contains(x,y)
+
         return active
     }
     fun disableItem(){
         active = false
         move = false
         scaling = false
-        deletling = false
-        CUR_RECT.setEmpty()
+        deleting = false
     }
 
     fun releaseItem() {
@@ -217,19 +253,24 @@ abstract class ItemBase{
     }
 
     fun hasDelete():Boolean{
-        return deletling
+        return deleting
     }
 
     fun activeItem(){
         active = true
     }
 
-    override fun toString(): String {
-        return "ItemBase(top=$top, left=$left, width=$width, height=$height, radian=$radian, clsType=$clsType, active=$active, move=$move)"
+    open fun createItemBitmap():Bitmap{
+        val bmp = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
+        val c = Canvas(bmp)
+        c.translate((-left).toFloat(), (-top).toFloat())
+        c.drawColor(Color.WHITE)
+        draw(0f,0f,c, Paint())
+        return bmp
     }
 
-    protected fun finalize(){
-        Logger.d("%s has finalized",javaClass.simpleName)
+    override fun toString(): String {
+        return "ItemBase(top=$top, left=$left, width=$width, height=$height, radian=$radian, clsType=$clsType, active=$active, move=$move, scaling=$scaling, deleting=$deleting, cRECT=$cRECT)"
     }
 
     companion object{
@@ -239,6 +280,8 @@ abstract class ItemBase{
         val DEL_RECT = RectF()
         @JvmField
         val SCALE_RECT = RectF()
+        @JSONField
+        val ROTATE_MATRIX = Matrix()
         @JvmField
         val ACTION_RADIUS = CustomApplication.self().resources.getDimension(R.dimen.size_10)
         @JvmField
