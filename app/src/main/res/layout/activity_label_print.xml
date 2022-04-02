@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".design.LabelPrintActivity">
+
+    <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
+        android:id="@+id/_search_content"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_50"
+        android:layout_gravity="center"
+        android:background="@drawable/round_border_sub_gray"
+        android:drawableStart="@drawable/sel"
+        android:drawableEnd="@drawable/scan"
+        android:drawablePadding="@dimen/margin_8"
+        android:ems="10"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:hint="@string/barcode_sz"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName"
+        android:padding="@dimen/margin_5"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_18"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/goods_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/white" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/top_separator"
+        android:orientation="horizontal"
+        android:padding="@dimen/margin_5">
+
+        <Button
+            android:id="@+id/label_print"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_12"
+            android:layout_marginEnd="@dimen/margin_12"
+            android:background="@drawable/button_blue"
+            android:text="@string/m_print_sz"
+            android:textColor="@color/blue_white"
+            android:textSize="@dimen/font_size_18"
+            tools:ignore="TouchTargetSizeCheck" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/label_preview"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:background="@color/gray_subtransparent"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/margin_12"
+        android:text="@string/label_preview"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+
+    <com.wyc.cloudapp.design.LabelView
+        android:id="@+id/label"
+        android:layout_width="@dimen/size_288"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/margin_5" />
+
+</LinearLayout>

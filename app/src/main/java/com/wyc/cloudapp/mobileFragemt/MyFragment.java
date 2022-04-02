@@ -5,7 +5,6 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.normal.LabelActivity;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity;
 import com.wyc.cloudapp.application.CustomApplication;

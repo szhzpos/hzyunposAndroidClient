@@ -26,9 +26,13 @@ class DateItem: TextItem() {
             if (!hasInit() && autoUpdate && !scaling){
                 val stringBuffer = StringBuffer(FormatDateTimeUtils.formatCurrentTime(dateFormat.format))
                 var len = 0f
+
+                mPaint.textSize = mFontSize
+                mPaint.letterSpacing = mLetterSpacing
+
                 stringBuffer.forEachIndexed {index,chars->
                     if (chars == '\n')return@forEachIndexed
-                    len += (mPaint?.measureText(chars.toString())?:0f)
+                    len += (mPaint.measureText(chars.toString()) ?:0f)
                     if (len > width){
 
                         if (index > 0 && stringBuffer[index - 1] != '\n')

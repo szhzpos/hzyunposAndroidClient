@@ -39,6 +39,9 @@ open class ItemBase:Cloneable{
             field = max(value, 0)
         }
     var radian = 0f
+        set(value) {
+            field = value % 360
+        }
 
     var clsType = this::class.simpleName
 
@@ -56,7 +59,7 @@ open class ItemBase:Cloneable{
     fun draw(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint){
         updateContentRect(offsetX + left,offsetY + top)
 
-        val r = radian % 360 != 0f
+        val r = radian != 0f
         if (r){
             canvas.save()
             canvas.rotate(radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
@@ -115,16 +118,16 @@ open class ItemBase:Cloneable{
         scale(-width * 0.2f,-height * 0.2f)
     }
 
-    fun measure(w:Int, h:Int, paint: Paint){
+    fun measure(w:Int, h:Int){
         if (hasInit()){
-            measureItem(w,h,paint)
+            measureItem(w,h)
         }
     }
     protected fun hasInit():Boolean{
         return width == -1 && height == -1
     }
 
-    protected open fun measureItem(w:Int, h:Int, paint: Paint) {
+    protected open fun measureItem(w:Int, h:Int) {
         width = min(width,w)
         height = min(height, h)
     }
@@ -229,15 +232,13 @@ open class ItemBase:Cloneable{
             }
         }
     }
-    fun hasSelect(x:Float,y:Float):Boolean{
-        val diameter = ACTION_RADIUS * 2
-        cRECT.set(left - diameter,top - diameter,left + width + diameter,top + height + diameter)
+    fun hasSelect(x:Float, y:Float, offsetX: Int, offsetY: Int):Boolean{
+        cRECT.set(left.toFloat(), top.toFloat(), (left + width).toFloat(), (top + height).toFloat())
         if (radian != 0f){
             ROTATE_MATRIX.setRotate(radian,left + width / 2f,top + height / 2f)
             cRECT.transform(ROTATE_MATRIX)
         }
-        active = cRECT.contains(x,y)
-
+        active = DEL_RECT.contains(x,y) || SCALE_RECT.contains(x,y) || cRECT.contains(x - offsetX,y - offsetY)
         return active
     }
     fun disableItem(){
@@ -261,11 +262,31 @@ open class ItemBase:Cloneable{
     }
 
     open fun createItemBitmap():Bitmap{
-        val bmp = Bitmap.createBitmap(width, height,Bitmap.Config.ARGB_8888)
-        val c = Canvas(bmp)
-        c.translate((-left).toFloat(), (-top).toFloat())
-        c.drawColor(Color.WHITE)
-        draw(0f,0f,c, Paint())
+        var bmp:Bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
+        if (radian != 0f){
+            val rect = RectF(left.toFloat(), top.toFloat(), left + width.toFloat(), top + height.toFloat())
+
+            val matrix = Matrix()
+            matrix.setRotate(radian,rect.centerX(),rect.centerY())
+            matrix.mapRect(rect)
+            left = rect.left.toInt()
+            top = rect.top.toInt()
+
+            bmp.recycle()
+            bmp = Bitmap.createBitmap(rect.width().toInt(), rect.height().toInt(),Bitmap.Config.ARGB_8888)
+            val c = Canvas(bmp)
+            c.drawColor(Color.WHITE)
+
+            c.translate((-left).toFloat(), (-top).toFloat())
+            c.rotate(radian,  rect.centerX(), rect.centerY())
+
+            drawItem((rect.width() - width) / 2f,(rect.height() - height) / 2f,c, Paint())
+        }else{
+            val c = Canvas(bmp)
+            c.drawColor(Color.WHITE)
+            c.translate((-left).toFloat(), (-top).toFloat())
+            drawItem(0f,0f,c, Paint())
+        }
         return bmp
     }
 

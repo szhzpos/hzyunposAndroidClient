@@ -16,11 +16,10 @@ import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity
-import com.wyc.cloudapp.activity.normal.LabelActivity
+import com.wyc.cloudapp.design.LabelDesignActivity
 import com.wyc.cloudapp.design.LabelPrintSetting
 import com.wyc.cloudapp.bean.TreeListItem
 import com.wyc.cloudapp.data.room.AppDatabase
-import com.wyc.cloudapp.data.room.dao.LabelTemplateDao
 import com.wyc.cloudapp.databinding.LabelPrintSettingBinding
 import com.wyc.cloudapp.design.LabelTemplate
 import com.wyc.cloudapp.dialog.CustomProgressDialog
@@ -267,7 +266,7 @@ class LabelPrintFragment: AbstractMobileFragment() {
 
     @OnClick(R.id.print_template_tv)
     fun templateDesign(){
-        LabelActivity.start(mContext)
+        LabelDesignActivity.start(mContext)
     }
 
     override fun getRootLayout(): Int {

@@ -91,7 +91,7 @@ public abstract class AppDatabase extends RoomDatabase {
     private static final Migration migration_14_15 = new Migration(14,DATABASE_VERSION){
         @Override
         public void migrate(@NonNull SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS `labelTemplate` (`templateId` INTEGER NOT NULL, `templateName` TEXT NOT NULL, `width` INTEGER NOT NULL, `height` INTEGER NOT NULL, `itemList` TEXT NOT NULL, PRIMARY KEY(`templateId`))");
+            database.execSQL("CREATE TABLE IF NOT EXISTS `labelTemplate` (`templateId` INTEGER NOT NULL, `templateName` TEXT NOT NULL, `width` INTEGER NOT NULL, `height` INTEGER NOT NULL, `itemList` TEXT NOT NULL, `realWidth` INTEGER NOT NULL, `realHeight` INTEGER NOT NULL, PRIMARY KEY(`templateId`))");
         }
     };
 

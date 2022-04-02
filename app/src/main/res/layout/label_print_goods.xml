@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:padding="@dimen/margin_5">
+
+    <TextView
+        android:id="@+id/rowId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/margin_5"
+        android:text="1、"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/goods_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="某某商品"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@+id/rowId"
+        app:layout_constraintTop_toTopOf="@id/rowId" />
+
+    <TextView
+        android:id="@+id/price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="￥888.00"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/rowId" />
+
+    <TextView
+        android:id="@+id/barcode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="6922711043401"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_14"
+        app:layout_constraintStart_toStartOf="@id/goods_title"
+        app:layout_constraintTop_toBottomOf="@id/goods_title" />
+
+    <TextView
+        android:id="@+id/spec"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/barcode" />
+</androidx.constraintlayout.widget.ConstraintLayout>

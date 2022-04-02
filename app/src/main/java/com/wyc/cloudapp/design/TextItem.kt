@@ -36,6 +36,10 @@ open class TextItem:ItemBase() {
                 field = value
 
                 mRect.setEmpty()
+
+                mPaint.textSize = value
+                mPaint.letterSpacing = mLetterSpacing
+
                 getBound(mRect)
                 if (width <= mRect.width()) {
                     width = mRect.width()
@@ -48,18 +52,18 @@ open class TextItem:ItemBase() {
 
     var mFontColor = Color.BLACK
     var mLetterSpacing = 0f
+    var hasNewLine = false
 
     @JSONField(serialize = false)
     private val scaleFactor = CustomApplication.self().resources.displayMetrics.scaledDensity
     @JSONField(serialize = false)
-    protected var mPaint:Paint? = null
+    protected var mPaint:Paint = Paint()
     @JSONField(serialize = false)
     protected val mRect = Rect()
     @JSONField(serialize = false)
     private var mTextLastWidth = 0
 
-    override fun measureItem(w:Int,h:Int,paint: Paint) {
-        mPaint = paint
+    override fun measureItem(w:Int,h:Int) {
         getBound(mRect)
 
         width = min(mRect.width(),w)
@@ -81,6 +85,8 @@ open class TextItem:ItemBase() {
             paint.style = Paint.Style.FILL
             paint.letterSpacing = mLetterSpacing
 
+            mPaint = paint
+
             if (content.contains("\n")){
                 val str = content.split("\n")
                 var currentY  = 0f
@@ -94,7 +100,6 @@ open class TextItem:ItemBase() {
                 val baseLineY = height / 2 + (abs(paint.fontMetrics.ascent) - paint.fontMetrics.descent) / 2
                 canvas.drawText(content,left + offsetX,top + offsetY + baseLineY,paint)
             }
-            mPaint = paint
         }
     }
 
@@ -113,50 +118,58 @@ open class TextItem:ItemBase() {
             mFontSize += scaleY / 2f
         }else if (abs(scaleX) >= scaleFactor){
             width += scaleX.toInt()
-
+            updateNewline()
+        }
+        mTextLastWidth = mRect.width()
+    }
+    fun updateNewline():Boolean{
+        if (hasNewLine){
             val stringBuffer = StringBuffer(content.replace("\n",""))
             var len = 0f
+
+            mPaint.textSize = mFontSize
+            mPaint.letterSpacing = mLetterSpacing
+
             stringBuffer.forEachIndexed {index,chars->
                 if (chars == '\n')return@forEachIndexed
-                len += (mPaint?.measureText(chars.toString())?:0f)
+                len += mPaint.measureText(chars.toString())
                 if (len > width){
-
-                    if (index > 0 && stringBuffer[index - 1] != '\n')
+                    if (index > 0 && stringBuffer[index - 1] != '\n'){
                         stringBuffer.insert(index,"\n")
-
+                    }
                     len = 0f
                 }
             }
             content = stringBuffer.toString()
-
             getBound(mRect)
             height = mRect.height()
+
+            return true
+        }else{
+            content = content.replace("\n","")
         }
-        mTextLastWidth = mRect.width()
+        return false
     }
+
     protected fun getBound(b:Rect,c:String = ""){
-        mPaint?.let { paint ->
-            paint.textSize = mFontSize
-            paint.letterSpacing = mLetterSpacing
-            val t = Rect()
-            val tmp = if (Utils.isNotEmpty(c)) c else content
-            if (tmp.contains("\n")){
-                val aStr = tmp.split("\n")
-                var currentY: Float
-                var maxWidth = 0
-                aStr.forEach {
-                    paint.getTextBounds(it,0,it.length,t)
-                    currentY = t.height() + paint.fontMetrics.leading + paint.fontMetrics.descent
-                    b.bottom += currentY.toInt()
-                    if (t.width() > maxWidth)
-                        maxWidth = t.width()
-                }
-                b.right += maxWidth
-            }else{
-                paint.getTextBounds(tmp,0,tmp.length,t)
-                b.right += t.width()
-                b.bottom += t.height()
+        val t = Rect()
+        val tmp = if (Utils.isNotEmpty(c)) c else content
+        if (tmp.contains("\n")){
+            val aStr = tmp.split("\n")
+            var currentY: Float
+            var maxWidth = 0
+            aStr.forEach {
+                mPaint.getTextBounds(it,0,it.length,t)
+                currentY = t.height() + mPaint.fontMetrics.leading + mPaint.fontMetrics.descent
+                b.bottom += currentY.toInt()
+                if (t.width() > maxWidth)
+                    maxWidth = t.width()
             }
+            b.right += maxWidth
+        }else{
+            mPaint.getTextBounds(tmp,0,tmp.length,t)
+            b.right += t.width()
+            b.bottom += t.height()
         }
     }
 

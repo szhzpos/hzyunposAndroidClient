@@ -1,4 +1,4 @@
-package com.wyc.cloudapp.activity.normal
+package com.wyc.cloudapp.design
 
 import android.app.Activity
 import android.content.Intent
@@ -12,13 +12,9 @@ import com.gprinter.utils.CallbackListener
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.customizationView.TopDrawableTextView
-import com.wyc.cloudapp.design.GPPrinter
-import com.wyc.cloudapp.design.LabelPrintSetting
-import com.wyc.cloudapp.design.LabelTemplate
-import com.wyc.cloudapp.design.LabelView
 import com.wyc.cloudapp.dialog.MyDialog
 
-class LabelActivity : AbstractDefinedTitleActivity(), View.OnClickListener,CallbackListener {
+class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener,CallbackListener {
     private var mLabelView:LabelView? = null
     private var mCurBtn:TopDrawableTextView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +40,7 @@ class LabelActivity : AbstractDefinedTitleActivity(), View.OnClickListener,Callb
             }
         })
     }
+
     private fun initLabelName(){
         findViewById<EditText>(R.id.label_name)?.apply {
                setText(mLabelView?.getLabelName())
@@ -74,7 +71,7 @@ class LabelActivity : AbstractDefinedTitleActivity(), View.OnClickListener,Callb
     }
     private fun initLabelSize(){
         findViewById<Spinner>(R.id.label_size)?.apply {
-            val adapter = ArrayAdapter<String>(this@LabelActivity, R.layout.drop_down_style)
+            val adapter = ArrayAdapter<String>(this@LabelDesignActivity, R.layout.drop_down_style)
             adapter.setDropDownViewResource(R.layout.drop_down_style)
             mLabelView?.getLabelSize()?.forEach {
                 adapter.add(it.description)
@@ -119,7 +116,7 @@ class LabelActivity : AbstractDefinedTitleActivity(), View.OnClickListener,Callb
     companion object{
         @JvmStatic
         fun start(context: Activity){
-            context.startActivity(Intent(context,LabelActivity::class.java))
+            context.startActivity(Intent(context, LabelDesignActivity::class.java))
         }
     }
     private fun swapCurBtn(v: View){
@@ -184,8 +181,9 @@ class LabelActivity : AbstractDefinedTitleActivity(), View.OnClickListener,Callb
                     if((v as TopDrawableTextView).hasNormal()){
                         var n = mLabelView?.getPrintNumber()?:0
                         while (n-- > 0){
-                            GPPrinter.sendDataToPrinter(mLabelView?.getGPTscCommand()?.command)
+                            GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoodsById("20765")?.command)
                         }
+                        this@LabelDesignActivity.findViewById<ImageView>(R.id.imageView3).setImageBitmap(mLabelView?.printSingleGoodsBitmap("20765"))
                     }else{
                         connPrinter()
                     }

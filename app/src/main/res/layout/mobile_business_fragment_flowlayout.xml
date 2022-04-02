@@ -46,13 +46,14 @@
             android:visibility="visible"
             app:layout_weight_width="0.333"
             app:moduleId="51"
-            app:verSpacing="@dimen/margin_2" />
+            app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
             android:id="@+id/goods_record_tv"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/business_item_height"
             android:drawableTop="@drawable/distribution_warehouse"
+            android:gravity="center"
             android:tag="activity.mobile.business.MobileSelectGoodsActivity"
             android:text="@string/goods_record_sz"
             android:textColor="@color/text_color"
@@ -82,6 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/business_item_height"
             android:drawableTop="@drawable/supplier"
+            android:gravity="center"
             android:tag="activity.mobile.business.MobileSupplierInfoActivity"
             android:text="@string/supplier_sz"
             android:textColor="@color/text_color"
@@ -124,6 +126,22 @@
             app:moduleId="55"
             app:perId="56"
             app:verSpacing="@dimen/margin_5" />
+
+        <com.wyc.cloudapp.customizationView.TopDrawableTextView
+            android:id="@+id/label_print"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/business_item_height"
+            android:drawableTop="@drawable/distribution_warehousing"
+            android:gravity="center"
+            android:tag="design.LabelPrintActivity"
+            android:text="@string/label_print"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="visible"
+            app:hide="false"
+            app:layout_weight_width="0.333"
+            app:perId="56"
+            app:verSpacing="@dimen/margin_5" />
     </com.wyc.cloudapp.customizationView.FlowLayout>
 
     <com.wyc.cloudapp.customizationView.FlowLayout
@@ -151,6 +169,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/business_item_height"
             android:drawableTop="@drawable/purchase_order"
+            android:gravity="center"
             android:tag="activity.mobile.business.MobilePurchaseOrderActivity"
             android:text="@string/purchase_order_sz"
             android:textColor="@color/text_color"
@@ -218,6 +237,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/business_item_height"
             android:drawableTop="@drawable/wholesale"
+            android:gravity="center"
             android:tag="activity.mobile.business.MobileWholesaleOrderActivity"
             android:text="@string/wholesale_order_sz"
             android:textColor="@color/text_color"
@@ -327,6 +347,7 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/business_item_height"
             android:drawableTop="@drawable/other_inventory"
+            android:gravity="center"
             android:tag="activity.mobile.business.MobileOtherWarehouseOrderActivity"
             android:text="@string/other_inventory_sz"
             android:textColor="@color/text_color"

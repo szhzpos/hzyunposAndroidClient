@@ -38,11 +38,17 @@ open class BarcodeItem:ItemBase() {
             field = value
             mBitmap = generateBitmap()
         }
+    /**
+     * 引用数据字段。如果不为空则content的值需要从数据源获取，获取数据源的具体值由field的值决定
+     * */
+    var field = ""
 
     @JSONField(serialize = false)
     private var mBitmap:Bitmap? = null
     @JSONField(serialize = false)
     private var mBottomMarge = Rect()
+    @JSONField(serialize = false)
+    var hasMark = true
 
     override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         mBitmap?.let {
@@ -51,6 +57,22 @@ open class BarcodeItem:ItemBase() {
             canvas.drawBitmap(it, null,RectF(l,t,l + width,t + height),paint)
 
             drawContent(l,t,canvas,paint)
+
+            if (hasMark && field.isNotEmpty()){
+                val r = radian % 360 != 0f
+                if (r){
+                    canvas.save()
+                    canvas.rotate(-radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
+                }
+
+                paint.color = Color.RED
+                paint.style = Paint.Style.STROKE
+                canvas.drawRect(cRECT,paint)
+
+                if (r){
+                    canvas.restore()
+                }
+            }
         }
     }
     private fun drawContent(l: Float, t: Float,canvas: Canvas, paint: Paint){
@@ -82,7 +104,7 @@ open class BarcodeItem:ItemBase() {
         }
     }
 
-    override fun measureItem(w: Int, h: Int, paint: Paint) {
+    override fun measureItem(w: Int, h: Int) {
         if (mBitmap == null){
             when(barcodeFormat){
                 BarcodeFormat.QR_CODE ->{
@@ -142,18 +164,7 @@ open class BarcodeItem:ItemBase() {
                     else pixels[offset + x] = Color.WHITE
                 }
             }
-
-            if (mBitmap != null){
-                if (width >= mBitmap!!.width || height >= mBitmap!!.height ){
-                    mBitmap!!.recycle()
-                    mBitmap = null
-                }else mBitmap!!.reconfigure(width,height,Bitmap.Config.ARGB_8888)
-            }
-            val bitmap = if (mBitmap != null){
-                mBitmap!!
-            }else{
-                Bitmap.createBitmap(codeWidth, codeHeight, Bitmap.Config.ARGB_8888)
-            }
+            val bitmap = Bitmap.createBitmap(codeWidth, codeHeight, Bitmap.Config.ARGB_8888)
             bitmap.setPixels(pixels, 0, codeWidth, 0, 0, codeWidth, codeHeight)
 
             return bitmap

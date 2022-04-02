@@ -1022,4 +1022,6 @@
     <string name="hor_offset">水平偏移</string>
     <string name="ver_offset">垂直偏移</string>
     <string name="dpi">分辨率</string>
+    <string name="label_print">标签打印</string>
+    <string name="label_preview">标签预览</string>
 </resources>
