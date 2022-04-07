@@ -409,8 +409,8 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setDataAndType(mImageUri, "image/*");
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
+        //intent.putExtra("aspectX", 1);
+        //intent.putExtra("aspectY", 2);
         intent.putExtra("outputX", 1200);
         intent.putExtra("outputY", 1200);
         intent.putExtra("scale", false);

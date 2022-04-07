@@ -174,15 +174,17 @@
 -keepattributes *Annotation*
 
 
--keep class com.wyc.cloudapp.dialog.serialScales.* { *; }
--keep class com.wyc.cloudapp.dialog.barcodeScales.* { *; }
--keep class com.wyc.cloudapp.bean.*{ *; }
+-keep class com.wyc.cloudapp.dialog.serialScales.** { *; }
+-keep class com.wyc.cloudapp.dialog.barcodeScales.** { *; }
+-keep class com.wyc.cloudapp.bean.**{ *; }
 
--keep class com.wyc.cloudapp.print.bean.* { *; }
--keep class com.wyc.cloudapp.print.printer.* { *; }
--keep class com.wyc.cloudapp.print.receipts.*{ *; }
--keep class com.wyc.cloudapp.print.parameter.*{ *; }
--keep class com.wyc.cloudapp.design.*{*;}
+-keep class com.wyc.cloudapp.print.bean.** { *; }
+-keep class com.wyc.cloudapp.print.printer.** { *; }
+-keep class com.wyc.cloudapp.print.receipts.**{ *; }
+-keep class com.wyc.cloudapp.print.parameter.**{ *; }
+-keep class com.wyc.cloudapp.design.**{*;}
+-keep class com.gprinter.**{*;}
+-keep class com.jcraft.**{ *; }
 
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**

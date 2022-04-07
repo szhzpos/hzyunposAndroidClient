@@ -52,12 +52,12 @@ open class ShapeItemBase:ItemBase() {
 
     }
 
-    override fun createItemBitmap(): Bitmap {
+    override fun createItemBitmap(bgColor:Int): Bitmap {
         val offset = borderWidth / 2
         val bmp = Bitmap.createBitmap((width + offset).toInt(), (height + offset).toInt(), Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
         c.translate(-left + offset, -top + offset)
-        c.drawColor(Color.WHITE)
+        c.drawColor(bgColor)
         draw(0f,0f,c, Paint())
         return bmp
     }

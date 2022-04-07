@@ -9,6 +9,7 @@ import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
+import java.lang.StringBuilder
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
@@ -52,7 +53,7 @@ open class TextItem:ItemBase() {
 
     var mFontColor = Color.BLACK
     var mLetterSpacing = 0f
-    var hasNewLine = false
+    var hasNewLine = true
 
     @JSONField(serialize = false)
     private val scaleFactor = CustomApplication.self().resources.displayMetrics.scaledDensity
@@ -64,12 +65,14 @@ open class TextItem:ItemBase() {
     private var mTextLastWidth = 0
 
     override fun measureItem(w:Int,h:Int) {
+        mPaint.textSize = mFontSize
+        mPaint.letterSpacing = mLetterSpacing
+
+        mRect.setEmpty()
         getBound(mRect)
 
         width = min(mRect.width(),w)
         height = min(mRect.height(),h)
-
-        mRect.setEmpty()
     }
 
     override fun transform(scaleX: Float, scaleY: Float) {
@@ -124,23 +127,23 @@ open class TextItem:ItemBase() {
     }
     fun updateNewline():Boolean{
         if (hasNewLine){
-            val stringBuffer = StringBuffer(content.replace("\n",""))
+            val stringBuilder = StringBuilder(content.replace("\n",""))
             var len = 0f
 
             mPaint.textSize = mFontSize
             mPaint.letterSpacing = mLetterSpacing
 
-            stringBuffer.forEachIndexed {index,chars->
+            stringBuilder.forEachIndexed {index,chars->
                 if (chars == '\n')return@forEachIndexed
                 len += mPaint.measureText(chars.toString())
                 if (len > width){
-                    if (index > 0 && stringBuffer[index - 1] != '\n'){
-                        stringBuffer.insert(index,"\n")
+                    if (index > 0 && stringBuilder[index - 1] != '\n'){
+                        stringBuilder.insert(index,"\n")
                     }
                     len = 0f
                 }
             }
-            content = stringBuffer.toString()
+            content = stringBuilder.toString()
             getBound(mRect)
             height = mRect.height()
 
@@ -151,7 +154,7 @@ open class TextItem:ItemBase() {
         return false
     }
 
-    protected fun getBound(b:Rect,c:String = ""){
+    private fun getBound(b:Rect, c:String = ""){
         val t = Rect()
         val tmp = if (Utils.isNotEmpty(c)) c else content
         if (tmp.contains("\n")){

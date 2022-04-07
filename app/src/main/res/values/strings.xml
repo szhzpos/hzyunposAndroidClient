@@ -463,7 +463,7 @@
     <string name="gift_card_query_sz">购物卡查询</string>
 
     <!--挂单窗口-->
-    <string name="delete_sz">删除</string>
+    <string name="delete_sz">@string/delete</string>
     <string name="hang_id_colon">挂单单号：</string>
     <string name="hang_time_sz">挂单时间：</string>
     <string name="vip_info_sz_colon">会员信息：</string>
@@ -987,7 +987,7 @@
     <string name="print_finished">打印完成：%1$s</string>
     <string name="feedPaperFinished">走纸完成：%1$s</string>
 
-    <!-- 标签编辑 -->
+    <!-- 标签打印相关 -->
     <string name="label_setting">标签设置</string>
     <string name="text">文字</string>
     <string name="preview">预览</string>
@@ -998,6 +998,7 @@
     <string name="label_date">日期</string>
     <string name="data">数据列</string>
     <string name="image">图像</string>
+    <string name="bg">背景</string>
     <string name="delete">删除</string>
     <string name="shrink">缩小</string>
     <string name="zoom">放大</string>
@@ -1024,4 +1025,11 @@
     <string name="dpi">分辨率</string>
     <string name="label_print">标签打印</string>
     <string name="label_preview">标签预览</string>
+    <string name="clear_goods_hints">是否清空商品?</string>
+    <string name="add_label">新增标签</string>
+    <string name="label_name">标签名称：</string>
+    <string name="label_width">宽度：</string>
+    <string name="label_height">高度：</string>
+    <string name="default_format">默认格式：</string>
+    <string name="local_label">本地标签</string>
 </resources>

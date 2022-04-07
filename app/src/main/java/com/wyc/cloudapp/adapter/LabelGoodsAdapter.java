@@ -1,5 +1,7 @@
 package com.wyc.cloudapp.adapter;
 
+import android.annotation.SuppressLint;
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -10,7 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.customizationView.SwipeLayout;
 import com.wyc.cloudapp.design.DataItem;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
@@ -47,7 +51,7 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods
         }
     }
 
-    static class MyViewHolder extends AbstractDataAdapterForJson.SuperViewHolder {
+    static class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
         @BindView(R.id.rowId)
         TextView rowId;
         @BindView(R.id.goods_title)
@@ -67,11 +71,18 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods
             ButterKnife.bind(this,itemView);
         }
     }
+    @SuppressLint("NotifyDataSetChanged")
     @NonNull
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        final View itemView = View.inflate(parent.getContext(), R.layout.label_print_goods, null);
+        final SwipeLayout itemView = (SwipeLayout)View.inflate(parent.getContext(), R.layout.label_print_swipe_container, null);
         final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+        itemView.addMenuItem(parent.getContext().getString(R.string.delete_sz), v -> {
+            mData.remove((DataItem.LabelGoods)itemView.getTag());
+            itemView.setTag(null);
+            itemView.closeRightMenu();
+            notifyDataSetChanged();
+        }, Color.RED);
         itemView.setLayoutParams(lp);
         itemView.setOnClickListener(this);
         return new MyViewHolder(itemView);

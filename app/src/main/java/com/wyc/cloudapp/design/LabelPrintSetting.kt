@@ -32,8 +32,9 @@ class LabelPrintSetting {
     var way: Way by change(Way.BLUETOOTH_PRINT)
 
     enum class Rotate(degree:Int){
-        D_0(0),D_90(90),D_180(180),D_270(270);
+        D_0(0),D_180(180);
         val description:String = degree.toString()
+        val value = degree
     }
     /**
      * 打印偏移 单位mm

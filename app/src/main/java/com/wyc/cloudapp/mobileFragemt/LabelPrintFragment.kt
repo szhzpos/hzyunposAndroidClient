@@ -10,21 +10,26 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.databinding.DataBindingUtil
 import butterknife.OnClick
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.wyc.cloudapp.R
+import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity
 import com.wyc.cloudapp.design.LabelDesignActivity
 import com.wyc.cloudapp.design.LabelPrintSetting
 import com.wyc.cloudapp.bean.TreeListItem
 import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.databinding.LabelPrintSettingBinding
+import com.wyc.cloudapp.design.BrowseLabelActivity
 import com.wyc.cloudapp.design.LabelTemplate
 import com.wyc.cloudapp.dialog.CustomProgressDialog
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.BluetoothUtils
 import java.lang.NumberFormatException
 
@@ -46,17 +51,37 @@ import java.lang.NumberFormatException
 class LabelPrintFragment: AbstractMobileFragment() {
     private var mProgressDialog: CustomProgressDialog? = null
     private var mBluetoothDevices:MutableList<TreeListItem>? = null
+    private var mLabelTemplateSelector: ActivityResultLauncher<Intent>? = null
     override fun viewCreated() {
         if (mContext is MobileSetupActivity){
             val abs = mContext as MobileSetupActivity
             abs.setRightTitle(getString(R.string.save_sz)) { DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)?.setting?.saveSetting() }
         }
         initParam()
+
+        registerGoodsCallback()
     }
     private fun initParam(){
         val setting = LabelPrintSetting.getSetting()
         DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)?.setting = setting
         BluetoothUtils.bondBlueTooth(setting.getPrinterAddress())
+    }
+
+    private fun registerGoodsCallback(){
+        mLabelTemplateSelector = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == AbstractDefinedTitleActivity.RESULT_OK){
+                it.data?.getParcelableExtra<LabelTemplate>(BrowseLabelActivity.LABEL_KEY)?.apply {
+                    findViewById<TextView>(R.id.template_tv)?.text = templateName
+                    val setting: LabelPrintSetting? = DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)?.setting
+                    try {
+                        setting?.labelTemplateId = templateId
+                    }catch (e:NumberFormatException){
+                        e.printStackTrace()
+                    }
+                    setting?.labelTemplateName = templateName
+                }
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -156,32 +181,8 @@ class LabelPrintFragment: AbstractMobileFragment() {
     }
 
     @OnClick(R.id.template_tv)
-    fun spec(view: View){
-        val treeListDialog = TreeListDialogForObj(mContext, mContext.getString(R.string.paper_spec))
-        treeListDialog.setData(convertTemplate(), null, true)
-        if (treeListDialog.exec() == 1) {
-            val obj = treeListDialog.singleContent
-            (view as TextView).text = obj.item_name
-
-            val setting: LabelPrintSetting? = DataBindingUtil.bind<LabelPrintSettingBinding>(rootView)?.setting
-            try {
-                setting?.labelTemplateId = obj.item_id.toInt()
-            }catch (e:NumberFormatException){
-                e.printStackTrace()
-            }
-            setting?.labelTemplateName = obj.item_name
-        }
-    }
-    private fun convertTemplate(): List<TreeListItem> {
-        val data: MutableList<TreeListItem> = ArrayList()
-        val  values: MutableList<LabelTemplate> = AppDatabase.getInstance().LabelTemplateDao().getAll()
-        values.iterator().forEach {
-            val item = TreeListItem()
-            item.item_id = it.templateId.toString()
-            item.item_name = it.templateName
-            data.add(item)
-        }
-        return data
+    fun spec() {
+        mLabelTemplateSelector?.launch(Intent(requireContext(),BrowseLabelActivity::class.java))
     }
 
     @OnClick(R.id.rotate_tv)

@@ -143,7 +143,7 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             final String barcode = intent.getStringExtra(SEARCH_KEY);
             if (Utils.isNotEmpty(barcode) && mSearchContentEt != null){
                 mSearchContentEt.setText(barcode);
-                CustomApplication.runInMainThread(()->search(barcode));
+                mSearchContentEt.post(()->search(barcode));
             }
         }
     }

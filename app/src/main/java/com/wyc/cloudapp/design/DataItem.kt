@@ -5,10 +5,13 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.os.Parcel
 import android.os.Parcelable
+import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.dialog.MyDialog
+import com.wyc.cloudapp.logger.Logger
+import java.lang.StringBuilder
 
 
 /**
@@ -54,9 +57,11 @@ class DataItem:TextItem() {
 
 
     companion object{
+        const val  field = "barcode_id barcodeId,goods_title goodsTitle, barcode,unit_name unit,origin,spec_str spec,yh_price,retail_price"
         @JvmStatic
-        fun getGoodsDataById(barcodeId:String):LabelGoods?{
-            val sql = "select goods_title goodsTitle, barcode,unit_name unit,origin,spec_str,yh_price,retail_price from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
+        fun getGoodsDataById(barcodeId:String?):LabelGoods?{
+            val sql = if (barcodeId.isNullOrEmpty()) "select $field from barcode_info where goods_status = 1 and barcode_status = 1 limit 1" else
+                "select $field from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
             val goods = JSONObject()
             if (!SQLiteHelper.execSql(goods,sql)){
                 MyDialog.toastMessage(goods.getString("info"))
@@ -64,6 +69,18 @@ class DataItem:TextItem() {
             }
             if (goods.isEmpty())return null
             return goods.toJavaObject(LabelGoods::class.java)
+        }
+        @JvmStatic
+        fun getGoodsDataByBarcode(barcode:String):MutableList<LabelGoods>{
+            val sql = "select $field from barcode_info where barcode = $barcode and (goods_status = 1 and barcode_status = 1)"
+            val sb = StringBuilder()
+            val goods = SQLiteHelper.getListToJson(sql,sb)
+            if (goods != null){
+                return goods.toJavaList(LabelGoods::class.java)
+            }else{
+                MyDialog.toastMessage(sb.toString())
+            }
+            return mutableListOf()
         }
     }
 
@@ -139,9 +156,7 @@ class DataItem:TextItem() {
             return barcodeId?.hashCode() ?: 0
         }
 
-        override fun toString(): String {
-            return "LabelGoods(barcodeId=$barcodeId, goodsTitle=$goodsTitle, barcode=$barcode, unit=$unit, origin=$origin, yh_price=$yh_price, retail_price=$retail_price)"
-        }
+
 
         override fun writeToParcel(parcel: Parcel, flags: Int) {
             parcel.writeString(barcodeId)
@@ -157,6 +172,10 @@ class DataItem:TextItem() {
 
         override fun describeContents(): Int {
             return 0
+        }
+
+        override fun toString(): String {
+            return "LabelGoods(barcodeId=$barcodeId, goodsTitle=$goodsTitle, barcode=$barcode, unit=$unit, spec=$spec, origin=$origin, level=$level, yh_price=$yh_price, retail_price=$retail_price)"
         }
 
         companion object CREATOR : Parcelable.Creator<LabelGoods> {

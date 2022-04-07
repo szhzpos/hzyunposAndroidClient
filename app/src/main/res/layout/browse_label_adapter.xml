@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_35"
+        android:background="@drawable/bottom_separator"
+        android:gravity="center"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16" />
+
+    <com.wyc.cloudapp.design.LabelView
+        android:id="@+id/labelView"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/size_15"
+        android:clickable="false"
+        android:visibility="visible"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+</LinearLayout>

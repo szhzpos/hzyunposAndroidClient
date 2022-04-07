@@ -261,7 +261,7 @@ open class ItemBase:Cloneable{
         active = true
     }
 
-    open fun createItemBitmap():Bitmap{
+    open fun createItemBitmap(bgColor:Int = Color.WHITE):Bitmap{
         var bmp:Bitmap = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
         if (radian != 0f){
             val rect = RectF(left.toFloat(), top.toFloat(), left + width.toFloat(), top + height.toFloat())
@@ -275,7 +275,7 @@ open class ItemBase:Cloneable{
             bmp.recycle()
             bmp = Bitmap.createBitmap(rect.width().toInt(), rect.height().toInt(),Bitmap.Config.ARGB_8888)
             val c = Canvas(bmp)
-            c.drawColor(Color.WHITE)
+            c.drawColor(bgColor)
 
             c.translate((-left).toFloat(), (-top).toFloat())
             c.rotate(radian,  rect.centerX(), rect.centerY())
@@ -283,7 +283,7 @@ open class ItemBase:Cloneable{
             drawItem((rect.width() - width) / 2f,(rect.height() - height) / 2f,c, Paint())
         }else{
             val c = Canvas(bmp)
-            c.drawColor(Color.WHITE)
+            c.drawColor(bgColor)
             c.translate((-left).toFloat(), (-top).toFloat())
             drawItem(0f,0f,c, Paint())
         }

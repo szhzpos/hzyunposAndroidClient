@@ -1,7 +1,10 @@
 package com.wyc.cloudapp.design
 
+import android.graphics.Canvas
 import android.graphics.Paint
+import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.FormatDateTimeUtils
+import java.lang.StringBuilder
 import kotlin.math.min
 
 
@@ -22,34 +25,20 @@ import kotlin.math.min
 class DateItem: TextItem() {
     var dateFormat = FORMAT.Y_M_D_H_M_S
     override var content: String = FormatDateTimeUtils.formatCurrentTime(dateFormat.format)
-        get() {
-            if (!hasInit() && autoUpdate && !scaling){
-                val stringBuffer = StringBuffer(FormatDateTimeUtils.formatCurrentTime(dateFormat.format))
-                var len = 0f
 
-                mPaint.textSize = mFontSize
-                mPaint.letterSpacing = mLetterSpacing
-
-                stringBuffer.forEachIndexed {index,chars->
-                    if (chars == '\n')return@forEachIndexed
-                    len += (mPaint.measureText(chars.toString()) ?:0f)
-                    if (len > width){
-
-                        if (index > 0 && stringBuffer[index - 1] != '\n')
-                            stringBuffer.insert(index,"\n")
-
-                        len = 0f
-                    }
-                }
-                content = stringBuffer.toString()
-
-                mRect.setEmpty()
-                getBound(mRect,stringBuffer.toString())
-                height = mRect.height()
-            }
-            return field
-        }
     var autoUpdate = true
+
+    override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
+        if (autoUpdate){
+            val v = FormatDateTimeUtils.formatCurrentTime(dateFormat.format)
+            val index = content.indexOf("\n")
+            if (index != -1 && v.length > index){
+                val stringBuilder = StringBuilder(v)
+                content = stringBuilder.insert(index,"\n").toString()
+            }
+        }
+        super.drawItem(offsetX, offsetY, canvas, paint)
+    }
 
     enum class FORMAT(f:String,d:String){
         Y_M("YYYY-MM","年-月"),Y_M_D("YYYY-MM-dd","年-月-日"),Y_M_D_H_M("YYYY-MM-dd HH:mm","年-月-日 时:分"),
