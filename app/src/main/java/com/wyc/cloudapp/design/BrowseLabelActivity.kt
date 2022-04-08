@@ -9,7 +9,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.R
@@ -69,8 +68,10 @@ class BrowseLabelActivity : AbstractDefinedTitleActivity() {
         when (item.itemId) {
             1 -> {
                 mCurLabel?.let {
-                    AppDatabase.getInstance().LabelTemplateDao().deleteTemplateById(it)
-                    mAdapter?.deleteLabel(it)
+                    if (MyDialog.showMessageToModalDialog(this,getString(R.string.delete_label_hint,it.templateName)) == 1){
+                        AppDatabase.getInstance().LabelTemplateDao().deleteTemplateById(it)
+                        mAdapter?.deleteLabel(it)
+                    }
                 }
             }
             2 -> {

@@ -1032,4 +1032,12 @@
     <string name="label_height">高度：</string>
     <string name="default_format">默认格式：</string>
     <string name="local_label">本地标签</string>
+    <string name="delete_label_hint">是否删除 %1$s ?></string>
+    <string name="bold">粗体</string>
+    <string name="italic">斜体</string>
+    <string name="underLine">下划线</string>
+    <string name="delLine">删除线</string>
+    <string name="letterSpacing">字间距</string>
+    <string name="newline">换行</string>
+    <string name="font">字&#160;&#160;&#160;体</string>
 </resources>

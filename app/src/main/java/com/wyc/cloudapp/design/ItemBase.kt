@@ -1,6 +1,11 @@
 package com.wyc.cloudapp.design
 
+import android.app.Dialog
+import android.content.Context
 import android.graphics.*
+import android.view.Gravity
+import android.view.View
+import android.view.WindowManager
 import androidx.annotation.CallSuper
 import androidx.core.graphics.transform
 import com.alibaba.fastjson.annotation.JSONField
@@ -69,7 +74,7 @@ open class ItemBase:Cloneable{
             canvas.restore()
         }
         if (active)drawAction(offsetX, offsetY,canvas,paint)
-        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint)
+        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint) else drawItemBaseLine(canvas,paint)
     }
 
     public override fun clone(): ItemBase {
@@ -110,6 +115,9 @@ open class ItemBase:Cloneable{
 
     }
 
+    open fun popMenu(labelView: LabelView){
+
+    }
 
     open fun zoom(){
         scale(width * 0.2f,height * 0.2f)
@@ -123,7 +131,7 @@ open class ItemBase:Cloneable{
             measureItem(w,h)
         }
     }
-    protected fun hasInit():Boolean{
+    private fun hasInit():Boolean{
         return width == -1 && height == -1
     }
 
@@ -144,6 +152,19 @@ open class ItemBase:Cloneable{
 
         paint.pathEffect = null
     }
+    private fun drawItemBaseLine(canvas:Canvas, paint: Paint){
+        if (this is TextItem){
+            paint.color = Color.BLUE
+            paint.style = Paint.Style.STROKE
+            paint.pathEffect = DashPathEffect(floatArrayOf(4f,6f),0f)
+
+            canvas.drawRect(cRECT,paint)
+
+            paint.pathEffect = null
+        }
+    }
+
+
     private fun drawAction(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint) {
         updateActionRect(offsetX + left,offsetY + top)
 
@@ -232,11 +253,21 @@ open class ItemBase:Cloneable{
             }
         }
     }
+
     fun hasSelect(x:Float, y:Float, offsetX: Int, offsetY: Int):Boolean{
-        cRECT.set(left.toFloat(), top.toFloat(), (left + width).toFloat(), (top + height).toFloat())
-        if (radian != 0f){
-            ROTATE_MATRIX.setRotate(radian,left + width / 2f,top + height / 2f)
-            cRECT.transform(ROTATE_MATRIX)
+        if (this is LineItem){
+            val diameter = ACTION_RADIUS * 2
+            cRECT.set(left  - diameter, top  - diameter, left + width + diameter, top + height + diameter)
+            if (radian != 0f){
+                ROTATE_MATRIX.setRotate(radian,left + width / 2f,top + height / 2f)
+                cRECT.transform(ROTATE_MATRIX)
+            }
+        }else{
+            cRECT.set(left.toFloat(), top.toFloat(), (left + width).toFloat(), (top + height).toFloat())
+            if (radian != 0f){
+                ROTATE_MATRIX.setRotate(radian,left + width / 2f,top + height / 2f)
+                cRECT.transform(ROTATE_MATRIX)
+            }
         }
         active = DEL_RECT.contains(x,y) || SCALE_RECT.contains(x,y) || cRECT.contains(x - offsetX,y - offsetY)
         return active
@@ -288,6 +319,18 @@ open class ItemBase:Cloneable{
             drawItem(0f,0f,c, Paint())
         }
         return bmp
+    }
+
+    protected fun showEditDialog(context: Context, view:View){
+        val pop = Dialog(context, R.style.MyDialog)
+        pop.window?.apply {
+            val wlp: WindowManager.LayoutParams = attributes
+            wlp.gravity = Gravity.BOTTOM
+            wlp.y = 68
+            attributes = wlp
+        }
+        pop.setContentView(view)
+        pop.show()
     }
 
     override fun toString(): String {

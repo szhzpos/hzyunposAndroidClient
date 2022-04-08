@@ -1,17 +1,23 @@
 package com.wyc.cloudapp.design
 
+import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Rect
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
+import android.widget.CheckBox
+import android.widget.EditText
+import android.widget.SeekBar
 import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.customizationView.MySeekBar
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
-import java.lang.StringBuilder
 import kotlin.math.abs
-import kotlin.math.max
 import kotlin.math.min
 
 
@@ -30,33 +36,25 @@ import kotlin.math.min
  */
 
 open class TextItem:ItemBase() {
+    private val minFontSize = CustomApplication.self().resources.getDimensionPixelSize(R.dimen.font_size_10)
+    private val maxFontSize = 128
+
     open var content = "编辑内容"
     var mFontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_18)
         set(value) {
-            if (value <= 200f) {
-                field = value
-
-                mRect.setEmpty()
-
-                mPaint.textSize = value
-                mPaint.letterSpacing = mLetterSpacing
-
-                getBound(mRect)
-                if (width <= mRect.width()) {
-                    width = mRect.width()
-                } else if (mTextLastWidth > mRect.width()) {
-                    width += mRect.width() - mTextLastWidth
-                }
-                height = mRect.height()
-            }else field = 200f
+            field = if (value <= maxFontSize) {
+                if (value < minFontSize) minFontSize.toFloat() else value
+            }else maxFontSize.toFloat()
         }
 
     var mFontColor = Color.BLACK
     var mLetterSpacing = 0f
     var hasNewLine = true
+    var hasBold = false
+    var hasItalic = false
+    var hasUnderLine = false
+    var hasDelLine = false
 
-    @JSONField(serialize = false)
-    private val scaleFactor = CustomApplication.self().resources.displayMetrics.scaledDensity
     @JSONField(serialize = false)
     protected var mPaint:Paint = Paint()
     @JSONField(serialize = false)
@@ -88,6 +86,11 @@ open class TextItem:ItemBase() {
             paint.style = Paint.Style.FILL
             paint.letterSpacing = mLetterSpacing
 
+            paint.isFakeBoldText = hasBold
+            paint.textSkewX = if (hasItalic) -0.5f else 0f
+            paint.isUnderlineText = hasUnderLine
+            paint.isStrikeThruText = hasDelLine
+
             mPaint = paint
 
             if (content.contains("\n")){
@@ -115,42 +118,66 @@ open class TextItem:ItemBase() {
     }
 
     override fun scale(scaleX: Float, scaleY: Float) {
-        mRect.setEmpty()
-
-        if (abs(scaleY) >= scaleFactor){
-            mFontSize += scaleY / 2f
-        }else if (abs(scaleX) >= scaleFactor){
+        if (abs(scaleY) >= 1.0f){
+            mFontSize += scaleY
+        }else if (abs(scaleX) >= 1.0f){
             width += scaleX.toInt()
-            updateNewline()
         }
+        updateNewline()
+
         mTextLastWidth = mRect.width()
     }
     fun updateNewline():Boolean{
+        mRect.setEmpty()
+
+        mPaint.textSize = mFontSize
+        mPaint.letterSpacing = mLetterSpacing
+
         if (hasNewLine){
-            val stringBuilder = StringBuilder(content.replace("\n",""))
-            var len = 0f
-
-            mPaint.textSize = mFontSize
-            mPaint.letterSpacing = mLetterSpacing
-
-            stringBuilder.forEachIndexed {index,chars->
-                if (chars == '\n')return@forEachIndexed
-                len += mPaint.measureText(chars.toString())
-                if (len > width){
-                    if (index > 0 && stringBuilder[index - 1] != '\n'){
-                        stringBuilder.insert(index,"\n")
-                    }
-                    len = 0f
-                }
+            if (content.contains("\n")){
+                content = content.replace("\n","")
             }
-            content = stringBuilder.toString()
-            getBound(mRect)
-            height = mRect.height()
+            mPaint.getTextBounds(content,0,content.length,mRect)
+            val newWidth = mRect.width()
 
-            return true
+            if (newWidth > width){
+
+                mPaint.letterSpacing = 0f
+                mPaint.getTextBounds(content,0,content.length,mRect)
+                val oldWidth = mRect.width()
+                mPaint.letterSpacing = mLetterSpacing
+
+                val space = (newWidth - oldWidth).toFloat() / content.length * 2f
+
+                val stringBuilder = StringBuilder(content)
+                var len = 0f
+
+                stringBuilder.forEachIndexed { index, c ->
+                    mPaint.getTextBounds(c.toString(),0,1,mRect)
+                    len += mRect.width().toFloat() + space
+                    if (len > width){
+                        if (index > 0 && stringBuilder[index - 1] != '\n'){
+                            stringBuilder.insert(index,"\n")
+                        }
+                        len = 0f
+                    }
+                }
+                content = stringBuilder.toString()
+                mRect.setEmpty()
+                getBound(mRect)
+                height = mRect.height()
+
+                return true
+            }
         }else{
-            content = content.replace("\n","")
+            if (content.contains("\n")){
+                content = content.replace("\n","")
+            }
+            getBound(mRect)
         }
+
+        height = mRect.height()
+
         return false
     }
 
@@ -176,8 +203,115 @@ open class TextItem:ItemBase() {
         }
     }
 
+    override fun popMenu(labelView: LabelView) {
+        val context = labelView.context
+        if (context is Activity){
+            val view = View.inflate(context,R.layout.text_item_attr,null)
+            showEditDialog(context,view)
+
+            val font: MySeekBar = view.findViewById(R.id.font)
+            font.minValue = minFontSize
+            font.max = maxFontSize - minFontSize
+            font.progress = mFontSize.toInt() - minFontSize
+            font.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    mFontSize = progress.toFloat() + minFontSize
+
+                    updateNewline()
+                    labelView.postInvalidate()
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+                }
+
+            })
+
+            val bCheckBox:CheckBox = view.findViewById(R.id.bold)
+            bCheckBox.isChecked = hasBold
+            bCheckBox.setOnCheckedChangeListener{ _, check ->
+                hasBold = check
+                labelView.postInvalidate()
+            }
+
+            val italic:CheckBox = view.findViewById(R.id.italic)
+            italic.isChecked = hasItalic
+            italic.setOnCheckedChangeListener { _, isChecked ->
+                hasItalic = isChecked
+                updateNewline()
+                labelView.postInvalidate()
+            }
+
+            val underLine:CheckBox = view.findViewById(R.id.underLine)
+            underLine.isChecked = hasUnderLine
+            underLine.setOnCheckedChangeListener { _, isChecked ->
+                hasUnderLine = isChecked
+                labelView.postInvalidate()
+            }
+
+            val delLine:CheckBox = view.findViewById(R.id.delLine)
+            delLine.isChecked = hasDelLine
+            delLine.setOnCheckedChangeListener { _, isChecked ->
+                hasDelLine = isChecked
+                labelView.postInvalidate()
+            }
+
+            val newline:CheckBox = view.findViewById(R.id.newline)
+            newline.isChecked = hasNewLine
+            newline.setOnCheckedChangeListener { _, isChecked ->
+                hasNewLine = isChecked
+                updateNewline()
+                labelView.postInvalidate()
+            }
+
+            val letterSpacing:SeekBar = view.findViewById(R.id.letterSpacing)
+            letterSpacing.progress = (mLetterSpacing * 10).toInt()
+            letterSpacing.max = 20
+            letterSpacing.setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+                override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                    mLetterSpacing = progress / 10f
+                    updateNewline()
+                    labelView.postInvalidate()
+                }
+
+                override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+                }
+
+                override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+                }
+
+            })
+
+            val et:EditText = view.findViewById(R.id.content)
+            et.setText(content)
+            if (this is DataItem){
+                et.isEnabled = false
+            }
+            et.addTextChangedListener(object : TextWatcher{
+                override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+                }
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+                }
+                override fun afterTextChanged(s: Editable) {
+                    content = s.toString()
+                    updateNewline()
+                    labelView.postInvalidate()
+                }
+
+            })
+        }
+    }
+
     override fun toString(): String {
-        return "TextItem(content='$content', mFontSize=$mFontSize, mFontColor=$mFontColor, mLetterSpacing=$mLetterSpacing, scaleFactor=$scaleFactor, mPaint=$mPaint, mRect=$mRect, mTextLastWidth=$mTextLastWidth) ${super.toString()}"
+        return "TextItem(content='$content', mFontSize=$mFontSize, mFontColor=$mFontColor, mLetterSpacing=$mLetterSpacing,mPaint=$mPaint, mRect=$mRect, mTextLastWidth=$mTextLastWidth) ${super.toString()}"
     }
 
 

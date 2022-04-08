@@ -19,7 +19,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.dialog.CustomePopupWindow;
+import com.wyc.cloudapp.dialog.CustomPopupWindow;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogContext;
@@ -30,7 +30,7 @@ import java.lang.reflect.InvocationTargetException;
 public class AddBarcodeScaleDialog extends AbstractDialogContext {
     private EditText mManufacturerEt,mProductType, mScaleName,mPort,mGCategoryEt;
     private LinearLayout mIP;
-    private CustomePopupWindow mPopupWindow;
+    private CustomPopupWindow mPopupWindow;
     private JSONArray mCategoryInfo,mManufacturerInfos, mScaleInfos;
     private OnGetContentCallBack mGetContent;
     private JSONObject mModifyScale;
@@ -49,7 +49,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
         mPort = findViewById(R.id.ser_port);
         mGCategoryEt = findViewById(R.id.g_c_name);
 
-        mPopupWindow = new CustomePopupWindow(mContext);
+        mPopupWindow = new CustomPopupWindow(mContext);
         mCategoryInfo = new JSONArray();
 
         //型号
@@ -132,7 +132,7 @@ public class AddBarcodeScaleDialog extends AbstractDialogContext {
         });
         mManufacturerEt.setSelectAllOnFocus(true);
         mManufacturerEt.setOnClickListener(v -> {
-            mPopupWindow.initContent(null, mManufacturerEt,mManufacturerInfos, new String[]{"name"}, 0, true, new CustomePopupWindow.OngetSelectContent() {
+            mPopupWindow.initContent(null, mManufacturerEt,mManufacturerInfos, new String[]{"name"}, 0, true, new CustomPopupWindow.OngetSelectContent() {
                 @Override
                 public void getContent(JSONObject json) {
                     mScaleInfos = json.getJSONArray("products");

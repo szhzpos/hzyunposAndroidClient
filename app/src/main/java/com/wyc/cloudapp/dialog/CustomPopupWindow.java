@@ -20,7 +20,7 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.R;
 
-public class CustomePopupWindow extends PopupWindow {
+public class CustomPopupWindow extends PopupWindow {
     private static final String SEPARATE = "\t";
     private ListView mListView;
     private ArrayAdapter mArrayAdapter, mTmpAdapter;
@@ -31,7 +31,7 @@ public class CustomePopupWindow extends PopupWindow {
     private JSONArray mShowContents;
     private OngetSelectContent mGetSelectContent;
 
-    public CustomePopupWindow(Context context){
+    public CustomPopupWindow(Context context){
         super(context);
         mContext = context;
         setOutsideTouchable(true);

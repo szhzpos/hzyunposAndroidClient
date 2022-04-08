@@ -18,14 +18,8 @@ import com.wyc.cloudapp.design.LabelTemplate.Companion.width2Pixel
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
 import com.wyc.cloudapp.logger.Logger
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.ObservableOnSubscribe
-import io.reactivex.rxjava3.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
 
@@ -68,13 +62,18 @@ class LabelView: View {
 
     private val mLabelSize = LabelTemplate.getDefaultSize()
 
-    private var hasLayoutItem = false
+    private var mItemChange = false
 
     private var mRotate = 0
     /**
      * 当前模式 true 预览 false 编辑
      * */
     private var mModel = false
+
+
+    private var count = 0
+    private var firClick: Long = 0
+    private var mItemDClick:OnItemDoubleClick? = null
 
     constructor(context: Context):this(context, null)
     constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
@@ -84,6 +83,7 @@ class LabelView: View {
 
     fun updateLabelTemplate(labelTemplate: LabelTemplate){
         mLabelTemplate = labelTemplate
+        mItemChange = true
         adjustLabelSize(labelTemplate.width,labelTemplate.height)
         contentList.clear()
         contentList.addAll(toItem(labelTemplate.itemList))
@@ -170,8 +170,9 @@ class LabelView: View {
                     }
                 };
                 MotionEvent.ACTION_UP->{
-                    deleteItem(event.x,event.y);
-                    releaseCurItem()
+                    if (!deleteItem(event.x,event.y) && !checkDoubleClick()){
+                        releaseCurItem()
+                    }
                 }
             }
             return true
@@ -179,18 +180,46 @@ class LabelView: View {
 
         return super.onTouchEvent(event)
     }
+    private fun checkDoubleClick():Boolean{
+        mCurItem?.apply {
+            count++
+            val interval = 200
+            if (1 == count) {
+                firClick = System.currentTimeMillis()
+            } else if (2 == count) {
+                val secClick = System.currentTimeMillis()
+                if (secClick - firClick < interval) {
+                    popMenu(this@LabelView)
+                    count = 0
+                    firClick = 0
+                    return true
+                } else {
+                    firClick = secClick
+                    count = 1
+                }
+            }
+        }
+        return false
+    }
+    interface OnItemDoubleClick{
+        fun onDoubleClick(item: ItemBase)
+    }
+
+
     private fun checkTouchRegion(clickX:Float,clickY:Float):Boolean{
         return clickX - mOffsetX in 0f..realWidth.toFloat() && clickY - mOffsetY in 0f..realHeight.toFloat()
     }
-    private fun deleteItem(clickX:Float,clickY:Float){
+    private fun deleteItem(clickX:Float,clickY:Float):Boolean{
         mCurItem?.let {
             it.checkDeleteClick(clickX,clickY)
             if (it.hasDelete()){
                 contentList.remove(it)
                 mCurItem = null
                 invalidate()
+                return true
             }
         }
+        return false
     }
 
     private fun activeItem(clickX:Float, clickY:Float):Boolean{
@@ -285,12 +314,12 @@ class LabelView: View {
 
 
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        layoutItem()
+        if (changed || mItemChange)
+            layoutItem()
     }
     private fun layoutItem(){
-        if (!hasLayoutItem && contentList.isNotEmpty()){
-            hasLayoutItem = true
-
+        if (mItemChange){
+            mItemChange = false
             val tWidth = mLabelTemplate.realWidth
             val tHeight = mLabelTemplate.realHeight
             if (tWidth != 0 && tHeight != 0){

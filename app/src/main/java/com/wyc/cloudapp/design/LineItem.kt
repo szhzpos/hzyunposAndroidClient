@@ -2,6 +2,7 @@ package com.wyc.cloudapp.design
 
 import android.graphics.Canvas
 import android.graphics.Paint
+import androidx.core.graphics.transform
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 

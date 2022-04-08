@@ -2,13 +2,13 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
+    android:background="@drawable/round_border_sub_gray"
     android:gravity="center_horizontal"
     android:orientation="vertical">
 
     <Button
         android:id="@+id/btn_take_photo"
-        style="@style/Widget.AppCompat.Button.Borderless"
+        style="@android:style/Widget.Material.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -18,7 +18,7 @@
 
     <Button
         android:id="@+id/btn_pick_photo"
-        style="@style/Widget.AppCompat.Button.Borderless"
+        style="@android:style/Widget.Material.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
@@ -28,7 +28,7 @@
 
     <Button
         android:id="@+id/btn_cancel"
-        style="@style/Widget.AppCompat.Button.Borderless"
+        style="@android:style/Widget.DeviceDefault.Button.Borderless"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
