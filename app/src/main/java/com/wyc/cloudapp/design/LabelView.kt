@@ -335,6 +335,7 @@ class LabelView: View {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         canvas.apply {
+            mPaint.reset()
             if (mRotate != 0){
                 save()
                 rotate(mRotate.toFloat(),width / 2f,height / 2f)
@@ -707,12 +708,14 @@ class LabelView: View {
             c.restore()
         }
 
-
+        val p = Paint()
+        p.style = Paint.Style.STROKE
         printItem.forEach {
             val b = it.createItemBitmap(Color.TRANSPARENT)
             c.save()
             c.translate(it.left.toFloat(), it.top.toFloat())
             c.drawBitmap(b,Matrix(),null)
+            //c.drawRect(0f,0f, it.width.toFloat(), it.height.toFloat(),p)
             c.restore()
         }
         return bmp
@@ -723,9 +726,7 @@ class LabelView: View {
             printItem.forEach {
                 if (it is DataItem){
                     it.content = getValueByField(it.field)
-                    if (it.updateNewline()){
-                        it.height = (it.height * mLabelTemplate.width2Dot(LabelPrintSetting.getSetting().dpi) / mLabelTemplate.realWidth.toFloat()).toInt()
-                    }
+                    it.updateNewline()
                 }else if (it is BarcodeItem && it.field.isNotEmpty()){
                     it.hasMark = false
                     it.content = getValueByField(it.field)
@@ -740,9 +741,7 @@ class LabelView: View {
             val item = it.clone()
             if (item is DataItem){
                 item.content = goods.getValueByField(item.field)
-                if (item.updateNewline()){
-                    item.height = (item.height * mLabelTemplate.width2Dot(LabelPrintSetting.getSetting().dpi) / mLabelTemplate.realWidth.toFloat()).toInt()
-                }
+                item.updateNewline()
             }else if (item is BarcodeItem && item.field.isNotEmpty()){
                 item.hasMark = false
                 item.content = goods.getValueByField(item.field)

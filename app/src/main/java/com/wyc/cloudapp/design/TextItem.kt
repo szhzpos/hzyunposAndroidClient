@@ -15,7 +15,6 @@ import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.customizationView.MySeekBar
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.abs
 import kotlin.math.min
@@ -81,6 +80,11 @@ open class TextItem:ItemBase() {
 
     override fun drawItem(offsetX:Float,offsetY:Float,canvas: Canvas,paint: Paint) {
         if (Utils.isNotEmpty(content)){
+            canvas.save()
+            val l = left + offsetX
+            val t = top + offsetY
+            canvas.clipRect(l,t,l + width ,t + height)
+
             paint.textSize = mFontSize
             paint.color = mFontColor
             paint.style = Paint.Style.FILL
@@ -99,13 +103,15 @@ open class TextItem:ItemBase() {
                 mRect.setEmpty()
                 str.forEach {
                     paint.getTextBounds(it,0,it.length,mRect)
-                    canvas.drawText(it,left + offsetX,top + offsetY + mRect.height() + currentY,paint)
+                    canvas.drawText(it,l,t + mRect.height() + currentY,paint)
                     currentY += mRect.height() + paint.fontMetrics.descent + paint.fontMetrics.leading
                 }
             }else{
                 val baseLineY = height / 2 + (abs(paint.fontMetrics.ascent) - paint.fontMetrics.descent) / 2
-                canvas.drawText(content,left + offsetX,top + offsetY + baseLineY,paint)
+                canvas.drawText(content,l,t + baseLineY,paint)
             }
+
+            canvas.restore()
         }
     }
 
@@ -127,9 +133,7 @@ open class TextItem:ItemBase() {
 
         mTextLastWidth = mRect.width()
     }
-    fun updateNewline():Boolean{
-        mRect.setEmpty()
-
+    fun updateNewline(){
         mPaint.textSize = mFontSize
         mPaint.letterSpacing = mLetterSpacing
 
@@ -163,22 +167,15 @@ open class TextItem:ItemBase() {
                     }
                 }
                 content = stringBuilder.toString()
-                mRect.setEmpty()
-                getBound(mRect)
-                height = mRect.height()
-
-                return true
             }
         }else{
             if (content.contains("\n")){
                 content = content.replace("\n","")
             }
-            getBound(mRect)
         }
-
+        mRect.setEmpty()
+        getBound(mRect)
         height = mRect.height()
-
-        return false
     }
 
     private fun getBound(b:Rect, c:String = ""){

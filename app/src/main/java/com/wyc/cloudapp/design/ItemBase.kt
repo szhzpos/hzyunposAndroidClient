@@ -74,7 +74,7 @@ open class ItemBase:Cloneable{
             canvas.restore()
         }
         if (active)drawAction(offsetX, offsetY,canvas,paint)
-        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint) else drawItemBaseLine(canvas,paint)
+        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint)
     }
 
     public override fun clone(): ItemBase {
@@ -152,18 +152,6 @@ open class ItemBase:Cloneable{
 
         paint.pathEffect = null
     }
-    private fun drawItemBaseLine(canvas:Canvas, paint: Paint){
-        if (this is TextItem){
-            paint.color = Color.BLUE
-            paint.style = Paint.Style.STROKE
-            paint.pathEffect = DashPathEffect(floatArrayOf(4f,6f),0f)
-
-            canvas.drawRect(cRECT,paint)
-
-            paint.pathEffect = null
-        }
-    }
-
 
     private fun drawAction(offsetX:Float, offsetY:Float, canvas:Canvas, paint: Paint) {
         updateActionRect(offsetX + left,offsetY + top)
