@@ -24,9 +24,10 @@ import kotlin.math.min
 
 class DateItem: TextItem() {
     var dateFormat = FORMAT.Y_M_D_H_M_S
-    override var content: String = FormatDateTimeUtils.formatCurrentTime(dateFormat.format)
-
-    var autoUpdate = true
+    init {
+        content = FormatDateTimeUtils.formatCurrentTime(dateFormat.format)
+    }
+    var autoUpdate = false
 
     override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         if (autoUpdate){
@@ -35,7 +36,7 @@ class DateItem: TextItem() {
             if (index != -1 && v.length > index){
                 val stringBuilder = StringBuilder(v)
                 content = stringBuilder.insert(index,"\n").toString()
-            }
+            }else content = v
         }
         super.drawItem(offsetX, offsetY, canvas, paint)
     }

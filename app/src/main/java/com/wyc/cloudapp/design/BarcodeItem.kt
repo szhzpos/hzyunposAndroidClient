@@ -14,6 +14,7 @@ import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
 import kotlin.math.max
+import kotlin.math.min
 
 
 /**
@@ -123,7 +124,7 @@ open class BarcodeItem:ItemBase() {
 
     override fun transform(scaleX: Float, scaleY: Float) {
         super.transform(scaleX, scaleY)
-        fontSize *= scaleX
+        fontSize *= min(scaleX,scaleY)
     }
 
     override fun scale(scaleX: Float, scaleY: Float) {

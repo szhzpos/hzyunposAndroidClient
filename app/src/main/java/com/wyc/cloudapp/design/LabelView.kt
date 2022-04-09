@@ -73,7 +73,6 @@ class LabelView: View {
 
     private var count = 0
     private var firClick: Long = 0
-    private var mItemDClick:OnItemDoubleClick? = null
 
     constructor(context: Context):this(context, null)
     constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
@@ -201,10 +200,6 @@ class LabelView: View {
         }
         return false
     }
-    interface OnItemDoubleClick{
-        fun onDoubleClick(item: ItemBase)
-    }
-
 
     private fun checkTouchRegion(clickX:Float,clickY:Float):Boolean{
         return clickX - mOffsetX in 0f..realWidth.toFloat() && clickY - mOffsetY in 0f..realHeight.toFloat()
@@ -675,10 +670,11 @@ class LabelView: View {
     }
 
     fun getPrintItem():MutableList<ItemBase>{
-        val scaleX = mLabelTemplate.height2Dot(LabelPrintSetting.getSetting().dpi) / mLabelTemplate.realHeight.toFloat()
+        val scaleX = mLabelTemplate.width2Dot(LabelPrintSetting.getSetting().dpi) / mLabelTemplate.realWidth.toFloat()
+        val scaleY = mLabelTemplate.height2Dot(LabelPrintSetting.getSetting().dpi) / mLabelTemplate.realHeight.toFloat()
         val content = toItem(mLabelTemplate.itemList)
         content.forEach {
-            it.transform(scaleX,scaleX)
+            it.transform(scaleX,scaleY)
             if (it is DataItem){
                 it.hasMark = false
             }
@@ -714,8 +710,8 @@ class LabelView: View {
             val b = it.createItemBitmap(Color.TRANSPARENT)
             c.save()
             c.translate(it.left.toFloat(), it.top.toFloat())
-            c.drawBitmap(b,Matrix(),null)
-            //c.drawRect(0f,0f, it.width.toFloat(), it.height.toFloat(),p)
+            c.drawBitmap(b,0f,0f,null)
+            c.drawRect(0f,0f, it.width.toFloat(), it.height.toFloat(),p)
             c.restore()
         }
         return bmp
@@ -724,13 +720,7 @@ class LabelView: View {
     private fun generatePrinterDataItem(printItem: MutableList<ItemBase>, barcodeId:String = ""){
         DataItem.getGoodsDataById(barcodeId)?.apply {
             printItem.forEach {
-                if (it is DataItem){
-                    it.content = getValueByField(it.field)
-                    it.updateNewline()
-                }else if (it is BarcodeItem && it.field.isNotEmpty()){
-                    it.hasMark = false
-                    it.content = getValueByField(it.field)
-                }
+                assignItemValue(it,this)
             }
         }
     }
@@ -739,18 +729,21 @@ class LabelView: View {
         val itemCopy = mutableListOf<ItemBase>()
         printItem.forEach {
             val item = it.clone()
-            if (item is DataItem){
-                item.content = goods.getValueByField(item.field)
-                item.updateNewline()
-            }else if (item is BarcodeItem && item.field.isNotEmpty()){
-                item.hasMark = false
-                item.content = goods.getValueByField(item.field)
-            }
+            assignItemValue(item,goods)
             itemCopy.add(item)
         }
         return getGPTscCommand(itemCopy)
     }
 
+    private fun assignItemValue(item: ItemBase,goods:DataItem.LabelGoods){
+        if (item is DataItem){
+            item.content = goods.getValueByField(item.field)
+            item.updateNewline()
+        }else if (item is BarcodeItem && item.field.isNotEmpty()){
+            item.hasMark = false
+            item.content = goods.getValueByField(item.field)
+        }
+    }
 
 
     fun getGPTscCommand(data: List<ItemBase>):LabelCommand{
@@ -779,13 +772,7 @@ class LabelView: View {
         if (hasPreviewModel()){
             labelGoods.apply {
                 contentList.forEach {
-                    if (it is DataItem){
-                        it.content = getValueByField(it.field)
-                        it.updateNewline()
-                    }else if (it is BarcodeItem && it.field.isNotEmpty()){
-                        it.hasMark = false
-                        it.content = getValueByField(it.field)
-                    }
+                    assignItemValue(it,this)
                 }
                 postInvalidate()
             }

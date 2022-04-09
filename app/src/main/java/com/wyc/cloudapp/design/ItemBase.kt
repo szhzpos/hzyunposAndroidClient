@@ -53,8 +53,6 @@ open class ItemBase:Cloneable{
     @JSONField(serialize = false)
     private var active:Boolean = false
     @JSONField(serialize = false)
-    private var move:Boolean = false
-    @JSONField(serialize = false)
     protected var scaling:Boolean = false
     @JSONField(serialize = false)
     private var deleting:Boolean = false
@@ -73,8 +71,10 @@ open class ItemBase:Cloneable{
         if (r){
             canvas.restore()
         }
-        if (active)drawAction(offsetX, offsetY,canvas,paint)
-        if (move)drawItemBaseLine(offsetX, offsetY,canvas,paint)
+        if (active){
+            drawAction(offsetX, offsetY,canvas,paint)
+            drawItemBaseLine(offsetX, offsetY,canvas,paint)
+        }
     }
 
     public override fun clone(): ItemBase {
@@ -231,8 +231,6 @@ open class ItemBase:Cloneable{
         if (!deleting && !hScale){
             left += moveX.toInt()
             top += moveY.toInt()
-            move = true
-
             if (!(left >= 0 && left + width <= rWidth && top >= 0 && top + height <= height)){
                 if (left < 0f)left = 0
                 if (left + width > rWidth)left = rWidth - width
@@ -262,13 +260,11 @@ open class ItemBase:Cloneable{
     }
     fun disableItem(){
         active = false
-        move = false
         scaling = false
         deleting = false
     }
 
     fun releaseItem() {
-        move = false
         scaling = false
     }
 
@@ -309,7 +305,7 @@ open class ItemBase:Cloneable{
         return bmp
     }
 
-    protected fun showEditDialog(context: Context, view:View){
+    protected fun showEditDialog(context: Context, view:View):View{
         val pop = Dialog(context, R.style.MyDialog)
         pop.window?.apply {
             val wlp: WindowManager.LayoutParams = attributes
@@ -319,10 +315,11 @@ open class ItemBase:Cloneable{
         }
         pop.setContentView(view)
         pop.show()
+        return view
     }
 
     override fun toString(): String {
-        return "ItemBase(top=$top, left=$left, width=$width, height=$height, radian=$radian, clsType=$clsType, active=$active, move=$move, scaling=$scaling, deleting=$deleting, cRECT=$cRECT)"
+        return "ItemBase(top=$top, left=$left, width=$width, height=$height, radian=$radian, clsType=$clsType, active=$active,scaling=$scaling, deleting=$deleting, cRECT=$cRECT)"
     }
 
     companion object{
