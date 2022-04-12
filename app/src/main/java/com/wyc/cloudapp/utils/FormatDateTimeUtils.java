@@ -29,6 +29,10 @@ public final class FormatDateTimeUtils {
         return new java.text.SimpleDateFormat(pattern, Locale.CHINA).format(new Date());
     }
 
+    public static String formatDate(String pattern,long time){
+        return new java.text.SimpleDateFormat(pattern, Locale.CHINA).format(new Date());
+    }
+
     public static void setStartTime(final Calendar calendar){
         calendar.set(Calendar.HOUR_OF_DAY,0);
         calendar.set(Calendar.MINUTE,0);

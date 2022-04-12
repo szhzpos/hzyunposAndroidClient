@@ -3,6 +3,7 @@ package com.wyc.cloudapp.design
 import android.app.Dialog
 import android.content.Context
 import android.graphics.*
+import android.view.Display
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -11,7 +12,6 @@ import androidx.core.graphics.transform
 import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.asin
 import kotlin.math.max
@@ -119,6 +119,26 @@ open class ItemBase:Cloneable{
 
     }
 
+    protected fun showEditDialog(context: Context, view:View){
+        val pop = Dialog(context, R.style.MyDialog)
+        pop.setContentView(view)
+
+        val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val d: Display = wm.defaultDisplay // 获取屏幕宽、高用
+        val point = Point()
+        d.getSize(point)
+
+        pop.window?.apply {
+            setWindowAnimations(R.style.bottom_pop_anim)
+            val wlp: WindowManager.LayoutParams = attributes
+            wlp.gravity = Gravity.BOTTOM
+            wlp.y = 68
+            wlp.width = (point.x * 0.95).toInt()
+            attributes = wlp
+        }
+        pop.show()
+    }
+
     open fun zoom(){
         scale(width * 0.2f,height * 0.2f)
     }
@@ -222,8 +242,7 @@ open class ItemBase:Cloneable{
         height += scaleY.toInt()
     }
 
-    @CallSuper
-    open fun moveCurItem(rWidth:Int,rHeight:Int,clickX:Float, clickY:Float,offsetX:Int, offsetY:Int,moveX:Float,moveY:Float){
+    fun moveCurItem(rWidth:Int,rHeight:Int,clickX:Float, clickY:Float,offsetX:Int, offsetY:Int,moveX:Float,moveY:Float){
         val hScale = if(top + height + ACTION_RADIUS * 2 < rHeight && left + width + ACTION_RADIUS * 2 < rWidth){
             checkScaleClick(clickX,clickY,moveX,moveY)
         }else false
@@ -303,19 +322,6 @@ open class ItemBase:Cloneable{
             drawItem(0f,0f,c, Paint())
         }
         return bmp
-    }
-
-    protected fun showEditDialog(context: Context, view:View):View{
-        val pop = Dialog(context, R.style.MyDialog)
-        pop.window?.apply {
-            val wlp: WindowManager.LayoutParams = attributes
-            wlp.gravity = Gravity.BOTTOM
-            wlp.y = 68
-            attributes = wlp
-        }
-        pop.setContentView(view)
-        pop.show()
-        return view
     }
 
     override fun toString(): String {

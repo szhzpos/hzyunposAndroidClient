@@ -1,11 +1,15 @@
 package com.wyc.cloudapp.design
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.graphics.Canvas
 import android.graphics.Paint
-import com.wyc.cloudapp.logger.Logger
+import android.view.View
+import android.widget.*
+import com.wyc.cloudapp.R
 import com.wyc.cloudapp.utils.FormatDateTimeUtils
-import java.lang.StringBuilder
-import kotlin.math.min
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -24,21 +28,103 @@ import kotlin.math.min
 
 class DateItem: TextItem() {
     var dateFormat = FORMAT.Y_M_D_H_M_S
+
+    var dateContent = Date().time
     init {
-        content = FormatDateTimeUtils.formatCurrentTime(dateFormat.format)
+        content = formatDate()
     }
+
     var autoUpdate = false
 
     override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         if (autoUpdate){
-            val v = FormatDateTimeUtils.formatCurrentTime(dateFormat.format)
+            dateContent = Date().time
+            val v = formatDate()
             val index = content.indexOf("\n")
-            if (index != -1 && v.length > index){
+            content = if (index != -1 && v.length > index){
                 val stringBuilder = StringBuilder(v)
-                content = stringBuilder.insert(index,"\n").toString()
-            }else content = v
+                stringBuilder.insert(index,"\n").toString()
+            }else v
         }
         super.drawItem(offsetX, offsetY, canvas, paint)
+    }
+
+    override fun popMenu(labelView: LabelView) {
+        val view = View.inflate(labelView.context, R.layout.date_item_attr,null)
+        super.showTextEditDialog(labelView,view)
+
+        val dateView = view.findViewById<EditText>(R.id.content)
+        dateView.setOnClickListener {
+            if (!autoUpdate){
+                val calendar = Calendar.getInstance()
+                DatePickerDialog(labelView.context,
+                    { _, year, month, dayOfMonth ->
+
+                        TimePickerDialog(
+                            labelView.context,
+                            { _, hourOfDay, minute ->
+                                calendar.set(Calendar.YEAR,year)
+                                calendar.set(Calendar.MONTH,month)
+                                calendar.set(Calendar.DAY_OF_MONTH,dayOfMonth)
+                                calendar.set(Calendar.HOUR_OF_DAY,hourOfDay)
+                                calendar.set(Calendar.MINUTE,minute)
+
+                                dateContent = calendar.time.time
+                                dateView.setText(formatDate())
+                            },
+                            calendar.get(Calendar.HOUR_OF_DAY),
+                            calendar.get(Calendar.MINUTE),
+                            true
+                        ).show()
+                    }
+                    // 设置初始日期
+                    , calendar.get(Calendar.YEAR)
+                    ,calendar.get(Calendar.MONTH)
+                    ,calendar.get(Calendar.DAY_OF_MONTH)).show()
+            }
+        }
+
+        view.findViewById<Spinner>(R.id.format)?.apply {
+            val adapter = ArrayAdapter<String>(labelView.context, R.layout.drop_down_style)
+            adapter.setDropDownViewResource(R.layout.drop_down_style)
+            adapter.add(dateFormat.description)
+
+            FORMAT.values().forEach {
+                if (it.description == dateFormat.description)return@forEach
+                adapter.add(it.description)
+            }
+            setAdapter(adapter)
+
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    FORMAT.values().forEach {
+                        if (it.description == adapter.getItem(position)){
+                            dateFormat = it
+                            dateView.setText(formatDate())
+                            return
+                        }
+                    }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+            }
+        }
+        val bCheckBox: CheckBox = view.findViewById(R.id.auto_update)
+        bCheckBox.isChecked = autoUpdate
+        bCheckBox.setOnCheckedChangeListener{ _, check ->
+            autoUpdate = check
+            labelView.postInvalidate()
+        }
+    }
+    private fun formatDate():String{
+        val fm = SimpleDateFormat(dateFormat.format, Locale.CHINA)
+        return fm.format(dateContent)
     }
 
     enum class FORMAT(f:String,d:String){

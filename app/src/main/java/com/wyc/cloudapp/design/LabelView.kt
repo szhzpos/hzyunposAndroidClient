@@ -20,8 +20,12 @@ import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
 import com.wyc.cloudapp.logger.Logger
 import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
+import java.lang.reflect.Field
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.internal.impl.descriptors.NotFoundClasses
+import kotlin.reflect.jvm.javaField
 
 
 /**
@@ -74,6 +78,10 @@ class LabelView: View {
     private var count = 0
     private var firClick: Long = 0
 
+    private val mMaxAttrIndex = 30
+    private val mItemAttrList:Array<ActionObject?> = arrayOfNulls(30)
+    private var mCurAttrIndex = 0
+
     constructor(context: Context):this(context, null)
     constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int):super(context, attrs, defStyleAttr){
@@ -106,28 +114,10 @@ class LabelView: View {
         val list = mutableListOf<ItemBase>()
         for (i in 0 until a.size){
             val obj = a.getJSONObject(i)
-            when(obj.getString("clsType")){
-                TextItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(TextItem::class.java))
-                }
-                LineItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(LineItem::class.java))
-                }
-                RectItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(RectItem::class.java))
-                }
-                CircleItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(CircleItem::class.java))
-                }
-                BarcodeItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(BarcodeItem::class.java))
-                }
-                DateItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(DateItem::class.java))
-                }
-                DataItem::class.simpleName ->{
-                    list.add(obj.toJavaObject(DataItem::class.java))
-                }
+            try {
+                list.add(obj.toJavaObject(Class.forName("com.wyc.cloudapp.design." + obj.getString("clsType"))) as ItemBase)
+            }catch (_:ClassNotFoundException){
+
             }
         }
         return list
@@ -179,6 +169,7 @@ class LabelView: View {
 
         return super.onTouchEvent(event)
     }
+
     private fun checkDoubleClick():Boolean{
         mCurItem?.apply {
             count++
@@ -209,6 +200,9 @@ class LabelView: View {
             it.checkDeleteClick(clickX,clickY)
             if (it.hasDelete()){
                 contentList.remove(it)
+
+                addDelAction(it)
+
                 mCurItem = null
                 invalidate()
                 return true
@@ -228,6 +222,9 @@ class LabelView: View {
                     contentList[i] = contentList[contentList.size -1]
                     contentList[contentList.size -1] = it
                     mCurItem = it
+
+
+
                 }
                 return true
             }
@@ -469,13 +466,64 @@ class LabelView: View {
 
         contentList.add(item)
 
+        addNewAction(item)
+
         postInvalidate()
     }
-    private fun swapCurItem(item: ItemBase){
+    private fun addNewAction(item: ItemBase){
+        mItemAttrList[mCurAttrIndex++ % mMaxAttrIndex] = ActionObject(item,ActionObject.Action.ADD,null)
+    }
+
+    private fun addDelAction(item: ItemBase){
+        mItemAttrList[mCurAttrIndex++ % mMaxAttrIndex] = ActionObject(item,ActionObject.Action.DEL,null)
+    }
+
+    private fun addModifyAction(item: ItemBase,vararg vars:ActionObject.FieldObject){
+
+        val fieldList:MutableList<ActionObject.FieldObject> = mutableListOf()
+
+        vars.forEach {
+            fieldList.add(it)
+        }
+        mItemAttrList[mCurAttrIndex++ % mMaxAttrIndex] = ActionObject(item,ActionObject.Action.MOD,fieldList)
+    }
+
+    fun restAction(){
+        if (mCurAttrIndex > 0){
+            mCurAttrIndex--
+        }else mCurAttrIndex = 0
+
+        val actionObject = mItemAttrList[mCurAttrIndex]
+        if (actionObject != null){
+            mItemAttrList[mCurAttrIndex] = null
+            val item = actionObject.actionObj
+            when(actionObject.action){
+                ActionObject.Action.ADD ->{
+                    contentList.remove(item)
+                }
+                ActionObject.Action.DEL ->{
+                    contentList.add(0,item)
+                    swapCurItem(item)
+                }
+                ActionObject.Action.MOD->{
+                    swapCurItem(item)
+                    actionObject.fieldList?.forEach {
+                        it.field?.apply {
+                            isAccessible = true
+                            set(item,it.oldValue)
+                        }
+                    }
+                }
+            }
+            postInvalidate()
+        }
+    }
+
+    private fun swapCurItem(item: ItemBase?){
         if (mCurItem != null){
             mCurItem!!.disableItem()
         }
-        item.activeItem()
+        item?.activeItem()
         mCurItem = item
         postInvalidate()
     }
@@ -507,8 +555,7 @@ class LabelView: View {
     }
 
     fun addQRCodeItem(){
-        val item = BarcodeItem()
-        item.barcodeFormat = BarcodeFormat.QR_CODE
+        val item = QRCodeItem()
         addItem(item)
     }
 
@@ -548,27 +595,61 @@ class LabelView: View {
     fun deleteItem(){
         mCurItem?.apply {
             contentList.remove(this)
-            swapCurItem(this)
+
+            addDelAction(this)
+
+            swapCurItem(null)
         }
     }
 
     fun shrinkItem(){
         mCurItem?.apply {
+
+            val w = ActionObject.FieldObject(getFieldByName(this,"width"),width,0)
+            val h = ActionObject.FieldObject(getFieldByName(this,"height"),height,0)
+
             shrink()
+
+            w.newValue = width
+            h.newValue = height
+
+            addModifyAction(this,w,h)
+
             invalidate()
         }
     }
     fun zoomItem(){
         mCurItem?.apply {
+            val w = ActionObject.FieldObject(getFieldByName(this,"width"),width,0)
+            val h = ActionObject.FieldObject(getFieldByName(this,"height"),height,0)
+
             zoom()
+
+            w.newValue = width
+            h.newValue = height
+
+            addModifyAction(this,w,h)
+
             invalidate()
         }
     }
+
     fun rotateItem(){
         mCurItem?.apply {
             radian += 15
+
+            addModifyAction(this,ActionObject.FieldObject(getFieldByName(this,"radian"),radian - 15,radian))
+
             invalidate()
         }
+    }
+    private fun getFieldByName(item: ItemBase,name:String):Field?{
+        item::class.memberProperties.forEach {
+            if (it.name == name){
+                return it.javaField
+            }
+        }
+        return null
     }
 
     fun previewModel(){
@@ -739,7 +820,7 @@ class LabelView: View {
         if (item is DataItem){
             item.content = goods.getValueByField(item.field)
             item.updateNewline()
-        }else if (item is BarcodeItem && item.field.isNotEmpty()){
+        }else if (item is CodeItemBase && item.field.isNotEmpty()){
             item.hasMark = false
             item.content = goods.getValueByField(item.field)
         }

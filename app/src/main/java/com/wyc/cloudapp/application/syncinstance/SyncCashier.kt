@@ -24,7 +24,7 @@ class SyncCashier:AbstractSyncBase("cashier_info", arrayOf("cas_id","stores_id",
         obj["appid"] = CustomApplication.self().appId
         obj["cas_ids"] = ids
         obj["pos_num"] = CustomApplication.self().posNum
-        obj[mMarkPathKey] = "/api/cashier_dwn/up_cashier"
+        obj[mMarkPathKey] = "/api/scale/up_cashier"
 
         return obj
     }

@@ -43,7 +43,7 @@ open class TextItem:ItemBase() {
     var mFontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_18)
     var mFontColor = Color.BLACK
     var mLetterSpacing = 0f
-    var hasNewLine = true
+    var hasNewLine = false
     var hasBold = false
     var hasItalic = false
     var hasUnderLine = false
@@ -133,28 +133,34 @@ open class TextItem:ItemBase() {
             if (content.contains("\n")){
                 content = content.replace("\n","")
             }
-            mPaint.getTextBounds(content,0,content.length,mRect)
+            val textLen = content.length
+            mPaint.getTextBounds(content,0,textLen,mRect)
             val newWidth = mRect.width()
 
             if (newWidth > width){
 
                 mPaint.letterSpacing = 0f
-                mPaint.getTextBounds(content,0,content.length,mRect)
-                val oldWidth = mRect.width()
-                mPaint.letterSpacing = mLetterSpacing
+                mPaint.getTextBounds(content,0,textLen,mRect)
+                val zeroTotalWidth = mRect.width()
+                var zeroPerWidth = 0
+                content.forEach {c->
+                    mPaint.getTextBounds(c.toString(),0,1,mRect)
+                    zeroPerWidth += mRect.width()
+                }
+                val zeroExtra = (zeroTotalWidth - zeroPerWidth) / textLen.toFloat()
 
-                val space = (newWidth - oldWidth).toFloat() / content.length * 2f
+                val space = if(mLetterSpacing > 0f) (newWidth  - zeroTotalWidth) / textLen * 2f else  zeroExtra
 
                 val stringBuilder = StringBuilder(content)
                 var len = 0f
 
+                mPaint.letterSpacing = mLetterSpacing
                 stringBuilder.forEachIndexed { index, c ->
                     mPaint.getTextBounds(c.toString(),0,1,mRect)
-                    len += mRect.width().toFloat() + space * 2
+                    len += mRect.width().toFloat() + space
                     if (len > width){
-                        if (index > 0 && stringBuilder[index - 1] != '\n'){
+                        if (index > 0 && stringBuilder[index - 1] != '\n')
                             stringBuilder.insert(index,"\n")
-                        }
                         len = 0f
                     }
                 }
@@ -168,6 +174,7 @@ open class TextItem:ItemBase() {
         getBound(mRect)
         height = mRect.height()
     }
+
 
     private fun getBound(b:Rect){
         if (content.contains("\n")){
@@ -191,8 +198,10 @@ open class TextItem:ItemBase() {
 
     override fun popMenu(labelView: LabelView) {
         val view = View.inflate(labelView.context,R.layout.text_item_attr,null)
+        showTextEditDialog(labelView,view)
+    }
+    protected fun showTextEditDialog(labelView: LabelView,view: View){
         showEditDialog(labelView.context,view)
-
         val font: MySeekBar = view.findViewById(R.id.font)
         font.minValue = minFontSize
         font.max = maxFontSize - minFontSize

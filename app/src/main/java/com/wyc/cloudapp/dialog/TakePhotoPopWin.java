@@ -1,11 +1,9 @@
 package com.wyc.cloudapp.dialog;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
@@ -30,7 +28,7 @@ public class TakePhotoPopWin extends PopupWindow {
         });
         setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         this.setOutsideTouchable(true);
-        this.setAnimationStyle(R.style.take_photo_anim);
+        this.setAnimationStyle(R.style.bottom_pop_anim);
         this.setContentView(view);
         this.setWidth(RelativeLayout.LayoutParams.MATCH_PARENT);
         this.setFocusable(true);

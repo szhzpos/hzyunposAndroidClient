@@ -81,7 +81,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:listDivider">@color/gray_subtransparent</item>
     </style>
-    <style name="take_photo_anim" parent="android:Animation">
+    <style name="bottom_pop_anim" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/pop_enter_anim</item>
         <item name="android:windowExitAnimation">@anim/pop_exit_anim</item>
     </style>

@@ -1040,4 +1040,14 @@
     <string name="letterSpacing">字间距</string>
     <string name="newline">换行</string>
     <string name="font">字&#160;&#160;&#160;体</string>
+    <string name="date_format">日期格式</string>
+    <string name="auto_update">自动更新</string>
+    <string name="code_format">编码格式</string>
+    <string name="not_ean_13">内容长度错误,EAN_13格式长度只能为13位!</string>
+    <string name="dot_width">虚线宽</string>
+    <string name="border_width">线&#160;&#160;&#160;&#160;宽</string>
+    <string name="fill">填充</string>
+    <string name="border">边框</string>
+    <string name="dot">虚边框</string>
+    <string name="round">圆&#160;&#160;&#160;&#160;角</string>
 </resources>

@@ -95,7 +95,7 @@ class BusinessOrderPrintSetting {
         return "BusinessOrderPrintSetting(way=${way.description}, printer='$printer', spec=${spec.description}, type=${type.description}, print_num=$print_num)"
     }
 
-    private fun <T> change(iv:T) = Delegates.observable(iv) { _, oldValue, newValue ->
+    private fun <T> change(iv:T) = Delegates.observable(iv) { a, oldValue, newValue ->
         if (oldValue != newValue) change = true
     }
 

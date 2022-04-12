@@ -1,19 +1,23 @@
 package com.wyc.cloudapp.design
 
 import android.graphics.*
-import android.util.TypedValue
-import androidx.core.graphics.plus
+import android.text.Editable
+import android.text.InputFilter
+import android.text.InputType
+import android.text.TextWatcher
+import android.view.View
+import android.widget.*
 import com.alibaba.fastjson.annotation.JSONField
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
-import com.google.zxing.WriterException
 import com.google.zxing.common.BitMatrix
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.customizationView.MySeekBar
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
-import kotlin.math.max
+import com.wyc.cloudapp.utils.Utils
 import kotlin.math.min
 
 
@@ -21,81 +25,105 @@ import kotlin.math.min
  *
  * @ProjectName:    AndroidClient
  * @Package:        com.wyc.cloudapp.design
- * @ClassName:      ImageItem
- * @Description:    图片
+ * @ClassName:      code
+ * @Description:    条码
  * @Author:         wyc
- * @CreateDate:     2022/3/16 14:51
+ * @CreateDate:     2022/4/11 17:18
  * @UpdateUser:     更新者：
- * @UpdateDate:     2022/3/16 14:51
+ * @UpdateDate:     2022/4/11 17:18
  * @UpdateRemark:   更新说明：
  * @Version:        1.0
  */
 
-open class BarcodeItem:ItemBase() {
-    var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
+class BarcodeItem:CodeItemBase() {
+    val minFontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_14)
     var fontSize = CustomApplication.self().resources.getDimension(R.dimen.font_size_14)
-    var content: String = "6922711043401"
-        set(value) {
-            field = value
-            mBitmap = generateBitmap()
-        }
-    /**
-     * 引用数据字段。如果不为空则content的值需要从数据源获取，获取数据源的具体值由field的值决定
-     * */
-    var field = ""
-
-    @JSONField(serialize = false)
-    private var mBitmap:Bitmap? = null
     @JSONField(serialize = false)
     private var mBottomMarge = Rect()
     @JSONField(serialize = false)
-    var hasMark = true
+    private var leftMargin = 0
+    @JSONField(serialize = false)
+    private var rightMargin = 0
 
-    override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
-        mBitmap?.let {
-            val l = left + offsetX
-            val t = top + offsetY
-            canvas.drawBitmap(it, null,RectF(l,t,l + width,t + height),paint)
-
-            drawContent(l,t,canvas,paint)
-
-            if (hasMark && field.isNotEmpty()){
-                val r = radian % 360 != 0f
-                if (r){
-                    canvas.save()
-                    canvas.rotate(-radian,offsetX+ left + width / 2f,offsetY + top + height / 2f)
-                }
-
-                paint.color = Color.RED
-                paint.style = Paint.Style.STROKE
-                canvas.drawRect(cRECT,paint)
-
-                if (r){
-                    canvas.restore()
-                }
+    init {
+        width = 370
+        height = CustomApplication.self().resources.getDimensionPixelSize(R.dimen.size_28)
+        generateBitmap()
+        BarcodeFormat.values().forEach {
+            if (it.name == BarcodeFormat.CODE_128.name || it.name == BarcodeFormat.EAN_13.name){
+                supportFormatList.add(it)
             }
         }
     }
+
+    override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
+        super.drawItem(offsetX, offsetY, canvas, paint)
+        drawContent(left + offsetX,top + offsetY,canvas,paint)
+    }
+
+    override fun transform(scaleX: Float, scaleY: Float) {
+        super.transform(scaleX, scaleY)
+        fontSize *= min(scaleX,scaleY)
+        if (barcodeFormat == BarcodeFormat.EAN_13){
+            leftMargin = (leftMargin * scaleX).toInt()
+            rightMargin = (rightMargin * scaleX).toInt()
+        }
+    }
+
+    override fun scale(scaleX: Float, scaleY: Float) {
+        super.scale(scaleX, scaleY)
+        if (barcodeFormat == BarcodeFormat.EAN_13){
+            generateBitmap()
+        }
+    }
+
     private fun drawContent(l: Float, t: Float,canvas: Canvas, paint: Paint){
-        if (barcodeFormat == BarcodeFormat.CODE_128){
-            paint.color = Color.WHITE
-            paint.style = Paint.Style.FILL
-            paint.textSize = fontSize
-            paint.getTextBounds(content,0,content.length,mBottomMarge)
+        paint.color = Color.WHITE
+        paint.style = Paint.Style.FILL
+        paint.textSize = fontSize
 
+        if (barcodeFormat == BarcodeFormat.EAN_13){
+            val start = leftMargin * 2
+
+            val first = content.substring(0,1)
+            val end = content.substring(1,content.length)
+            paint.getTextBounds(end,0,end.length,mBottomMarge)
             val textHeight = mBottomMarge.height()
-
             mBottomMarge.bottom += CustomApplication.self().resources.getDimensionPixelSize(R.dimen.size_4)
-            mBottomMarge.right += (width - mBottomMarge.width())
-            mBottomMarge.offsetTo(l.toInt(), (height - mBottomMarge.height() + t).toInt())
+            mBottomMarge.right += (width- rightMargin - start - mBottomMarge.width())
+            mBottomMarge.offsetTo(l.toInt() + start, (height - mBottomMarge.height() + t).toInt())
+
+            canvas.drawRect(mBottomMarge.left.toFloat() - start,
+                mBottomMarge.top.toFloat() + (mBottomMarge.height() shr 1), mBottomMarge.right.toFloat() + rightMargin,
+                mBottomMarge.bottom.toFloat(),paint)
 
             canvas.drawRect(mBottomMarge,paint)
-
             paint.color = Color.BLACK
 
             var textWidth = 0f
-            content.forEach {
-                textWidth += paint.measureText(it.toString())
+            end.forEach {c->
+                textWidth += paint.measureText(c.toString())
+            }
+            val letterSpacing = ((mBottomMarge.width() - textWidth) / (end.length - 1)) + textWidth / end.length
+            val textY = mBottomMarge.bottom - (mBottomMarge.height() - textHeight) / 2f
+
+            canvas.drawText(first,l ,textY,paint)
+
+            end.forEachIndexed {index,it ->
+                canvas.drawText(it.toString(),l + start + index * letterSpacing,textY,paint)
+            }
+        }else{
+            paint.getTextBounds(content,0,content.length,mBottomMarge)
+            val textHeight = mBottomMarge.height()
+            mBottomMarge.bottom += CustomApplication.self().resources.getDimensionPixelSize(R.dimen.size_4)
+            mBottomMarge.right += (width - mBottomMarge.width())
+            mBottomMarge.offsetTo(l.toInt(), (height - mBottomMarge.height() + t).toInt())
+            canvas.drawRect(mBottomMarge,paint)
+            paint.color = Color.BLACK
+
+            var textWidth = 0f
+            content.forEach {c->
+                textWidth += paint.measureText(c.toString())
             }
             val letterSpacing = ((mBottomMarge.width() - textWidth) / (content.length - 1)) + textWidth / content.length
             val textY = mBottomMarge.bottom - (mBottomMarge.height() - textHeight) / 2f
@@ -105,73 +133,193 @@ open class BarcodeItem:ItemBase() {
         }
     }
 
-    override fun measureItem(w: Int, h: Int) {
-        if (mBitmap == null){
-            when(barcodeFormat){
-                BarcodeFormat.QR_CODE ->{
-                    if (width <= ACTION_RADIUS.toInt()){
-                        width = 231
-                        height = width
+    override fun generateBitmap(){
+        if (Utils.isNotEmpty(content)){
+            val writer = MultiFormatWriter()
+            try {
+                val result: BitMatrix = writer.encode(content,barcodeFormat, width,height,hashMapOf(Pair(
+                    EncodeHintType.MARGIN,18)) )
+
+                var start = 0
+                var end = result.width
+
+                for (i in 0 .. result.width){
+                    if (result[i,0]){
+                        start = i
+                        break
                     }
-                }else ->{
-                    if (width <= ACTION_RADIUS.toInt())width = 370
-                    if (height <= ACTION_RADIUS.toInt())height = CustomApplication.self().resources.getDimensionPixelSize(R.dimen.size_28)
+                }
+                for (i in result.width downTo 0 ){
+                    if (result[i,0]){
+                        end = i
+                        break
+                    }
+                }
+
+                if (barcodeFormat == BarcodeFormat.EAN_13){
+                    var count = 0
+                    var code = true
+                    for (i in start .. end){
+                        if (result[i,0]){
+                            if (code){
+                                if (++count == 3){
+                                    leftMargin = i- start
+                                    break
+                                }
+                                code = false
+                            }
+                        }else code = true
+                    }
+
+                    count = 0
+                    code = true
+                    for (i in end downTo  start){
+                        if (result[i,0]){
+                            if (code){
+                                if (++count == 3){
+                                    rightMargin = end - i
+                                    break
+                                }
+                                code = false
+                            }
+                        }else code = true
+                    }
+                }else {
+                    leftMargin = 0
+                    rightMargin = 0
+                }
+
+                Logger.d("start:%d,end:%d,width:%d,leftMargin:%d,rightMargin:%d",start,end,result.width,leftMargin,rightMargin)
+
+
+                val codeWidth = end - start + leftMargin
+                val codeHeight = result.height
+                val pixels = IntArray(codeWidth * codeHeight)
+
+                for (y in 0 until codeHeight) {
+                    val offset = y * codeWidth
+                    for (x in 0 until codeWidth) {
+                        if (x < leftMargin){
+                            pixels[offset + x] = Color.WHITE
+                        }else{
+                            val xx = x - leftMargin
+                            if (y < result.height && xx + start < result.width){
+                                pixels[offset + x] = if (result[xx + start , y]) Color.BLACK else Color.WHITE
+                            }else pixels[offset + x] = Color.RED
+                        }
+                    }
+                }
+                if(mBitmap != null){
+                    if (mBitmap!!.width>= codeWidth && mBitmap!!.height >= codeHeight){
+                        mBitmap!!.reconfigure(codeWidth,codeHeight, Bitmap.Config.ARGB_8888)
+                        mBitmap?.setPixels(pixels,0, codeWidth, 0, 0, codeWidth, codeHeight)
+                    }else{
+                        mBitmap!!.recycle()
+                        mBitmap = null
+                    }
+                }
+                if (mBitmap == null){
+                    mBitmap = Bitmap.createBitmap(codeWidth, codeHeight, Bitmap.Config.ARGB_8888)
+                    mBitmap?.setPixels(pixels, 0, codeWidth, 0, 0, codeWidth, codeHeight)
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                MyDialog.toastMessage(e.message)
+                if(mBitmap != null){
+                    mBitmap!!.recycle()
+                    mBitmap = null
                 }
             }
-            mBitmap = generateBitmap()
-        }
-    }
-
-    override fun transform(scaleX: Float, scaleY: Float) {
-        super.transform(scaleX, scaleY)
-        fontSize *= min(scaleX,scaleY)
-    }
-
-    override fun scale(scaleX: Float, scaleY: Float) {
-        when(barcodeFormat){
-            BarcodeFormat.QR_CODE ->{
-                width += scaleX.coerceAtLeast(scaleY).toInt()
-                height = width
-            }else ->{
-                super.scale(scaleX, scaleY)
+        }else
+            if(mBitmap != null){
+                mBitmap!!.recycle()
+                mBitmap = null
             }
-        }
     }
-    private fun generateBitmap():Bitmap?{
-        val writer = MultiFormatWriter()
-        var w = 0
-        var h = 0
-        when(barcodeFormat){
-            BarcodeFormat.QR_CODE ->{
-                w = 231
-                h = w
-            }else ->{
-                w = 370
-                h = CustomApplication.self().resources.getDimensionPixelSize(R.dimen.size_28)
+
+    override fun popMenu(labelView: LabelView) {
+        val view = View.inflate(labelView.context, R.layout.barcode_item_attr,null)
+        showEditDialog(labelView.context,view)
+        val font: MySeekBar = view.findViewById(R.id.font)
+        font.minValue = minFontSize.toInt()
+        font.max = 98 - minFontSize.toInt()
+        font.progress = fontSize.toInt() - 30
+        font.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                fontSize = progress.toFloat() + minFontSize
+                labelView.postInvalidate()
             }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+        })
+
+        val et: EditText = view.findViewById(R.id.content)
+        et.inputType = InputType.TYPE_CLASS_NUMBER
+        et.setText(content)
+        if (field.isNotEmpty()){
+            et.isEnabled = false
         }
-        try {
-            val result: BitMatrix = writer.encode(content,barcodeFormat, w,h,hashMapOf(Pair(EncodeHintType.MARGIN,0)) )
+        if (barcodeFormat == BarcodeFormat.EAN_13){
+            et.filters = arrayOf(InputFilter.LengthFilter(13))
+        }
+        et.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
 
-            val codeWidth = result.width
-            val codeHeight = result.height
-            val pixels = IntArray(codeWidth * codeHeight)
+            }
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
-            for (y in 0 until codeHeight) {
-                val offset = y * codeWidth
-                for (x in 0 until codeWidth) {
-                    if (y < result.height)
-                        pixels[offset + x] = if (result[x, y]) Color.BLACK else Color.WHITE
-                    else pixels[offset + x] = Color.WHITE
+            }
+            override fun afterTextChanged(s: Editable) {
+                content = s.toString()
+                labelView.postInvalidate()
+            }
+        })
+
+        view.findViewById<Spinner>(R.id.format)?.apply {
+            val adapter = ArrayAdapter<String>(labelView.context, R.layout.drop_down_style)
+            adapter.setDropDownViewResource(R.layout.drop_down_style)
+            adapter.add(barcodeFormat.name)
+
+            supportFormatList.forEach {
+                if (it.name == barcodeFormat.name)return@forEach
+                adapter.add(it.name)
+            }
+            setAdapter(adapter)
+
+            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    supportFormatList.forEach {
+                        if (it.name == adapter.getItem(position)){
+                            if (it.name  == BarcodeFormat.EAN_13.name && content.length != 13){
+                                MyDialog.toastMessage(R.string.not_ean_13)
+                                setSelection(supportFormatList.indexOf(barcodeFormat))
+                                return
+                            }else if (it.name == BarcodeFormat.CODE_128.name){
+                                et.filters = arrayOf()
+                            }
+                            barcodeFormat = it
+                            generateBitmap()
+                            labelView.postInvalidate()
+                            return
+                        }
+                    }
+                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
                 }
             }
-            val bitmap = Bitmap.createBitmap(codeWidth, codeHeight, Bitmap.Config.ARGB_8888)
-            bitmap.setPixels(pixels, 0, codeWidth, 0, 0, codeWidth, codeHeight)
-
-            return bitmap
-        } catch (e: WriterException) {
-            MyDialog.toastMessage(e.message)
         }
-        return null
     }
 }

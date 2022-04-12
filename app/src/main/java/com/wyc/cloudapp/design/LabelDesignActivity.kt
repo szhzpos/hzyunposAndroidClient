@@ -261,7 +261,7 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                     rotateItem()
                 }
                 R.id.undo->{
-
+                    restAction()
                 }
                 R.id.text->{
                     addTextItem()

@@ -1,7 +1,13 @@
 package com.wyc.cloudapp.design
 import android.graphics.*
+import android.view.View
+import android.widget.CheckBox
+import android.widget.RadioButton
+import android.widget.SeekBar
+import androidx.constraintlayout.widget.Group
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.customizationView.MySeekBar
 import com.wyc.cloudapp.logger.Logger
 import kotlin.math.max
 
@@ -28,23 +34,32 @@ open class ShapeItemBase:ItemBase() {
         set(value) {
             field = max(value, MIN_BORDER_WIDTH)
         }
+    var dotBorderWidth = MIN_BORDER_WIDTH
+        set(value) {
+            field = max(value, MIN_BORDER_WIDTH)
+        }
+
     var borderColor: Int = Color.BLACK
     var hasfill = false
     var hasDash = false
+    var hasBorder = true
 
     override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         paint.strokeWidth = borderWidth
         paint.color = borderColor
 
-        if (hasfill)
-            paint.style = Paint.Style.FILL
-        else paint.style = Paint.Style.STROKE
+        when {
+            hasfill -> paint.style = Paint.Style.FILL
+            hasBorder -> paint.style = Paint.Style.STROKE
+            else -> paint.style = Paint.Style.STROKE
+        }
 
-        if (hasDash)paint.pathEffect = DashPathEffect(floatArrayOf(4f,4f),0f)
+        if (hasDash)paint.pathEffect = DashPathEffect(floatArrayOf(dotBorderWidth,dotBorderWidth),0f)
 
         drawShape(offsetX, offsetY, canvas,paint)
 
         paint.strokeWidth = MIN_BORDER_WIDTH
+
         if (hasfill)paint.style = Paint.Style.STROKE
         if (hasDash)paint.pathEffect = null
     }
@@ -53,17 +68,96 @@ open class ShapeItemBase:ItemBase() {
     }
 
     override fun createItemBitmap(bgColor:Int): Bitmap {
-        val offset = borderWidth / 2
+        val offset = borderWidth
         val bmp = Bitmap.createBitmap((width + offset).toInt(), (height + offset).toInt(), Bitmap.Config.ARGB_8888)
         val c = Canvas(bmp)
-        c.translate(-left + offset, -top + offset)
+        c.translate(-left + offset / 2, -top + offset / 2)
         c.drawColor(bgColor)
         draw(0f,0f,c, Paint())
         return bmp
     }
 
-    override fun toString(): String {
-        return "ShapeItemBase(borderWidth=$borderWidth, borderColor=$borderColor, hasfill=$hasfill, hasDash=$hasDash) ${super.toString()}"
+    override fun popMenu(labelView: LabelView) {
+        val view = View.inflate(labelView.context,R.layout.shap_item_attr,null)
+        showShapeEditDialog(labelView,view)
     }
+
+    protected fun showShapeEditDialog(labelView: LabelView,view: View){
+        showEditDialog(labelView.context,view)
+
+        val fill: RadioButton = view.findViewById(R.id.fill)
+        fill.isChecked = hasfill
+        fill.setOnCheckedChangeListener{ _, check ->
+            hasfill = check
+            labelView.postInvalidate()
+        }
+
+        val border: RadioButton = view.findViewById(R.id.border)
+        border.isChecked = hasBorder
+        border.setOnCheckedChangeListener{ _, check ->
+            hasBorder = check
+            labelView.postInvalidate()
+        }
+
+        val dot_width: MySeekBar = view.findViewById(R.id.dot_width)
+        dot_width.visibility = View.VISIBLE
+        dot_width.minValue = MIN_BORDER_WIDTH.toInt()
+        dot_width.max = 48 - MIN_BORDER_WIDTH.toInt()
+        dot_width.progress = dotBorderWidth.toInt()
+        dot_width.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                dotBorderWidth = progress.toFloat()
+                Logger.d(dotBorderWidth)
+                labelView.postInvalidate()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+        })
+        view.findViewById<Group>(R.id.dot_group).visibility = if (hasDash){ View.VISIBLE }else View.GONE
+
+        val dot: RadioButton = view.findViewById(R.id.dot)
+        dot.isChecked = hasDash
+        dot.setOnCheckedChangeListener{ _, check ->
+            hasDash = check
+            view.findViewById<Group>(R.id.dot_group).visibility = if (check){
+                  View.VISIBLE
+            }else View.GONE
+
+            labelView.postInvalidate()
+        }
+
+
+        val bw: MySeekBar = view.findViewById(R.id.border_width)
+        bw.minValue = MIN_BORDER_WIDTH.toInt()
+        bw.max = 48 - MIN_BORDER_WIDTH.toInt()
+        bw.progress = borderWidth.toInt()
+        bw.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+                borderWidth = progress.toFloat()
+                labelView.postInvalidate()
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+
+            }
+
+        })
+    }
+
+    override fun toString(): String {
+        return "ShapeItemBase(borderWidth=$borderWidth, dotBorderWidth=$dotBorderWidth, borderColor=$borderColor, hasfill=$hasfill, hasDash=$hasDash, hasBorder=$hasBorder) ${super.toString()}"
+    }
+
 
 }
