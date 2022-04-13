@@ -7,7 +7,6 @@ import android.util.Base64
 import android.view.MotionEvent
 import android.view.View
 import com.alibaba.fastjson.JSONArray
-import com.google.zxing.BarcodeFormat
 import com.gprinter.command.LabelCommand
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
@@ -20,12 +19,9 @@ import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj
 import com.wyc.cloudapp.logger.Logger
 import org.greenrobot.eventbus.EventBus
 import java.io.ByteArrayOutputStream
-import java.lang.reflect.Field
+import kotlin.collections.ArrayList
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.internal.impl.descriptors.NotFoundClasses
-import kotlin.reflect.jvm.javaField
 
 
 /**
@@ -78,9 +74,17 @@ class LabelView: View {
     private var count = 0
     private var firClick: Long = 0
 
-    private val mMaxAttrIndex = 30
-    private val mItemAttrList:Array<ActionObject?> = arrayOfNulls(30)
+    private val mMaxAttrIndex = 5
+    private val mItemAttrList:Array<ActionObject?> = arrayOfNulls(mMaxAttrIndex)
     private var mCurAttrIndex = 0
+        set(value) {
+            field = if (value >= mMaxAttrIndex){
+                0
+            }else value
+        }
+        get() {
+            return if ( field < 0) mMaxAttrIndex - 1 else field
+        }
 
     constructor(context: Context):this(context, null)
     constructor(context: Context, attrs: AttributeSet?):this(context, attrs, 0)
@@ -141,6 +145,8 @@ class LabelView: View {
                 MotionEvent.ACTION_DOWN->{
                     mCurItem?.checkDeleteClick(event.x,event.y)
                     if (activeItem(event.x,event.y)){
+                        addActiveItem(mCurItem)
+
                         mLastX = event.x
                         mLastY = event.y
                         return true
@@ -160,6 +166,7 @@ class LabelView: View {
                 };
                 MotionEvent.ACTION_UP->{
                     if (!deleteItem(event.x,event.y) && !checkDoubleClick()){
+                        checkActiveItemAttr(mCurItem)
                         releaseCurItem()
                     }
                 }
@@ -222,9 +229,6 @@ class LabelView: View {
                     contentList[i] = contentList[contentList.size -1]
                     contentList[contentList.size -1] = it
                     mCurItem = it
-
-
-
                 }
                 return true
             }
@@ -426,7 +430,7 @@ class LabelView: View {
     /**
      * @param bg 背景位图。如果为null则清除当前背景
      * */
-    fun setBackground(bg:Bitmap?){
+    fun setLabelBackground(bg:Bitmap?){
         if (bg == null){
             if (mBackground != null){
                 mBackground!!.recycle()
@@ -464,6 +468,9 @@ class LabelView: View {
         item.measure(realWidth, realHeight)
         mCurItem = item
 
+        item.left = (width - item.width - ItemBase.ACTION_RADIUS * 4).toInt()
+        item.top = (height - item.height - ItemBase.ACTION_RADIUS * 4).toInt()
+
         contentList.add(item)
 
         addNewAction(item)
@@ -471,29 +478,101 @@ class LabelView: View {
         postInvalidate()
     }
     private fun addNewAction(item: ItemBase){
-        mItemAttrList[mCurAttrIndex++ % mMaxAttrIndex] = ActionObject(item,ActionObject.Action.ADD,null)
+        mItemAttrList[mCurAttrIndex++] = ActionObject(item,ActionObject.Action.ADD,null)
     }
 
     private fun addDelAction(item: ItemBase){
-        mItemAttrList[mCurAttrIndex++ % mMaxAttrIndex] = ActionObject(item,ActionObject.Action.DEL,null)
+        mItemAttrList[mCurAttrIndex++] = ActionObject(item,ActionObject.Action.DEL,null)
     }
 
-    private fun addModifyAction(item: ItemBase,vararg vars:ActionObject.FieldObject){
+    fun addModifyAction(item: ItemBase,vararg vars:ActionObject.FieldObject){
 
         val fieldList:MutableList<ActionObject.FieldObject> = mutableListOf()
 
         vars.forEach {
             fieldList.add(it)
         }
-        mItemAttrList[mCurAttrIndex++ % mMaxAttrIndex] = ActionObject(item,ActionObject.Action.MOD,fieldList)
+        mItemAttrList[mCurAttrIndex++] = ActionObject(item,ActionObject.Action.MOD,fieldList)
+
+        Logger.d("modifyIndex:%d",mCurAttrIndex)
+    }
+    private fun addModifyAction(item: ItemBase,fieldList:MutableList<ActionObject.FieldObject>){
+        mItemAttrList[mCurAttrIndex++] = ActionObject(item,ActionObject.Action.MOD,fieldList)
+    }
+
+    private fun addActiveItem(item: ItemBase?){
+        item?.apply {
+            var index = mCurAttrIndex - 1
+            if (index < 0)index = mMaxAttrIndex - 1
+            val oldActionObject = mItemAttrList[index]
+
+            var changed = true
+            if (oldActionObject != null && oldActionObject.action == ActionObject.Action.ACTIVE && oldActionObject.actionObj == this){
+                changed = false
+            }
+            if (changed){
+                val w = ActionObject.FieldObject(getFieldByName(this,"width"),width,width)
+                val h = ActionObject.FieldObject(getFieldByName(this,"height"),height,height)
+                val l = ActionObject.FieldObject(getFieldByName(this,"left"),left,left)
+                val r = ActionObject.FieldObject(getFieldByName(this,"top"),top,top)
+
+                mItemAttrList[mCurAttrIndex++] = if (this is TextItem){
+                    ActionObject(this,ActionObject.Action.ACTIVE, mutableListOf(w,h,l,r,
+                        ActionObject.FieldObject(getFieldByName(this,"mFontSize"),mFontSize,mFontSize)))
+                }else ActionObject(this,ActionObject.Action.ACTIVE, mutableListOf(w,h,l,r))
+            }
+        }
+    }
+    private fun checkActiveItemAttr(curItem: ItemBase?){
+        curItem?.apply {
+            var index = mCurAttrIndex - 1
+            if (index < 0)index = mMaxAttrIndex - 1
+            val actionObject = mItemAttrList[index]
+            if (actionObject != null){
+                if (actionObject.actionObj == this){
+                    actionObject.fieldList?.let {list->
+
+                        val fieldList:MutableList<ActionObject.FieldObject> = mutableListOf()
+
+                        list.forEach {
+                            when(it.field?.name){
+                                "width" ->{
+                                    if (it.oldValue != this.width){
+                                        fieldList.add(ActionObject.FieldObject(getFieldByName(this,"width"),it.oldValue,this.width))
+                                    }
+                                }
+                                "height" ->{
+                                    if (it.oldValue != this.height){
+                                        fieldList.add(ActionObject.FieldObject(getFieldByName(this,"height"),it.oldValue,this.height))
+                                    }
+                                }
+                                "left" ->{
+                                    if (it.oldValue != this.left){
+                                        fieldList.add(ActionObject.FieldObject(getFieldByName(this,"left"),it.oldValue,this.left))
+                                    }
+                                }
+                                "top" ->{
+                                    if (it.oldValue != this.top){
+                                        fieldList.add(ActionObject.FieldObject(getFieldByName(this,"top"),it.oldValue,this.top))
+                                    }
+                                }
+                                "mFontSize" ->{
+                                    if (this is TextItem && it.oldValue != this.mFontSize){
+                                        fieldList.add(ActionObject.FieldObject(getFieldByName(this,"mFontSize"),it.oldValue,this.mFontSize))
+                                    }
+                                }
+                            }
+                        }
+                        Logger.d(fieldList.toTypedArray().contentToString())
+                        if (fieldList.isNotEmpty())addModifyAction(this,fieldList)
+                    }
+                }
+            }
+        }
     }
 
     fun restAction(){
-        if (mCurAttrIndex > 0){
-            mCurAttrIndex--
-        }else mCurAttrIndex = 0
-
-        val actionObject = mItemAttrList[mCurAttrIndex]
+        val actionObject = mItemAttrList[--mCurAttrIndex]
         if (actionObject != null){
             mItemAttrList[mCurAttrIndex] = null
             val item = actionObject.actionObj
@@ -511,12 +590,17 @@ class LabelView: View {
                         it.field?.apply {
                             isAccessible = true
                             set(item,it.oldValue)
+                            item.resetAttr(name)
                         }
                     }
+                }
+                ActionObject.Action.ACTIVE ->{
+                    swapCurItem(item)
                 }
             }
             postInvalidate()
         }
+        Logger.d("restIndex:%d,attrs:%s",mCurAttrIndex, mItemAttrList.contentToString())
     }
 
     private fun swapCurItem(item: ItemBase?){
@@ -605,30 +689,39 @@ class LabelView: View {
     fun shrinkItem(){
         mCurItem?.apply {
 
-            val w = ActionObject.FieldObject(getFieldByName(this,"width"),width,0)
-            val h = ActionObject.FieldObject(getFieldByName(this,"height"),height,0)
+            val oldW = width
+            val oldH = height
+            val oldFont = if (this is TextItem) mFontSize else 0f
 
             shrink()
 
-            w.newValue = width
-            h.newValue = height
+            val w = ActionObject.FieldObject(getFieldByName(this,"width"),oldW,width)
+            val h = ActionObject.FieldObject(getFieldByName(this,"height"),oldH,height)
 
-            addModifyAction(this,w,h)
+            if (this is TextItem){
+                addModifyAction(this,w,h,ActionObject.FieldObject(getFieldByName(this,"mFontSize"),oldFont,mFontSize))
+            }else
+                addModifyAction(this,w,h)
 
             invalidate()
         }
     }
     fun zoomItem(){
         mCurItem?.apply {
-            val w = ActionObject.FieldObject(getFieldByName(this,"width"),width,0)
-            val h = ActionObject.FieldObject(getFieldByName(this,"height"),height,0)
+
+            val oldW = width
+            val oldH = height
+            val oldFont = if (this is TextItem) mFontSize else 0f
 
             zoom()
 
-            w.newValue = width
-            h.newValue = height
+            val w = ActionObject.FieldObject(getFieldByName(this,"width"),oldW,width)
+            val h = ActionObject.FieldObject(getFieldByName(this,"height"),oldH,height)
 
-            addModifyAction(this,w,h)
+            if (this is TextItem){
+                addModifyAction(this,w,h,ActionObject.FieldObject(getFieldByName(this,"mFontSize"),oldFont,mFontSize))
+            }else
+                addModifyAction(this,w,h)
 
             invalidate()
         }
@@ -642,14 +735,6 @@ class LabelView: View {
 
             invalidate()
         }
-    }
-    private fun getFieldByName(item: ItemBase,name:String):Field?{
-        item::class.memberProperties.forEach {
-            if (it.name == name){
-                return it.javaField
-            }
-        }
-        return null
     }
 
     fun previewModel(){
@@ -792,7 +877,7 @@ class LabelView: View {
             c.save()
             c.translate(it.left.toFloat(), it.top.toFloat())
             c.drawBitmap(b,0f,0f,null)
-            c.drawRect(0f,0f, it.width.toFloat(), it.height.toFloat(),p)
+            //c.drawRect(0f,0f, it.width.toFloat(), it.height.toFloat(),p)
             c.restore()
         }
         return bmp
@@ -827,7 +912,7 @@ class LabelView: View {
     }
 
 
-    fun getGPTscCommand(data: List<ItemBase>):LabelCommand{
+    private fun getGPTscCommand(data: List<ItemBase>):LabelCommand{
         val setting = LabelPrintSetting.getSetting()
         val offsetX = setting.offsetX
         val offsetY = setting.offsetY
@@ -863,19 +948,5 @@ class LabelView: View {
     fun setRotate(degree:Int){
         mRotate = degree
         postInvalidate()
-    }
-
-    fun getGPTscCommand2():LabelCommand{
-        val tsc = LabelCommand()
-        tsc.addSize(mLabelTemplate.width, mLabelTemplate.height)
-        tsc.addGap(5)
-        tsc.addDirection(LabelCommand.DIRECTION.FORWARD, LabelCommand.MIRROR.NORMAL)
-        tsc.addReference(0, 0)
-        tsc.addDensity(LabelCommand.DENSITY.DNESITY1)
-        tsc.addCls()
-        val b = getPrintBitmap()
-        tsc.drawJPGImage(0,0,b.width,b)
-        tsc.addPrint(1, 1)
-        return tsc
     }
 }

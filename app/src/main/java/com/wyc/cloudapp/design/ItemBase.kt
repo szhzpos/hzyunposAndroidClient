@@ -13,10 +13,13 @@ import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.utils.Utils
+import java.lang.reflect.Field
 import kotlin.math.asin
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.javaField
 
 /**
  *
@@ -33,15 +36,15 @@ import kotlin.math.sqrt
  */
 
 open class ItemBase:Cloneable{
-    var top = 88
-    var left = 88
+    var top = 0
+    var left = 0
     var width = -1
         set(value) {
-            field = max(value, 0)
+            field = max(value, 1)
         }
     var height = -1
         set(value) {
-            field = max(value, 0)
+            field = max(value, 1)
         }
     var radian = 0f
         set(value) {
@@ -136,7 +139,16 @@ open class ItemBase:Cloneable{
             wlp.width = (point.x * 0.95).toInt()
             attributes = wlp
         }
+        pop.setOnDismissListener {
+            pop.currentFocus?.apply {
+                clearFocus()
+            }
+        }
         pop.show()
+    }
+
+    open fun resetAttr(attrName: String){
+
     }
 
     open fun zoom(){
@@ -240,6 +252,19 @@ open class ItemBase:Cloneable{
     protected open fun scale(scaleX:Float, scaleY:Float){
         width += scaleX.toInt()
         height += scaleY.toInt()
+    }
+
+    fun getFieldByName(item: ItemBase,name:String): Field?{
+        item::class.memberProperties.forEach {
+            if (it.name == name){
+                return it.javaField
+            }
+        }
+        return null
+    }
+
+    protected fun addAttrChange(labelView:LabelView,attrName:String,oldValue:Any,newValue:Any){
+        labelView.addModifyAction(this,ActionObject.FieldObject(getFieldByName(this,attrName),oldValue,newValue))
     }
 
     fun moveCurItem(rWidth:Int,rHeight:Int,clickX:Float, clickY:Float,offsetX:Int, offsetY:Int,moveX:Float,moveY:Float){

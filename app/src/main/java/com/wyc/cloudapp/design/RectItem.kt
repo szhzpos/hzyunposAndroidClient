@@ -47,11 +47,14 @@ class RectItem:ShapeItemBase() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-
+                seekBar.tag = rc
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-
+                val oldSize = seekBar.tag as? Float ?: rc
+                if (rc != oldSize){
+                    addAttrChange(labelView,"rc",oldSize,rc)
+                }
             }
 
         })

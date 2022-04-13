@@ -1,32 +1,36 @@
 package com.wyc.cloudapp.design
 
 import android.app.Activity
+import android.app.Dialog
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
+import android.view.Display
+import android.view.Gravity
 import android.view.View
+import android.view.WindowManager
 import android.widget.*
 import com.gprinter.bean.PrinterDevices
 import com.gprinter.utils.CallbackListener
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity
-import com.wyc.cloudapp.activity.mobile.business.EditGoodsInfoBaseActivity
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.customizationView.TopDrawableTextView
 import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.utils.BluetoothUtils
 import com.wyc.cloudapp.utils.FileUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 
 class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener,CallbackListener {
@@ -44,7 +48,6 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
         setMiddleText(getString(R.string.label_setting))
 
         initLabelView()
-        initLabelName()
         initAddLabel()
 
         printerError()
@@ -97,6 +100,7 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
         }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe ({ temp->
             mLabelView?.updateLabelTemplate(temp)
             initLabelSize()
+            initLabelName()
         },{err-> err.printStackTrace()
             MyDialog.toastMessage(err.message)})
     }
@@ -185,7 +189,7 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                     try {
                         mImageUri?.let {
                             contentResolver.openInputStream(it).use { inputStream ->
-                                mLabelView?.setBackground(BitmapFactory.decodeStream(inputStream))
+                                mLabelView?.setLabelBackground(BitmapFactory.decodeStream(inputStream))
                             }
                         }
                     } catch (e: IOException) {
@@ -225,6 +229,35 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
         openAlbumIntent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*")
         openAlbumIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         startActivityForResult(openAlbumIntent, CHOOSE_PHOTO) //打开相册
+    }
+
+    private fun showEditBackgroundDialog(){
+        val pop = Dialog(this, R.style.MyDialog)
+        pop.setContentView(R.layout.background_edit)
+
+        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val d: Display = wm.defaultDisplay // 获取屏幕宽、高用
+        val point = Point()
+        d.getSize(point)
+
+        pop.window?.apply {
+            setWindowAnimations(R.style.bottom_pop_anim)
+            val wlp: WindowManager.LayoutParams = attributes
+            wlp.gravity = Gravity.BOTTOM
+            wlp.y = 68
+            wlp.width = (point.x * 0.95).toInt()
+            attributes = wlp
+        }
+
+        pop.findViewById<Button>(R.id.add)?.setOnClickListener {
+            openAlbum()
+            pop.dismiss()
+        }
+        pop.findViewById<Button>(R.id.del)?.setOnClickListener {
+            pop.dismiss()
+            mLabelView?.setLabelBackground(null)
+        }
+        pop.show()
     }
 
     companion object{
@@ -288,7 +321,7 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                     addDataItem()
                 }
                 R.id.image->{
-                    openAlbum()
+                    showEditBackgroundDialog()
                 }
                 R.id.save->{
                     save()
@@ -297,15 +330,17 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                     this@LabelDesignActivity.findViewById<ImageView>(R.id.imageView3).setImageBitmap(mLabelView?.printSingleGoodsBitmap(""))
                 }
                 R.id.printLabel->{
-                    if((v as TopDrawableTextView).hasNormal()){
-                        CustomApplication.execute {
-                            var n = LabelPrintSetting.getSetting().printNum
-                            while (n-- > 0){
-                                GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoodsById("")?.command)
+                    if (BluetoothUtils.hasSupportBluetooth()){
+                        if((v as TopDrawableTextView).hasNormal()){
+                            CustomApplication.execute {
+                                var n = LabelPrintSetting.getSetting().printNum
+                                while (n-- > 0){
+                                    GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoodsById("")?.command)
+                                }
                             }
+                        }else{
+                            connPrinter()
                         }
-                    }else{
-                        connPrinter()
                     }
                 }
             }

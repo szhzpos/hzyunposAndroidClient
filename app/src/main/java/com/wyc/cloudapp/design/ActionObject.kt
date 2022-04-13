@@ -49,7 +49,7 @@ class ActionObject(var actionObj:ItemBase,var action:Action,var fieldList: Mutab
         }
     }
     enum class Action{
-        ADD,DEL,MOD
+        ADD,DEL,MOD,ACTIVE
     }
 
     override fun equals(other: Any?): Boolean {

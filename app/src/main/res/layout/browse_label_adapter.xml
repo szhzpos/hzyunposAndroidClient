@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/round_border_sub_gray"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/name"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/height_35"
+        android:layout_height="@dimen/height_45"
         android:background="@drawable/bottom_separator"
         android:gravity="center"
         android:textColor="@color/text_color"
-        android:textSize="@dimen/font_size_16" />
+        android:textSize="@dimen/font_size_24" />
 
     <com.wyc.cloudapp.design.LabelView
         android:id="@+id/labelView"

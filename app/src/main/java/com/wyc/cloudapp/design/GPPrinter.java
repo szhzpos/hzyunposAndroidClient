@@ -13,6 +13,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.utils.BluetoothUtils;
 
 import java.io.IOException;
 import java.util.Vector;

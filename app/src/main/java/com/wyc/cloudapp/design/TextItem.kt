@@ -1,6 +1,5 @@
 package com.wyc.cloudapp.design
 
-import android.app.Activity
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -10,12 +9,12 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.CheckBox
 import android.widget.EditText
+import android.widget.RadioButton
 import android.widget.SeekBar
 import com.alibaba.fastjson.annotation.JSONField
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.customizationView.MySeekBar
-import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.Utils
 import kotlin.math.abs
 import kotlin.math.min
@@ -48,6 +47,7 @@ open class TextItem:ItemBase() {
     var hasItalic = false
     var hasUnderLine = false
     var hasDelLine = false
+    var textAlign = Align.LEFT
 
     @JSONField(serialize = false)
     private var mPaint:Paint = Paint()
@@ -101,7 +101,19 @@ open class TextItem:ItemBase() {
                 }
             }else{
                 val baseLineY = height / 2 + (abs(paint.fontMetrics.ascent) - paint.fontMetrics.descent) / 2
-                canvas.drawText(content,l,t + baseLineY,paint)
+                val left = when(textAlign){
+                    Align.MID->{
+                        paint.getTextBounds(content,0,content.length,mRect)
+                        (width - mRect.width()) shr 1
+                    }
+                    Align.RIGHT->{
+                        paint.getTextBounds(content,0,content.length,mRect)
+                        width - mRect.width()
+                    }else ->{
+                        0
+                    }
+                }
+                canvas.drawText(content,l + left,t + baseLineY,paint)
             }
 
             canvas.restore()
@@ -196,6 +208,13 @@ open class TextItem:ItemBase() {
         }
     }
 
+    override fun resetAttr(attrName: String) {
+        if (attrName == "content" || attrName == "hasNewLine" || attrName == "mFontSize"){
+            updatePaintAttr()
+            updateNewline()
+        }
+    }
+
     override fun popMenu(labelView: LabelView) {
         val view = View.inflate(labelView.context,R.layout.text_item_attr,null)
         showTextEditDialog(labelView,view)
@@ -215,18 +234,21 @@ open class TextItem:ItemBase() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-
+                seekBar.tag = mFontSize
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-
+                val oldSize = seekBar.tag as? Float ?: mFontSize
+                if (mFontSize != oldSize){
+                    addAttrChange(labelView,"mFontSize",oldSize,mFontSize)
+                }
             }
-
         })
 
         val bCheckBox:CheckBox = view.findViewById(R.id.bold)
         bCheckBox.isChecked = hasBold
         bCheckBox.setOnCheckedChangeListener{ _, check ->
+            addAttrChange(labelView,"hasBold",hasBold,check)
             hasBold = check
             labelView.postInvalidate()
         }
@@ -234,6 +256,7 @@ open class TextItem:ItemBase() {
         val italic:CheckBox = view.findViewById(R.id.italic)
         italic.isChecked = hasItalic
         italic.setOnCheckedChangeListener { _, isChecked ->
+            addAttrChange(labelView,"hasItalic",hasItalic,isChecked)
             hasItalic = isChecked
             updateNewline()
             labelView.postInvalidate()
@@ -242,6 +265,7 @@ open class TextItem:ItemBase() {
         val underLine:CheckBox = view.findViewById(R.id.underLine)
         underLine.isChecked = hasUnderLine
         underLine.setOnCheckedChangeListener { _, isChecked ->
+            addAttrChange(labelView,"hasUnderLine",hasUnderLine,isChecked)
             hasUnderLine = isChecked
             labelView.postInvalidate()
         }
@@ -249,6 +273,7 @@ open class TextItem:ItemBase() {
         val delLine:CheckBox = view.findViewById(R.id.delLine)
         delLine.isChecked = hasDelLine
         delLine.setOnCheckedChangeListener { _, isChecked ->
+            addAttrChange(labelView,"hasDelLine",hasDelLine,isChecked)
             hasDelLine = isChecked
             labelView.postInvalidate()
         }
@@ -256,10 +281,42 @@ open class TextItem:ItemBase() {
         val newline:CheckBox = view.findViewById(R.id.newline)
         newline.isChecked = hasNewLine
         newline.setOnCheckedChangeListener { _, isChecked ->
+            addAttrChange(labelView,"hasNewLine",hasNewLine,isChecked)
             hasNewLine = isChecked
             updateNewline()
             labelView.postInvalidate()
         }
+
+        val left: RadioButton = view.findViewById(R.id.left)
+        left.isChecked = textAlign == Align.LEFT
+        left.setOnCheckedChangeListener{ _, check ->
+            if (check){
+                addAttrChange(labelView,"textAlign",textAlign,Align.LEFT)
+                textAlign = Align.LEFT
+                labelView.postInvalidate()
+            }
+        }
+
+        val right: RadioButton = view.findViewById(R.id.right)
+        right.isChecked = textAlign == Align.RIGHT
+        right.setOnCheckedChangeListener{ _, check ->
+            if (check){
+                addAttrChange(labelView,"textAlign",textAlign,Align.RIGHT)
+                textAlign = Align.RIGHT
+                labelView.postInvalidate()
+            }
+        }
+
+        val mid: RadioButton = view.findViewById(R.id.mid)
+        mid.isChecked = textAlign == Align.MID
+        mid.setOnCheckedChangeListener{ _, check ->
+            if (check){
+                addAttrChange(labelView,"textAlign",textAlign,Align.MID)
+                textAlign = Align.MID
+                labelView.postInvalidate()
+            }
+        }
+
 
         val letterSpacing:SeekBar = view.findViewById(R.id.letterSpacing)
         letterSpacing.progress = (mLetterSpacing * 10).toInt()
@@ -272,11 +329,14 @@ open class TextItem:ItemBase() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-
+                seekBar.tag = mLetterSpacing
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-
+                val oldSize = seekBar.tag as? Float ?: mLetterSpacing
+                if (mLetterSpacing != oldSize){
+                    addAttrChange(labelView,"mLetterSpacing",oldSize,mLetterSpacing)
+                }
             }
 
         })
@@ -298,8 +358,21 @@ open class TextItem:ItemBase() {
                 updateNewline()
                 labelView.postInvalidate()
             }
-
         })
+        et.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus){
+                v.tag = content
+            }else{
+                val old = v.tag as? String ?: content
+                if (old != content){
+                    addAttrChange(labelView,"content",old,content)
+                }
+            }
+        }
+    }
+
+    enum class Align{
+        LEFT,MID,RIGHT
     }
 
     override fun toString(): String {

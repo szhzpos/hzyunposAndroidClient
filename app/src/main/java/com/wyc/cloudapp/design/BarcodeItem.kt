@@ -65,8 +65,8 @@ class BarcodeItem:CodeItemBase() {
         super.transform(scaleX, scaleY)
         fontSize *= min(scaleX,scaleY)
         if (barcodeFormat == BarcodeFormat.EAN_13){
-            leftMargin = (leftMargin * scaleX).toInt()
-            rightMargin = (rightMargin * scaleX).toInt()
+            leftMargin = (leftMargin * min(scaleX,scaleY)).toInt()
+            rightMargin = (rightMargin * min(scaleX,scaleY)).toInt()
         }
     }
 
@@ -251,13 +251,15 @@ class BarcodeItem:CodeItemBase() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-
+                seekBar.tag = fontSize
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-
+                val oldSize = seekBar.tag as? Float ?: fontSize
+                if (fontSize != oldSize){
+                    addAttrChange(labelView,"fontSize",oldSize,fontSize)
+                }
             }
-
         })
 
         val et: EditText = view.findViewById(R.id.content)
@@ -281,6 +283,16 @@ class BarcodeItem:CodeItemBase() {
                 labelView.postInvalidate()
             }
         })
+        et.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus){
+                v.tag = content
+            }else{
+                val old = v.tag as? String ?: content
+                if (old != content){
+                    addAttrChange(labelView,"content",old,content)
+                }
+            }
+        }
 
         view.findViewById<Spinner>(R.id.format)?.apply {
             val adapter = ArrayAdapter<String>(labelView.context, R.layout.drop_down_style)
@@ -309,8 +321,8 @@ class BarcodeItem:CodeItemBase() {
                             }else if (it.name == BarcodeFormat.CODE_128.name){
                                 et.filters = arrayOf()
                             }
+                            addAttrChange(labelView,"barcodeFormat",barcodeFormat,it)
                             barcodeFormat = it
-                            generateBitmap()
                             labelView.postInvalidate()
                             return
                         }

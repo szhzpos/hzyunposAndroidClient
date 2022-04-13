@@ -64,9 +64,20 @@ class QRCodeItem:CodeItemBase()  {
             }
             override fun afterTextChanged(s: Editable) {
                 content = s.toString()
+                generateBitmap()
                 labelView.postInvalidate()
             }
         })
+        et.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus){
+                v.tag = content
+            }else{
+                val old = v.tag as? String ?: content
+                if (old != content){
+                    addAttrChange(labelView,"content",old,content)
+                }
+            }
+        }
 
         view.findViewById<Spinner>(R.id.format)?.apply {
             val adapter = ArrayAdapter<String>(labelView.context, R.layout.drop_down_style)

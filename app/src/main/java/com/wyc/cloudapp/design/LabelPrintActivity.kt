@@ -28,6 +28,7 @@ import com.wyc.cloudapp.decoration.LinearItemDecoration
 import com.wyc.cloudapp.decoration.SuperItemDecoration
 import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.utils.BluetoothUtils
 import com.wyc.cloudapp.utils.Utils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
@@ -78,21 +79,23 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
 
     private fun initPrint(){
         findViewById<TopDrawableTextView>(R.id.label_print)?.setOnClickListener { it ->
-            (it as TopDrawableTextView).triggerAnimation(true)
-            if (it.hasNormal()){
-                if (mPrintItem != null){
-                    CustomApplication.execute {
-                        val n = LabelPrintSetting.getSetting().printNum
-                        var index = n
-                        mLabelGoodsAdapter?.list?.forEach {
-                            while (index-- > 0){
-                                GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoods(mPrintItem!!,it)?.command)
+            if (BluetoothUtils.hasSupportBluetooth()){
+                (it as TopDrawableTextView).triggerAnimation(true)
+                if (it.hasNormal()){
+                    if (mPrintItem != null){
+                        CustomApplication.execute {
+                            val n = LabelPrintSetting.getSetting().printNum
+                            var index = n
+                            mLabelGoodsAdapter?.list?.forEach {
+                                while (index-- > 0){
+                                    GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoods(mPrintItem!!,it)?.command)
+                                }
+                                index = n
                             }
-                            index = n
                         }
                     }
-                }
-            }else connPrinter()
+                }else connPrinter()
+            }
         }
     }
     private fun initAdapter() {

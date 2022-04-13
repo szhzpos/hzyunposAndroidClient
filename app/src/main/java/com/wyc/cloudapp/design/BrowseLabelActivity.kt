@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.wyc.cloudapp.R
@@ -37,6 +38,8 @@ class BrowseLabelActivity : AbstractDefinedTitleActivity() {
         val recyclerView: RecyclerView = findViewById(R.id.label_list)
         SuperItemDecoration.registerGlobalLayoutToRecyclerView(recyclerView, resources.getDimension(R.dimen.size_48), LinearItemDecoration(getColor(R.color.gray_subtransparent)))
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        recyclerView.addItemDecoration(DividerItemDecoration(this,DividerItemDecoration.VERTICAL))
+
         mAdapter = LabelAdapter(this)
         Observable.create<List<LabelTemplate>>{
             it.onNext(AppDatabase.getInstance().LabelTemplateDao().getAll())

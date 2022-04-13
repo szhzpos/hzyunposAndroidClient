@@ -40,11 +40,16 @@ import kotlin.math.min
 
 open class CodeItemBase:ItemBase() {
     var barcodeFormat: BarcodeFormat = BarcodeFormat.CODE_128
+        set(value) {
+            field = value
+            generateBitmap()
+        }
     var content: String = "6922711043401"
         set(value) {
             field = value
             generateBitmap()
         }
+
     /**
      * 引用数据字段。如果不为空则content的值需要从数据源获取，获取数据源的具体值由field的值决定
      * */
@@ -81,8 +86,8 @@ open class CodeItemBase:ItemBase() {
         }
     }
 
-    override fun measureItem(w: Int, h: Int) {
-        if (mBitmap == null){
+    override fun resetAttr(attrName: String) {
+        if (attrName == "content" || attrName == "barcodeFormat"){
             generateBitmap()
         }
     }
@@ -91,25 +96,9 @@ open class CodeItemBase:ItemBase() {
         if (Utils.isNotEmpty(content)){
             val writer = MultiFormatWriter()
             try {
-                val result: BitMatrix = writer.encode(content,barcodeFormat, width,height,hashMapOf(Pair(EncodeHintType.MARGIN,18)) )
+                val result: BitMatrix = writer.encode(content,barcodeFormat, width,height,hashMapOf(Pair(EncodeHintType.MARGIN,0)) )
 
-                var start = 0
-                var end = result.width
-
-                for (i in 0 .. result.width){
-                    if (result[i,0]){
-                        start = i
-                        break
-                    }
-                }
-                for (i in result.width downTo 0 ){
-                    if (result[i,0]){
-                        end = i
-                        break
-                    }
-                }
-
-                val codeWidth = end - start
+                val codeWidth = result.width
                 val codeHeight = result.height
                 val pixels = IntArray(codeWidth * codeHeight)
 
@@ -117,7 +106,7 @@ open class CodeItemBase:ItemBase() {
                     val offset = y * codeWidth
                     for (x in 0 until codeWidth) {
                         if (y < result.height ){
-                            pixels[offset + x] = if (result[x + start , y]) Color.BLACK else Color.WHITE
+                            pixels[offset + x] = if (result[x , y]) Color.BLACK else Color.WHITE
                         }else pixels[offset + x] = Color.RED
                     }
                 }

@@ -88,6 +88,7 @@ open class ShapeItemBase:ItemBase() {
         val fill: RadioButton = view.findViewById(R.id.fill)
         fill.isChecked = hasfill
         fill.setOnCheckedChangeListener{ _, check ->
+            addAttrChange(labelView,"hasfill",hasfill,check)
             hasfill = check
             labelView.postInvalidate()
         }
@@ -95,6 +96,7 @@ open class ShapeItemBase:ItemBase() {
         val border: RadioButton = view.findViewById(R.id.border)
         border.isChecked = hasBorder
         border.setOnCheckedChangeListener{ _, check ->
+            addAttrChange(labelView,"hasBorder",hasBorder,check)
             hasBorder = check
             labelView.postInvalidate()
         }
@@ -112,11 +114,14 @@ open class ShapeItemBase:ItemBase() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-
+                seekBar.tag = dotBorderWidth
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-
+                val oldSize = seekBar.tag as? Float ?: dotBorderWidth
+                if (dotBorderWidth != oldSize){
+                    addAttrChange(labelView,"dotBorderWidth",oldSize,dotBorderWidth)
+                }
             }
 
         })
@@ -125,6 +130,7 @@ open class ShapeItemBase:ItemBase() {
         val dot: RadioButton = view.findViewById(R.id.dot)
         dot.isChecked = hasDash
         dot.setOnCheckedChangeListener{ _, check ->
+            addAttrChange(labelView,"hasDash",hasDash,check)
             hasDash = check
             view.findViewById<Group>(R.id.dot_group).visibility = if (check){
                   View.VISIBLE
@@ -145,11 +151,14 @@ open class ShapeItemBase:ItemBase() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
-
+                seekBar.tag = borderWidth
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
-
+                val oldSize = seekBar.tag as? Float ?: borderWidth
+                if (borderWidth != oldSize){
+                    addAttrChange(labelView,"borderWidth",oldSize,borderWidth)
+                }
             }
 
         })

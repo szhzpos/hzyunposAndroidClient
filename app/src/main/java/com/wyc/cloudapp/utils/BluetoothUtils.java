@@ -47,6 +47,16 @@ public class BluetoothUtils {
         else
             MyDialog.ToastMessage("设备不支持蓝牙功能！", null);
     }
+
+    public static boolean hasSupportBluetooth(){
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        boolean code = bluetoothAdapter != null && bluetoothAdapter.isEnabled();
+        if (!code){
+            MyDialog.ToastMessage("未开启蓝牙功能...", null);
+        }
+        return code;
+    }
+
     public static void stopBlueToothDiscovery(){
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null){
