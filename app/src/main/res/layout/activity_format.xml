@@ -52,8 +52,10 @@
         android:id="@+id/imageView3"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:layout_marginBottom="@dimen/margin_8"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -261,10 +263,16 @@
             app:verSpacing="@dimen/margin_8" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
-            android:id="@+id/image3"
+            android:id="@+id/document"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/height_68"
-            android:visibility="invisible" />
+            android:drawableTop="@drawable/export"
+            android:onClick="onClick"
+            android:text="@string/imExport"
+            android:textSize="@dimen/font_size_14"
+            android:visibility="visible"
+            app:layout_weight_width="0.2"
+            app:verSpacing="@dimen/margin_8" />
 
     </com.wyc.cloudapp.customizationView.FlowLayout>
 

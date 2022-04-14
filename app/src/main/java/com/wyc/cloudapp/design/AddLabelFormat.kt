@@ -80,8 +80,8 @@ class AddLabelFormat(context: Context):AbstractDialogContext(context,context.get
                 ) {
                     LabelTemplate.getDefaultSize().forEach {
                         if (it.description == adapter.getItem(position)){
-                            this@AddLabelFormat.findViewById<EditText>(R.id.label_width)?.setText(it.rW.toString())
-                            this@AddLabelFormat.findViewById<EditText>(R.id.label_height)?.setText(it.rH.toString())
+                            this@AddLabelFormat.findViewById<EditText>(R.id.label_width)?.setText(it.getrW().toString())
+                            this@AddLabelFormat.findViewById<EditText>(R.id.label_height)?.setText(it.getrH().toString())
                             return
                         }
                     }

@@ -40,7 +40,7 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     private var mSelectGoodsLauncher: ActivityResultLauncher<Intent>? = null
     private var mLabelGoodsAdapter:LabelGoodsAdapter? = null
     private var mLabelView:LabelView? = null
-    private var mPrintItem:List<ItemBase>? = null
+    private var mLabelTemplate:LabelTemplate? = null
     private var mConnecting = false
     private var mSearch:EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,13 +82,13 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
             if (BluetoothUtils.hasSupportBluetooth()){
                 (it as TopDrawableTextView).triggerAnimation(true)
                 if (it.hasNormal()){
-                    if (mPrintItem != null){
+                    if (mLabelTemplate != null){
                         CustomApplication.execute {
                             val n = LabelPrintSetting.getSetting().printNum
                             var index = n
                             mLabelGoodsAdapter?.list?.forEach {
                                 while (index-- > 0){
-                                    GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoods(mPrintItem!!,it)?.command)
+                                    GPPrinter.sendDataToPrinter(GPPrinter.getGPTscCommand(mLabelTemplate!!,it).command)
                                 }
                                 index = n
                             }
@@ -125,13 +125,13 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
             }
         }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe ({ temp->
             updateLabel(temp)
+            mLabelTemplate = temp
         },{err-> err.printStackTrace()
             MyDialog.toastMessage(err.message)})
     }
 
     private fun updateLabel(labelTemplate: LabelTemplate){
         mLabelView?.updateLabelTemplate(labelTemplate)
-        mPrintItem = mLabelView?.getPrintItem()
     }
 
     private fun registerGoodsCallback(){

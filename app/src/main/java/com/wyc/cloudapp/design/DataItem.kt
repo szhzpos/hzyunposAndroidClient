@@ -57,11 +57,11 @@ class DataItem:TextItem() {
 
 
     companion object{
-        const val  field = "barcode_id barcodeId,goods_title goodsTitle, barcode,unit_name unit,origin,spec_str spec,yh_price,retail_price"
+        const val  fields = "barcode_id barcodeId,goods_title goodsTitle, barcode,unit_name unit,origin,spec_str spec,yh_price,retail_price"
         @JvmStatic
         fun getGoodsDataById(barcodeId:String?):LabelGoods?{
-            val sql = if (barcodeId.isNullOrEmpty()) "select $field from barcode_info where goods_status = 1 and barcode_status = 1 limit 1" else
-                "select $field from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
+            val sql = if (barcodeId.isNullOrEmpty()) "select $fields from barcode_info where goods_status = 1 and barcode_status = 1 limit 1" else
+                "select $fields from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
             val goods = JSONObject()
             if (!SQLiteHelper.execSql(goods,sql)){
                 MyDialog.toastMessage(goods.getString("info"))
@@ -72,7 +72,7 @@ class DataItem:TextItem() {
         }
         @JvmStatic
         fun getGoodsDataByBarcode(barcode:String):MutableList<LabelGoods>{
-            val sql = "select $field from barcode_info where barcode = $barcode and (goods_status = 1 and barcode_status = 1)"
+            val sql = "select $fields from barcode_info where barcode = $barcode and (goods_status = 1 and barcode_status = 1)"
             val sb = StringBuilder()
             val goods = SQLiteHelper.getListToJson(sql,sb)
             if (goods != null){

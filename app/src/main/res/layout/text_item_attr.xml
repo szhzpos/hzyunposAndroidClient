@@ -22,7 +22,7 @@
         android:id="@+id/align"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_5"
+        android:layout_marginStart="@dimen/margin_2"
         android:layout_marginTop="@dimen/margin_12"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
@@ -141,8 +141,6 @@
         android:text="@string/delLine"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14"
-        app:layout_constraintEnd_toEndOf="@id/newline"
-        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/underLine"
         app:layout_constraintTop_toTopOf="@id/bold" />
 

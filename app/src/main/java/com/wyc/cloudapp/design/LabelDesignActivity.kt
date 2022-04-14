@@ -17,6 +17,9 @@ import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
+import com.alibaba.fastjson.JSON
 import com.gprinter.bean.PrinterDevices
 import com.gprinter.utils.CallbackListener
 import com.wyc.cloudapp.R
@@ -31,9 +34,13 @@ import com.wyc.cloudapp.utils.FileUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.io.IOException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.io.*
+import java.nio.charset.StandardCharsets
 
-class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener,CallbackListener {
+class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener,CallbackListener,CoroutineScope by CoroutineScope(Dispatchers.IO) {
     private var mLabelView:LabelView? = null
     private var mCurBtn:TopDrawableTextView? = null
     private var newFlag = false
@@ -43,9 +50,14 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
     private val REQUEST_CAPTURE_IMG = 100
     private var mImageUri: Uri? = null
 
+    private var mOpenDocumentLauncher: ActivityResultLauncher<Array<String>>? = null
+    private var mSaveDocumentLauncher: ActivityResultLauncher<String>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setMiddleText(getString(R.string.label_setting))
+
+        initImExport()
 
         initLabelView()
         initAddLabel()
@@ -54,6 +66,71 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
 
         connPrinter()
     }
+    private fun initImExport(){
+        mOpenDocumentLauncher = registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri != null){
+                Observable.create<LabelTemplate> {
+                    contentResolver.openInputStream(uri)?.use { stream ->
+                        val reader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
+                        val stringBuilder = StringBuilder()
+                        var line: String?
+                        while (reader.readLine().also { line = it } != null) {
+                            stringBuilder.append(line)
+                        }
+                        it.onNext(LabelTemplate.parse(stringBuilder.toString()))
+                    }
+                }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe({ updateLabel(it) },{
+                        it.printStackTrace()
+                        MyDialog.toastMessage(it.message)
+                    }
+                )
+            }
+        }
+        mSaveDocumentLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument()){
+            Logger.d(it)
+            it?.apply {
+                launch {
+                    contentResolver.openOutputStream(it)?.use {stream->
+                        val writer = BufferedWriter(OutputStreamWriter(stream,StandardCharsets.UTF_8))
+                        val json = JSON.toJSONString(mLabelView?.getLabelTemplate())
+                        writer.write(json)
+                        writer.flush()
+                    }
+                }
+            }
+        }
+    }
+    private fun showImExportDialog(){
+        val pop = Dialog(this, R.style.MyDialog)
+        pop.setContentView(R.layout.im_export_file)
+
+        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
+        val d: Display = wm.defaultDisplay
+        val point = Point()
+        d.getSize(point)
+
+        pop.window?.apply {
+            setWindowAnimations(R.style.bottom_pop_anim)
+            val wlp: WindowManager.LayoutParams = attributes
+            wlp.gravity = Gravity.BOTTOM
+            wlp.y = 68
+            wlp.width = (point.x * 0.95).toInt()
+            attributes = wlp
+        }
+
+        pop.findViewById<Button>(R.id.import_file)?.setOnClickListener {
+            pop.dismiss()
+            mOpenDocumentLauncher?.launch(arrayOf("text/*"))
+        }
+        pop.findViewById<Button>(R.id.export)?.setOnClickListener {
+            pop.dismiss()
+            mLabelView?.apply {
+                mSaveDocumentLauncher?.launch(getLabelName() + ".txt")
+            }
+        }
+        pop.show()
+    }
+
     private fun connPrinter(){
         GPPrinter.openBlueTooth(LabelPrintSetting.getSetting().getPrinterAddress(),this)
     }
@@ -66,7 +143,7 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
             if (addLabelFormat.exec() == 1){
                 val labelTemplate = addLabelFormat.getContent()
                 mLabelView?.updateLabelTemplate(labelTemplate)
-
+                this@LabelDesignActivity.findViewById<ImageView>(R.id.imageView3).setImageBitmap(null)
                 findViewById<EditText>(R.id.label_name)?.setText(labelTemplate.templateName)
                 (findViewById<Spinner>(R.id.label_size).adapter as? ArrayAdapter<String>)?.apply {
                     clear()
@@ -97,12 +174,15 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                     mLabelView?.setRotate(setting.rotate.value)
                 }
             }
-        }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe ({ temp->
-            mLabelView?.updateLabelTemplate(temp)
-            initLabelSize()
-            initLabelName()
+        }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe ({ label->
+            updateLabel(label)
         },{err-> err.printStackTrace()
             MyDialog.toastMessage(err.message)})
+    }
+    private fun updateLabel(label:LabelTemplate){
+        mLabelView?.updateLabelTemplate(label)
+        initLabelSize()
+        initLabelName()
     }
 
     private fun initLabelName(){
@@ -153,7 +233,7 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                     mLabelView?.getLabelSize()?.forEach {
                         if (it.description == adapter.getItem(position)){
                             if (!newFlag)
-                                mLabelView?.updateLabelSize(it.rW,it.rH)
+                                mLabelView?.updateLabelSize(it.getrW(),it.getrH())
                             return
                         }
                     }
@@ -163,6 +243,18 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        if (mLabelView?.hasModify() == true){
+            MyDialog.displayAskMessage(this,getString(R.string.save_label_hint),
+                {   mLabelView?.save()
+                    super.onBackPressed()
+                }) {
+                it.dismiss()
+                super.onBackPressed()
+            }
+        }else super.onBackPressed()
     }
 
     override fun onDestroy() {
@@ -329,17 +421,23 @@ class LabelDesignActivity : AbstractDefinedTitleActivity(), View.OnClickListener
                 R.id.preview->{
                     this@LabelDesignActivity.findViewById<ImageView>(R.id.imageView3).setImageBitmap(mLabelView?.printSingleGoodsBitmap(""))
                 }
+                R.id.document->{
+                    showImExportDialog()
+                }
                 R.id.printLabel->{
                     if (BluetoothUtils.hasSupportBluetooth()){
-                        if((v as TopDrawableTextView).hasNormal()){
-                            CustomApplication.execute {
-                                var n = LabelPrintSetting.getSetting().printNum
-                                while (n-- > 0){
-                                    GPPrinter.sendDataToPrinter(mLabelView?.printSingleGoodsById("")?.command)
+                        if (mLabelView != null){
+                            val labelTemplate = mLabelView!!.getLabelTemplate()
+                            if((v as TopDrawableTextView).hasNormal()){
+                                CustomApplication.execute {
+                                    var n = LabelPrintSetting.getSetting().printNum
+                                    while (n-- > 0){
+                                        GPPrinter.sendDataToPrinter(GPPrinter.getGPTscCommand(labelTemplate,DataItem.getGoodsDataById("")).command)
+                                    }
                                 }
+                            }else{
+                                connPrinter()
                             }
-                        }else{
-                            connPrinter()
                         }
                     }
                 }

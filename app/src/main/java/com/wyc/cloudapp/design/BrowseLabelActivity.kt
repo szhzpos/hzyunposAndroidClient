@@ -112,7 +112,7 @@ class BrowseLabelActivity : AbstractDefinedTitleActivity() {
             val label = getItem(position)
             holder.name.text = label.templateName
             holder.labelView.postDelayed({
-                holder.labelView.setLabelTemplate(label)
+                holder.labelView.updateLabelTemplate(label)
             },100)
             holder.labelView.previewModel()
 

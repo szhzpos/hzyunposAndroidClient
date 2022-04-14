@@ -1040,7 +1040,7 @@
     <string name="letterSpacing">字间距</string>
     <string name="newline">换行</string>
     <string name="font">字&#160;&#160;&#160;体</string>
-    <string name="date_format">日期格式</string>
+    <string name="date_format">格&#160;&#160;&#160;式</string>
     <string name="auto_update">自动更新</string>
     <string name="code_format">编码格式</string>
     <string name="not_ean_13">内容长度错误,EAN_13格式长度只能为13位!</string>
@@ -1057,4 +1057,8 @@
     <string name="l_align">左对齐</string>
     <string name="r_align">右对齐</string>
     <string name="m_align">中间对齐</string>
+    <string name="imExport">导入导出</string>
+    <string name="import_">导入</string>
+    <string name="export">导出</string>
+    <string name="save_label_hint">是否保存标签模板?</string>
 </resources>

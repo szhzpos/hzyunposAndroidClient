@@ -1,6 +1,12 @@
 package com.wyc.cloudapp.design;
 
+import android.graphics.Bitmap;
+import android.graphics.Color;
+
+import androidx.annotation.Nullable;
+
 import com.gprinter.bean.PrinterDevices;
+import com.gprinter.command.LabelCommand;
 import com.gprinter.io.BluetoothPort;
 import com.gprinter.io.EthernetPort;
 import com.gprinter.io.PortManager;
@@ -16,6 +22,7 @@ import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.BluetoothUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Vector;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
@@ -217,6 +224,35 @@ public class GPPrinter implements CallbackListener {
         if (printer != null){
             printer = null;
         }
+    }
+
+    /**
+     * @param labelTemplate 标签模板
+     * @param labelGoods 标签打印数据
+     * */
+    public static LabelCommand getGPTscCommand(LabelTemplate labelTemplate,@Nullable DataItem.LabelGoods labelGoods) {
+        LabelCommand tsc = new LabelCommand();
+        if (labelGoods != null){
+            LabelPrintSetting setting = LabelPrintSetting.getSetting();
+            int offsetX = setting.getOffsetX();
+            int offsetY = setting.getOffsetY();
+            Logger.d("offsetX:%d,offsetY:%d", offsetX, offsetY);
+
+            tsc.addSize(labelTemplate.getWidth(),labelTemplate.getHeight());
+            tsc.addGap(5);
+            tsc.addDirection(LabelCommand.DIRECTION.FORWARD, LabelCommand.MIRROR.NORMAL);
+            tsc.addReference(offsetX, offsetY);
+            tsc.addDensity(LabelCommand.DENSITY.DNESITY4);
+            tsc.addCls();
+
+            final List<ItemBase> data = labelTemplate.printSingleGoods(labelGoods);
+            for (ItemBase it : data) {
+                final Bitmap b = it.createItemBitmap(Color.WHITE);
+                tsc.drawImage(it.getLeft(), it.getTop(), b.getWidth(), b);
+            }
+            tsc.addPrint(1, 1);
+        }
+        return tsc;
     }
 
     @Override
