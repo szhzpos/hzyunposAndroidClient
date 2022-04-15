@@ -86,6 +86,14 @@ open class CodeItemBase:ItemBase() {
         }
     }
 
+    override fun clone(): ItemBase {
+        val c =  super.clone()
+        if (mBitmap != null){
+            mBitmap = mBitmap!!.copy(mBitmap!!.config,true)
+        }
+        return c
+    }
+
     override fun resetAttr(attrName: String) {
         if (attrName == "content" || attrName == "barcodeFormat"){
             generateBitmap()
@@ -126,6 +134,10 @@ open class CodeItemBase:ItemBase() {
             } catch (e: Exception) {
                 e.printStackTrace()
                 MyDialog.toastMessage(e.message)
+                if(mBitmap != null){
+                    mBitmap!!.recycle()
+                    mBitmap = null
+                }
             }
         }else
             if(mBitmap != null){

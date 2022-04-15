@@ -58,7 +58,7 @@ class BarcodeItem:CodeItemBase() {
 
     override fun drawItem(offsetX: Float, offsetY: Float, canvas: Canvas, paint: Paint) {
         super.drawItem(offsetX, offsetY, canvas, paint)
-        drawContent(left + offsetX,top + offsetY,canvas,paint)
+        if (mBitmap != null)drawContent(left + offsetX,top + offsetY,canvas,paint)
     }
 
     override fun transform(scaleX: Float, scaleY: Float) {
@@ -224,7 +224,11 @@ class BarcodeItem:CodeItemBase() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                MyDialog.toastMessage(e.message)
+                if (e is IllegalArgumentException && barcodeFormat == BarcodeFormat.EAN_13){
+                    MyDialog.toastMessage(R.string.ean_13_error_hint)
+                }else
+                    MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.new_barcode_hint,e.message))
+
                 if(mBitmap != null){
                     mBitmap!!.recycle()
                     mBitmap = null

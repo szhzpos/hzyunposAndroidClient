@@ -1061,4 +1061,6 @@
     <string name="import_">导入</string>
     <string name="export">导出</string>
     <string name="save_label_hint">是否保存标签模板?</string>
+    <string name="new_barcode_hint">生成条码错误:%1$s</string>
+    <string name="ean_13_error_hint">EAN13条码格式错误!</string>
 </resources>
