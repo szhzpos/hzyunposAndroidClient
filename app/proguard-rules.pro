@@ -186,6 +186,8 @@
 -keep class com.gprinter.**{*;}
 -keep class com.jcraft.**{ *; }
 
+-keep class com.wyc.cloudapp.customerView.bean.**{*;}
+
 -keep class butterknife.** { *; }
 -dontwarn butterknife.internal.**
 -keep class **$$ViewBinder { *; }

@@ -1,22 +1,15 @@
 package com.wyc.cloudapp.adapter;
 
-import android.view.View;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
-import com.wyc.cloudapp.fragment.BaseParameterFragment;
-import com.wyc.cloudapp.fragment.PeripheralSettingFragment;
-import com.wyc.cloudapp.fragment.PrintFormatFragment;
 import com.wyc.cloudapp.logger.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FragmentPagerAdapter<T extends AbstractBaseFragment> extends FragmentStateAdapter {

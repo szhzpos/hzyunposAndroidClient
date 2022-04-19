@@ -186,6 +186,10 @@
     <string name="select_pay_way_hint_sz">请选择付款方式</string>
     <string name="base_param_sz">基本参数</string>
     <string name="peripheral_sz">外设设置</string>
+    <string name="cv_not_hint">顾显参数未设置…</string>
+    <string name="not_support_hint">不支持顾显:%1$s</string>
+    <string name="init_cv_error">初始化顾显异常…</string>
+    <string name="cv_write_error">顾显写数据异常…</string>
     <string name="print_layout_sz">打印格式</string>
     <string name="data_save_sz">数据保存</string>
     <string name="data_save_period_sz">保存周期:</string>

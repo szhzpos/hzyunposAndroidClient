@@ -55,6 +55,7 @@ import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.ModulePermission;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.customerView.CVUtils;
 import com.wyc.cloudapp.customizationView.FlowLayout;
 import com.wyc.cloudapp.customizationView.IndicatorRecyclerView;
 import com.wyc.cloudapp.customizationView.InterceptLinearLayout;
@@ -172,6 +173,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         checkUsbPermission();
 
     }
+
     private void initMemberVariable(){
         mCurrentTimeViewTv = findViewById(R.id.current_time);
         mSaleSumNumTv = findViewById(R.id.sale_sum_num);
@@ -323,6 +325,10 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 last_rec_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("pay_amt")));
                 last_reality_amt.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("pre_amt")));
                 last_zl.setText(String.format(Locale.CHINA, "%.2f", order_info.getDoubleValue("zl_amt")));
+
+                if (CVUtils.getInstance() != null){
+                    CVUtils.getInstance().writChange(order_info.getDoubleValue("zl_amt"));
+                }
 
                 close_tv.setOnClickListener(v -> {
                     hideLastOrderInfo();
@@ -524,6 +530,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         ((NormalSaleGoodsAdapter)mSaleGoodsAdapter).closeScale();
         hideLastOrderInfo();
         if (mSecondDisplay != null)mSecondDisplay.dismiss();
+
+        CVUtils.close();
     }
 
     private void startSyncCurrentTime(){

@@ -780,6 +780,7 @@ class LabelView: View {
             template.itemList = toJson().toString()
             AppDatabase.getInstance().LabelTemplateDao().insertTemplate(template)
             MyDialog.toastMessage(CustomApplication.self().getString(R.string.success))
+            mItemAttrList.fill(null)
             EventBus.getDefault().post(template)
         }
     }

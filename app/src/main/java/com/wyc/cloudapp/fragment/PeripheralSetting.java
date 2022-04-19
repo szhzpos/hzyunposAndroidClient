@@ -13,10 +13,13 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.bean.TreeListItem;
+import com.wyc.cloudapp.customerView.bean.CVSetting;
+import com.wyc.cloudapp.customerView.CVUtils;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
@@ -29,15 +32,16 @@ import java.util.List;
 
 import android_serialport_api.SerialPortFinder;
 
-public class PeripheralSettingFragment extends AbstractParameterFragment {
+public class PeripheralSetting extends AbstractParameterFragment {
     private static final String mTitle = "外设设置";
-    private static final String NONE = "NONE";
+
     private ArrayAdapter<String> mSerialPortAdapter;
     private JSONArray mProTypes;
 
     public static final String connPrinter = ConnPrinter.class.getSimpleName();
+    public static final String NONE = "NONE";
 
-    public PeripheralSettingFragment() {
+    public PeripheralSetting() {
     }
 
     @Override
@@ -50,6 +54,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
 
         get_or_show_serialScale_setting(false);
         get_or_show_cashbox_setting(false);
+        get_or_show_cv_setting(false);
         return null;
     }
 
@@ -72,6 +77,12 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         content.put(p_desc_key, "钱箱设置");
         array.add(content);
 
+        content = new JSONObject();
+        content.put(p_id_key, CVSetting.KEY);
+        content.put(p_c_key, get_or_show_cv_setting(true));
+        content.put(p_desc_key, "顾显设置");
+        array.add(content);
+
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
             MyDialog.ToastMessage(null,err.toString(), null);
         }else{
@@ -87,6 +98,7 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         //初始化
         initSerialScale();
         initCashDrawer();
+        initCustomerView();
         //加载参数
         loadContent();
     }
@@ -112,6 +124,60 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         super.onResume();
     }
 
+    private void initCustomerView(){
+        final TextView cv = findViewById(R.id.ks),port = findViewById(R.id.ks_port);
+        if (cv != null && port != null){
+            cv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final TreeListDialogForObj treeListDialog = new TreeListDialogForObj(mContext,"顾显");
+                    treeListDialog.setData(generate(),null,true);
+                    if (treeListDialog.exec() == 1){
+                        final TreeListItem object = treeListDialog.getSingleContent();
+                        cv.setText(object.getItem_name());
+                        cv.setTag(object.getItem_id());
+                    }
+                }
+                private List<TreeListItem> generate(){
+                    List<TreeListItem> data = CVUtils.support();
+                    final TreeListItem item = new TreeListItem();
+                    item.setItem_id(NONE);
+                    item.setItem_name("无");
+                    data.add(0,item);
+                    return data;
+                }
+            });
+
+            port.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final TreeListDialogForObj treeListDialog = new TreeListDialogForObj(mContext,getString(R.string.port_sz));
+                    treeListDialog.setData(generate(),null,true);
+                    if (treeListDialog.exec() == 1){
+                        final TreeListItem object = treeListDialog.getSingleContent();
+                        port.setText(object.getItem_name());
+                        port.setTag(object.getItem_id());
+                    }
+                }
+                private List<TreeListItem> generate(){
+                    List<TreeListItem> data = new ArrayList<>();
+                    TreeListItem item = new TreeListItem();
+                    item.setItem_id(NONE);
+                    item.setItem_name("无");
+                    data.add(item);
+
+                    final String[] ports = new SerialPortFinder().getAllDevicesPath();
+                    for (String p : ports){
+                        item = new TreeListItem();
+                        item.setItem_id(p);
+                        item.setItem_name(p);
+                        data.add(item);
+                    }
+                    return data;
+                }
+            });
+        }
+    }
 
     private void initCashDrawer(){
         final TextView c_box = findViewById(R.id.c_box);
@@ -259,4 +325,31 @@ public class PeripheralSettingFragment extends AbstractParameterFragment {
         MyDialog.ToastMessage("加载钱箱参数错误：" + object.getString("info"), null);
         return false;
     }
+
+    /**
+     * 顾显参数
+     * */
+    private JSONObject get_or_show_cv_setting(boolean way){
+        JSONObject object = new JSONObject();
+        final TextView cv = findViewById(R.id.ks),port = findViewById(R.id.ks_port);
+        if (cv != null && port != null){
+            if (way){
+                final CVSetting setting = new CVSetting();
+                setting.setCsl(Utils.getViewTagValue(cv,""));
+                setting.setName(cv.getText().toString());
+                setting.setBoundRate(9600);
+                setting.setPort(port.getText().toString());
+                object = JSONObject.parseObject(JSON.toJSONString(setting));
+            }else{
+                final CVSetting setting = CVSetting.getInstance();
+                if (setting != null){
+                    cv.setText(setting.getName());
+                    cv.setTag(setting.getCsl());
+                    port.setText(setting.getPort());
+                }
+            }
+        }
+        return object;
+    }
+
 }

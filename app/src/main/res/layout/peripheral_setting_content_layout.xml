@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_1"
         android:orientation="vertical"
-        android:visibility="invisible"
+        android:visibility="visible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/right"
         app:layout_constraintTop_toTopOf="parent">
@@ -49,31 +49,37 @@
                     android:text="@string/ks_type_sz"
                     android:textColor="@color/text_color" />
 
-                <Spinner
-                    android:id="@+id/spinner6"
-                    style="@style/Platform.Widget.AppCompat.Spinner"
+                <TextView
+                    android:id="@+id/ks"
                     android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_35"
-                    android:background="@drawable/spinner_style"
-                    android:dropDownWidth="@dimen/height_40"
-                    android:minWidth="@dimen/width_88" />
+                    android:layout_height="@dimen/height_40"
+                    android:background="@drawable/round_shape_blue"
+                    android:gravity="center_vertical"
+                    android:minWidth="@dimen/width_88"
+                    android:padding="@dimen/margin_5"
+                    android:textSize="@dimen/font_size_16"
+                    app:drawableEndCompat="@drawable/content" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_12"
                     android:layout_marginEnd="@dimen/size_0"
-                    android:text="@string/interface_sz"
+                    android:text="@string/port_sz"
                     android:textColor="@color/text_color" />
 
-                <Spinner
-                    android:id="@+id/ks_id"
-                    style="@style/Platform.Widget.AppCompat.Spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/height_35"
-                    android:background="@drawable/spinner_style"
-                    android:dropDownWidth="@dimen/height_40"
-                    android:minWidth="@dimen/width_88" />
+                <TextView
+                    android:id="@+id/ks_port"
+                    android:layout_width="@dimen/width_128"
+                    android:layout_height="@dimen/height_40"
+                    android:layout_marginStart="@dimen/margin_2"
+                    android:background="@drawable/round_shape_blue"
+                    android:gravity="center_vertical"
+                    android:minWidth="@dimen/width_88"
+                    android:padding="@dimen/margin_5"
+                    android:textSize="@dimen/font_size_16"
+                    app:drawableEndCompat="@drawable/content"
+                    tools:ignore="SpeakableTextPresentCheck" />
 
             </LinearLayout>
         </LinearLayout>

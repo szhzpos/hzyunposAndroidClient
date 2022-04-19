@@ -11,6 +11,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.callback.ClickListener;
+import com.wyc.cloudapp.customerView.CVUtils;
+import com.wyc.cloudapp.customerView.ICustomerView;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
@@ -43,6 +45,9 @@ public final class NormalSaleGoodsAdapter extends AbstractSaleGoodsAdapter{
         final JSONObject goods = getCurrentContent();
         if (GoodsInfoViewAdapter.isWeighingGoods(goods)){
             mContext.updateScalePrice(goods.getDoubleValue("price"));
+        }
+        if (CVUtils.getInstance() != null){
+            CVUtils.getInstance().writPrice(goods.getDoubleValue("price"));
         }
     }
 

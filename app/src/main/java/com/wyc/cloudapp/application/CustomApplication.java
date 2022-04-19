@@ -8,12 +8,14 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.StrictMode;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import androidx.annotation.DimenRes;
@@ -40,6 +42,7 @@ import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -150,6 +153,9 @@ public final class CustomApplication extends Application {
     private static void showToast(final String message){
         if (mGlobalToast == null){
             mGlobalToast = Toast.makeText(CustomApplication.self(),"",Toast.LENGTH_LONG);
+            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N){
+                hookToast(mGlobalToast);
+            }
         }
         mGlobalToast.setText(message);
         mGlobalToast.show();
@@ -662,6 +668,46 @@ public final class CustomApplication extends Application {
             err.insert(0,"保存离线时间错误:");
             Logger.e(err.toString());
             MyDialog.toastMessage(err.toString());
+        }
+    }
+
+    //7.x
+    private static class HandlerProxy extends Handler {
+
+        private Handler mHandler;
+
+        public HandlerProxy(Handler handler) {
+            this.mHandler = handler;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            try {
+                mHandler.handleMessage(msg);
+            } catch (WindowManager.BadTokenException e) {
+                //ignore
+            }
+        }
+    }
+
+    private static void hookToast(Toast toast) {
+        Class<Toast> cToast = Toast.class;
+        try {
+            //TN是private的
+            Field fTn = cToast.getDeclaredField("mTN");
+            fTn.setAccessible(true);
+
+            //获取tn对象
+            Object oTn = fTn.get(toast);
+            //获取TN的class，也可以直接通过Field.getType()获取。
+            Class<?> cTn = oTn.getClass();
+            Field fHandle = cTn.getDeclaredField("mHandler");
+
+            //重新set->mHandler
+            fHandle.setAccessible(true);
+            fHandle.set(oTn, new HandlerProxy((Handler) fHandle.get(oTn)));
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 }

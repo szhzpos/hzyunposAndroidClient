@@ -15,7 +15,7 @@ import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.fragment.AbstractParameterFragment;
 import com.wyc.cloudapp.fragment.BaseParameterFragment;
-import com.wyc.cloudapp.fragment.PeripheralSettingFragment;
+import com.wyc.cloudapp.fragment.PeripheralSetting;
 import com.wyc.cloudapp.fragment.PrintFormatFragment;
 
 import java.util.ArrayList;
@@ -32,7 +32,7 @@ public class ParameterSettingDialog extends AbstractDialogMainActivity {
         setCancelable(false);
         final List<AbstractParameterFragment> fragments = new ArrayList<>();
         fragments.add(new BaseParameterFragment());
-        fragments.add(new PeripheralSettingFragment());
+        fragments.add(new PeripheralSetting());
         fragments.add(new PrintFormatFragment());
 
         final TabLayout tabLayout = findViewById(R.id.param_tab);

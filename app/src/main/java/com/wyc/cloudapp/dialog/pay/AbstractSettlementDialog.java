@@ -36,6 +36,7 @@ import com.wyc.cloudapp.bean.DiscountCouponInfo;
 import com.wyc.cloudapp.bean.UnifiedPayResult;
 import com.wyc.cloudapp.constants.InterfaceURL;
 import com.wyc.cloudapp.constants.RetailOrderStatus;
+import com.wyc.cloudapp.customerView.CVUtils;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.decoration.GridItemDecoration;
@@ -93,13 +94,14 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         //初始化成员
         mOrderAmtTv = findViewById(R.id.order_amt);//单据金额
         mDiscountAmtTv = findViewById(R.id.dis_sum_amt);//折扣金额
-        mActualAmtTv = findViewById(R.id.actual_amt);//应收金额
         mPayAmtTv = findViewById(R.id.pay_amt);//付款金额
         mAmtReceivedTv = findViewById(R.id.amt_received);//已收金额
         mPayBalanceTv = findViewById(R.id.pay_balance);//付款余额
         mZlAmtEt = findViewById(R.id.zl_amt);//找零
         mRemarkEt = findViewById(R.id.et_remark);//备注
         mDiscountDescriptionTv = findViewById(R.id.discount_description);//折扣信息
+
+        initActualAmt();
 
         //初始化支付明细
         initPayDetailViewAdapter();
@@ -121,6 +123,31 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
 
         //根据金额设置按钮数字
          autoShowValueFromPayAmt(getWindow().getDecorView(), (int) mCashAmt);
+    }
+    private void initActualAmt(){
+        mActualAmtTv = findViewById(R.id.actual_amt);//应收金额
+        mActualAmtTv.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (CVUtils.getInstance() != null){
+                    try {
+                        CVUtils.getInstance().writRealPay(Double.parseDouble(s.toString()));
+                    }catch (NumberFormatException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     @Override

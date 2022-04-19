@@ -1,10 +1,7 @@
 package com.wyc.cloudapp.print.cashDrawer
 
 import com.alibaba.fastjson.JSONObject
-import com.wyc.cloudapp.R
-import com.wyc.cloudapp.dialog.MyDialog
-import com.wyc.cloudapp.fragment.PeripheralSettingFragment
-import com.wyc.cloudapp.logger.Logger
+import com.wyc.cloudapp.fragment.PeripheralSetting
 import com.wyc.cloudapp.print.printer.AbstractPrinter
 import com.wyc.cloudapp.utils.Utils
 import kotlinx.coroutines.CoroutineScope
@@ -32,11 +29,11 @@ class UtilsOpenCashDrawer {
         fun open(){
             CoroutineScope(Dispatchers.IO).launch {
                 val obj = JSONObject()
-                if (PeripheralSettingFragment.loadCashboxSetting(obj)){
+                if (PeripheralSetting.loadCashboxSetting(obj)){
                     val type = if (obj.isEmpty()){
-                        PeripheralSettingFragment.connPrinter
+                        PeripheralSetting.connPrinter
                     }else Utils.getNullStringAsEmpty(obj,"c_box")
-                    if (type == PeripheralSettingFragment.connPrinter){
+                    if (type == PeripheralSetting.connPrinter){
                         AbstractPrinter.openCashDrawer()
                     }
                 }
