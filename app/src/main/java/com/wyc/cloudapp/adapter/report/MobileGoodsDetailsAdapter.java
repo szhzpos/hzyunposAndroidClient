@@ -73,6 +73,7 @@ public class MobileGoodsDetailsAdapter extends AbstractDataAdapterForJson<Mobile
             } else {
                 holder.sale_price_tv.setText(String.format(Locale.CHINA, "%.2f", object.getDoubleValue("price")));
                 holder.sale_num_tv.setText(object.getString("xnum"));
+                holder.price_num_layout.setVisibility(View.VISIBLE);
             }
             holder.sale_amt_tv.setText(String.format(Locale.CHINA, "%.2f%s", object.getDoubleValue("price_xnum"), "元"));
         }

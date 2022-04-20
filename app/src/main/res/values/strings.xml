@@ -602,6 +602,7 @@
     <string name="business_monitors_sz">营业监控</string>
     <string name="seven_days_sz">近7天</string>
     <string name="sale_amt_sz">销售金额</string>
+    <string name="business_amt_sz">营业额</string>
     <string name="times_card_amt_sz">次卡金额</string>
     <string name="payment_way_sz">付款方式</string>
     <string name="sale_sz">销售</string>
@@ -637,6 +638,8 @@
     <string name="vip_no_sz">会员卡号</string>
     <string name="consume_details_sz">消费明细</string>
     <string name="pay_details_sz">付款明细</string>
+    <string name="retail_order">零售销售单</string>
+    <string name="refund_order">零售退货单</string>
 
     <!-- 类别统计-->
     <string name="all_category_sz">全部类别</string>

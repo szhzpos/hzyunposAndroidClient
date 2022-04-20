@@ -20,11 +20,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.google.android.material.tabs.TabLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
 import com.wyc.cloudapp.adapter.report.MobileDealQueryAdapter;
 import com.wyc.cloudapp.adapter.report.MobileGoodsDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.customizationView.RoundCornerTabLayout;
 import com.wyc.cloudapp.dialog.JEventLoop;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
@@ -43,7 +45,7 @@ import java.util.TimeZone;
 public final class MobileDealQueryActivity extends AbstractReportActivity {
     private MobileDealQueryAdapter mAdapter;
     private boolean isFirst = true;
-
+    private RoundCornerTabLayout mTabLayout = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,38 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
         initDateCondition();
         initQueryBtn();
+        initTabLayout();
+    }
+
+    private void initTabLayout(){
+        mTabLayout = findViewById(R.id._tab_layout);
+        mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.retail_order)));
+        mTabLayout.addTab(mTabLayout.newTab().setText(getString(R.string.refund_order)));
+        mTabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                getData();
+                if (mAdapter != null){
+                    mAdapter.setType(tab.getPosition());
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+    }
+    private boolean hasRefundQuery(){
+        return mTabLayout != null && mTabLayout.getSelectedTabPosition() == 1;
+    }
+    private boolean hasRetailQuery(){
+        return mTabLayout != null && mTabLayout.getSelectedTabPosition() == 0;
     }
 
     @Override
@@ -191,7 +225,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
             Logger.d_json(mQueryConditionObj.toString());
 
-            getDatas();
+            getData();
 
         } catch (JSONException | ParseException e) {
             e.printStackTrace();
@@ -230,18 +264,22 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
         return object;
     }
 
-    private void getDatas(){
+    private void getData(){
         final ProgressDialog progressDialog = ProgressDialog.show(this,"",getString(R.string.hints_query_data_sz),true);
         final JEventLoop loop = new JEventLoop();
         final StringBuilder err = new StringBuilder();
 
         CustomApplication.execute(()->{
             final  JSONObject object = mQueryConditionObj;
+            object.put("appid",mAppId);
+            String url = mUrl + "/api/boss/get_retail_order";
+            if (hasRefundQuery()){
+                url = mUrl + "/api/boss/get_refund_order";
+            }
+
+            final JSONObject retJson = HttpUtils.sendPost(url,HttpRequest.generate_request_parma(object, mAppSecret),true);
+
             try {
-                object.put("appid",mAppId);
-
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order",HttpRequest.generate_request_parma(object, mAppSecret),true);
-
                 switch (retJson.getIntValue("flag")) {
                     case 0:
                         loop.done(0);
@@ -253,7 +291,6 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
                         loop.done(1);
                         break;
                 }
-
             } catch (JSONException e) {
                 e.printStackTrace();
                 err.append(e.getMessage());
@@ -272,10 +309,17 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
             double order_moneys = 0.0;
             JSONArray orders = null;
             if (!data.isEmpty()){
-                orders = data.getJSONArray("order");
+                if (hasRetailQuery()){
+                    orders = data.getJSONArray("order");
 
-                order = orders.size();
-                order_moneys = data.getDoubleValue("discount_prices");
+                    order = orders.size();
+                    order_moneys = data.getDoubleValue("discount_prices");
+                }else if (hasRefundQuery()){
+                    orders = data.getJSONArray("refund");
+
+                    order = orders.size();
+                    order_moneys = data.getDoubleValue("total");
+                }
             }else {
                 MyDialog.toastMessage("暂无数据!");
             }
@@ -286,11 +330,11 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
     }
 
     private void showCustomDate(boolean b){
-        final LinearLayout custome_date_layout = findViewById(R.id.custome_date_layout);
-        final EditText s = custome_date_layout.findViewById(R.id.start_date),e = custome_date_layout.findViewById(R.id.end_date);
+        final LinearLayout consume_date_layout = findViewById(R.id.custome_date_layout);
+        final EditText s = consume_date_layout.findViewById(R.id.start_date),e = consume_date_layout.findViewById(R.id.end_date);
         if (b){
-            if (custome_date_layout.getVisibility() == View.GONE){
-                custome_date_layout.setVisibility(View.VISIBLE);
+            if (consume_date_layout.getVisibility() == View.GONE){
+                consume_date_layout.setVisibility(View.VISIBLE);
                 final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.CHINA);
                 s.setText(sdf.format(new Date()));
                 s.setOnClickListener(view ->showDatePickerDialog(MobileDealQueryActivity.this,s,Calendar.getInstance()));
@@ -306,8 +350,8 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
                 });
             }
         }else {
-            if (custome_date_layout.getVisibility() == View.VISIBLE){
-                custome_date_layout.setVisibility(View.GONE);
+            if (consume_date_layout.getVisibility() == View.VISIBLE){
+                consume_date_layout.setVisibility(View.GONE);
                 s.getText().clear();
                 s.setOnClickListener(null);
                 s.setOnFocusChangeListener(null);
@@ -338,12 +382,18 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
         CustomApplication.execute(()->{
 
             final JSONObject object = new JSONObject();
-            try {
-                object.put("appid", mAppId);
+            object.put("appid", mAppId);
+
+            String url = mUrl + "/api/boss/get_retail_order_goods";
+            if (hasRetailQuery()){
                 object.put("order_code",order_code);
+            }else if (hasRefundQuery()){
+                object.put("ro_code",order_code);
+                url = mUrl + "/api/boss/get_refund_goods";
+            }
 
-                final JSONObject retJson = HttpUtils.sendPost(mUrl + "/api/boss/get_retail_order_goods", HttpRequest.generate_request_parma(object, mAppSecret),true);
-
+            final JSONObject retJson = HttpUtils.sendPost(url, HttpRequest.generate_request_parma(object, mAppSecret),true);
+            try {
                 switch (retJson.getIntValue("flag")) {
                     case 0:
                         loop.done(0);
@@ -353,6 +403,12 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
                         final JSONObject info = JSON.parseObject(retJson.getString("info"));
                         final JSONObject data = Utils.getNullObjectAsEmptyJson(info,"data");
                         if (!data.isEmpty()){
+
+                            if (hasRefundQuery()){
+                                data.put("order_code",data.remove("ro_code"));
+                                data.put("discount_price",data.remove("total"));
+                            }
+
                             data.put("stores_name",getMiddleText());
                             final Activity activity = MobileDealQueryActivity.this;
                             activity.runOnUiThread(()->{
@@ -482,11 +538,11 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
         }
 
-        private void initOrderList(final JSONArray datas){
+        private void initOrderList(final JSONArray data){
             final RecyclerView recyclerView  = findViewById(R.id.goods_details_list);
             if (null != recyclerView){
                 mDetailsAdapter = new MobileGoodsDetailsAdapter(this);
-                mDetailsAdapter.setDatas(datas,0);
+                mDetailsAdapter.setDatas(data,0);
                 recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
                 recyclerView.setAdapter(mDetailsAdapter);
             }

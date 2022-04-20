@@ -1,5 +1,6 @@
 package com.wyc.cloudapp.customizationView
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -51,12 +52,16 @@ class SlideRecycleView : IndicatorRecyclerView{
         clearLeftRight()
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        val code = super.dispatchTouchEvent(ev)
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        val code = super.onTouchEvent(ev)
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
                 clearDragFlag()
                 checkChildDrag(findChildByCoordinate(ev.x,ev.y))
+                if (!isChildRightDrag || !isChildLeftDrag ){
+                    return false
+                }
             }
             MotionEvent.ACTION_MOVE -> {
                 if ((hasSlideRight() && !isChildRightDrag && !canScrollHorizontally(-1)) || (hasSlideLeft() && !isChildLeftDrag && !canScrollHorizontally(1))) {

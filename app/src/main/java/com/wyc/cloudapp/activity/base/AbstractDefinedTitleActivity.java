@@ -98,11 +98,6 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
         if (hasSlide()){
             initVelocityTrackerIfNotExists();
 
-            float xDiff = Math.abs(ev.getX() - downX);
-            float yDiff = Math.abs(ev.getY() - downY);
-            double squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff));
-            double degreeX = Math.asin(yDiff / squareRoot) * 180 / Math.PI;
-
             switch (ev.getAction()){
                 case MotionEvent.ACTION_DOWN:
                     downX = ev.getX();
@@ -111,13 +106,26 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
                     mVelocityTracker.addMovement(ev);
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (degreeX < 45){
+                {
+                    float xDiff = Math.abs(ev.getX() - downX);
+                    float yDiff = Math.abs(ev.getY() - downY);
+                    double squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff));
+                    double degreeX = Math.asin(yDiff / squareRoot) * 180 / Math.PI;
+                    if (degreeX < 45) {
                         mVelocityTracker.addMovement(ev);
-                        mRoot.scrollTo((int) (downX - ev.getX()),0);
+                        mRoot.scrollTo((int) (downX - ev.getX()), 0);
                     }
+                }
                     break;
                 case MotionEvent.ACTION_CANCEL:
                 case MotionEvent.ACTION_UP:
+                {
+                    float xDiff = Math.abs(ev.getX() - downX);
+                    float yDiff = Math.abs(ev.getY() - downY);
+                    double squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff));
+                    double degreeX = Math.asin(yDiff / squareRoot) * 180 / Math.PI;
+
+                    if (mScroller == null)mScroller = new OverScroller(this);
 
                     if (degreeX < 45){
                         final VelocityTracker velocityTracker = mVelocityTracker;
@@ -127,7 +135,6 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
                         mActivePointerId = -1;
                         recycleVelocityTracker();
 
-                        if (mScroller == null)mScroller = new OverScroller(this);
                         if (Math.abs(initialXVelocity) > mMinimumVelocity){
                             int scrollX = mRoot.getScrollX();
                             int distance = mRoot.getWidth() - Math.abs(scrollX);
@@ -137,8 +144,9 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
                                 mScroller.fling(scrollX,0,-initialXVelocity * 2,0,0,distance,0,0);
                             }
                         }else calculateScrollX();
-                        startScroll();
                     }
+                    startScroll();
+                }
                     break;
             }
         }

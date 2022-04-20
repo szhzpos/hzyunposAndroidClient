@@ -31,6 +31,7 @@ import java.util.Locale;
 public class MobileDealQueryAdapter extends AbstractTableDataAdapter<MobileDealQueryAdapter.MyViewHolder> {
 
     private String mOrderCode = "";
+    private int type = 0;
     public MobileDealQueryAdapter(MainActivity context) {
         super(context);
     }
@@ -51,11 +52,19 @@ public class MobileDealQueryAdapter extends AbstractTableDataAdapter<MobileDealQ
         super.onBindViewHolder(holder, position);
         if (mData != null) {
             final JSONObject object = mData.getJSONObject(position);
-            holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("order_code") + "</u>"));
-            holder.order_code_tv.setOnClickListener(mItemClickListener);
+            if (type == 0){
+                holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("order_code") + "</u>"));
+                holder.order_code_tv.setOnClickListener(mItemClickListener);
 
-            holder.order_amt_tv.setText(String.format(Locale.CHINA, "%s%s", object.getString("discount_price"), "元"));
-            holder.order_date_tv.setText(object.getString("addtime"));
+                holder.order_amt_tv.setText(String.format(Locale.CHINA, "%s%s", object.getString("discount_price"), "元"));
+                holder.order_date_tv.setText(object.getString("addtime"));
+            }else  if (type == 1){
+                holder.order_code_tv.setText(Html.fromHtml("<u>" + object.getString("ro_code") + "</u>"));
+                holder.order_code_tv.setOnClickListener(mItemClickListener);
+
+                holder.order_amt_tv.setText(String.format(Locale.CHINA, "%s%s", object.getString("total"), "元"));
+                holder.order_date_tv.setText(object.getString("addtime"));
+            }
         }
     }
     @Override
@@ -80,5 +89,8 @@ public class MobileDealQueryAdapter extends AbstractTableDataAdapter<MobileDealQ
             order_amt_tv = itemView.findViewById(R.id.order_amt_tv);
             order_date_tv = itemView.findViewById(R.id.order_date_tv);
         }
+    }
+    public void setType(int t){
+        type = t;
     }
 }

@@ -212,11 +212,11 @@ public class LabelTemplate implements Parcelable {
         return list;
     }
 
-    public int getTemplateId() {
+    public Integer getTemplateId() {
         return templateId;
     }
 
-    public void setTemplateId(int templateId) {
+    public void setTemplateId(Integer templateId) {
         this.templateId = templateId;
     }
 
@@ -228,35 +228,35 @@ public class LabelTemplate implements Parcelable {
         this.templateName = templateName;
     }
 
-    public int getWidth() {
+    public Integer getWidth() {
         return width;
     }
 
-    public void setWidth(int width) {
+    public void setWidth(Integer width) {
         this.width = width;
     }
 
-    public int getHeight() {
+    public Integer getHeight() {
         return height;
     }
 
-    public void setHeight(int height) {
+    public void setHeight(Integer height) {
         this.height = height;
     }
 
-    public int getRealWidth() {
+    public Integer getRealWidth() {
         return realWidth;
     }
 
-    public void setRealWidth(int realWidth) {
+    public void setRealWidth(Integer realWidth) {
         this.realWidth = realWidth;
     }
 
-    public int getRealHeight() {
+    public Integer getRealHeight() {
         return realHeight;
     }
 
-    public void setRealHeight(int realHeight) {
+    public void setRealHeight(Integer realHeight) {
         this.realHeight = realHeight;
     }
 

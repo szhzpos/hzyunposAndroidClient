@@ -94,7 +94,7 @@ public final class MobileNavigationActivity extends AbstractDefinedTitleActivity
                 x1 = -1;
                 y1 = -1;
 
-                if (isMoved){
+                if (!isMoved){
                     isMoved = false;
 
                     int current_id = mCurrentNavView == null ? -1 : mCurrentNavView.getId(),

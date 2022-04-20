@@ -1,6 +1,7 @@
 package com.wyc.cloudapp.customizationView
 
 import android.animation.ValueAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
@@ -334,7 +335,8 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         }
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
         when(ev.action){
             MotionEvent.ACTION_DOWN ->{
                 pointerDown()
@@ -411,7 +413,7 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
                 }
             }
         }
-        return super.dispatchTouchEvent(ev)
+        return super.onTouchEvent(ev)
     }
 
     private fun slideLeft(code:Boolean){

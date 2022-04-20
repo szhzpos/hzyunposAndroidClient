@@ -153,7 +153,7 @@ public final class CustomApplication extends Application {
     private static void showToast(final String message){
         if (mGlobalToast == null){
             mGlobalToast = Toast.makeText(CustomApplication.self(),"",Toast.LENGTH_LONG);
-            if (Build.VERSION.SDK_INT == Build.VERSION_CODES.N){
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O){
                 hookToast(mGlobalToast);
             }
         }

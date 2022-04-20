@@ -173,7 +173,7 @@ public final class BoardFragment extends AbstractMobileFragment {
 
     private void showBusinessData(final @NonNull JSONArray array){
         JSONObject object;
-        double xx_money = 0.0,xx_num = 0.0;
+        double xx_money = 0.0,xx_num = 0.0,sale_amt = 0.0,refund_amt = 0.0;
         TextView amt_tv = null,num_tv = null;
         for (int i = 0,size = array.size();i < size;i++){
             object = array.getJSONObject(i);
@@ -182,6 +182,7 @@ public final class BoardFragment extends AbstractMobileFragment {
                 xx_num = object.getDoubleValue("xx_num");
                 switch (object.getIntValue("search_type")){
                     case 1:
+                        sale_amt = xx_money;
                         amt_tv = findViewById(R.id.sale_amt_tv);
                         num_tv = findViewById(R.id.sale_num_tv);
                         break;
@@ -193,12 +194,21 @@ public final class BoardFragment extends AbstractMobileFragment {
                         amt_tv = findViewById(R.id.ck_amt_tv);
                         num_tv = findViewById(R.id.ck_num_tv);
                         break;
+                    case 5:
+                        refund_amt = xx_money;
+                        amt_tv = findViewById(R.id.refund_amt_tv);
+                        num_tv = findViewById(R.id.refund_num_tv);
+                        break;
                 }
                 if (null != amt_tv && num_tv != null){
                     amt_tv.setText(String.format(Locale.CHINA,"%.2f",xx_money));
                     num_tv.setText(String.format(Locale.CHINA,"%.2f",xx_num));
                 }
             }
+        }
+        final TextView bus_amt_tv = findViewById(R.id.busi_amt_tv);
+        if (bus_amt_tv != null){
+            bus_amt_tv.setText(String.format(Locale.CHINA,"%.2f",sale_amt - refund_amt));
         }
     }
 

@@ -44,7 +44,7 @@ public class CVUtils {
                             MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.not_support_hint,setting.getName()));
                         } catch (InvocationTargetException | IllegalAccessException | InstantiationException | NoSuchMethodException e) {
                             e.printStackTrace();
-                            MyDialog.toastMessage(R.string.init_cv_error + e.getMessage());
+                            MyDialog.toastMessage(R.string.init_cv_error);
                         }
                     }
                 }

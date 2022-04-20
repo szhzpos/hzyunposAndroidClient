@@ -7,6 +7,19 @@
     android:background="@color/white"
     android:orientation="vertical">
 
+    <com.wyc.cloudapp.customizationView.RoundCornerTabLayout
+        android:id="@+id/_tab_layout"
+        style="@style/TabStyle"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/height_45"
+        android:layout_marginStart="@dimen/size_45"
+        android:layout_marginTop="@dimen/margin_5"
+        android:layout_marginEnd="@dimen/size_45"
+        android:visibility="visible"
+        app:tabTextAppearance="@style/TabText_14"
+        app:tabTextColor="@color/text_color"
+        tools:ignore="SpeakableTextPresentCheck" />
+
     <LinearLayout
         android:id="@+id/date_layout"
         android:layout_width="match_parent"
