@@ -75,7 +75,7 @@ class FindFragment(private var mIntent: Intent):Fragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
          if (resultCode == RESULT_OK){
-             data?.getStringExtra(data.getStringExtra(DATA_KEY))?.let {
+             data?.getStringExtra(mIntent.getStringExtra(DATA_KEY))?.let {
                  mCallBack?.scan(it)
              }
          }

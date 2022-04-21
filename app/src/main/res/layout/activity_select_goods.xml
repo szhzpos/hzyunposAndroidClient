@@ -13,6 +13,7 @@
         android:layout_height="@dimen/height_50"
         android:layout_gravity="center"
         android:background="@drawable/round_border_sub_gray"
+        android:drawableStart="@drawable/scan"
         android:drawableEnd="@drawable/search"
         android:drawablePadding="@dimen/margin_8"
         android:ems="10"

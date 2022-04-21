@@ -34,6 +34,7 @@ import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.logger.Logger;
+import com.wyc.cloudapp.mobileFragemt.FindFragment;
 import com.wyc.cloudapp.msg.ReloadMsg;
 import com.wyc.cloudapp.utils.Utils;
 
@@ -124,6 +125,12 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 final int w = search.getWidth();
                 if (dx > (w - search.getCompoundPaddingRight())) {
                     search(search.getText().toString());
+                }else if(dx < (w - search.getCompoundPaddingLeft())){
+                    FindFragment.beginScan(this, code -> {
+                        Logger.d("code:%s",code);
+                        mSearchContentEt.setText(code);
+                        search(code);
+                    });
                 }
             }
             return false;
