@@ -13,6 +13,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.alibaba.fastjson.JSONObject
 import com.google.zxing.client.android.CaptureActivity
 import com.gprinter.bean.PrinterDevices
 import com.gprinter.utils.CallbackListener
@@ -23,6 +24,7 @@ import com.wyc.cloudapp.adapter.LabelGoodsAdapter
 import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.constants.ScanCallbackCode
 import com.wyc.cloudapp.customizationView.TopDrawableTextView
+import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.decoration.LinearItemDecoration
 import com.wyc.cloudapp.decoration.SuperItemDecoration
@@ -30,17 +32,20 @@ import com.wyc.cloudapp.dialog.MyDialog
 import com.wyc.cloudapp.logger.Logger
 import com.wyc.cloudapp.utils.BluetoothUtils
 import com.wyc.cloudapp.utils.Utils
+import com.wyc.label.*
+import com.wyc.label.printer.LabelPrintUtils
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.lang.StringBuilder
 
 class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     private var mSelectGoodsLauncher: ActivityResultLauncher<Intent>? = null
-    private var mLabelGoodsAdapter:LabelGoodsAdapter? = null
-    private var mLabelView:LabelView? = null
-    private var mLabelTemplate:LabelTemplate? = null
+    private var mLabelGoodsAdapter: LabelGoodsAdapter? = null
+    private var mLabelView: LabelView? = null
+    private var mLabelTemplate: LabelTemplate? = null
     private var mConnecting = false
     private var mSearch:EditText? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,7 +78,7 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     private fun connPrinter(){
         if (!mConnecting){
             mConnecting = true
-            GPPrinter.openBlueTooth(LabelPrintSetting.getSetting().getPrinterAddress(),this)
+            LabelPrintUtils.openPrinter()
         }else MyDialog.toastMessage(R.string.printer_connecting)
     }
 
@@ -84,11 +89,11 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
                 if (it.hasNormal()){
                     if (mLabelTemplate != null){
                         CustomApplication.execute {
-                            val n = LabelPrintSetting.getSetting().printNum
+                            val n = 1
                             var index = n
                             mLabelGoodsAdapter?.list?.forEach {
                                 while (index-- > 0){
-                                    GPPrinter.sendDataToPrinter(GPPrinter.getGPTscCommand(mLabelTemplate!!,it).command)
+                                    LabelPrintUtils.print(it)
                                 }
                                 index = n
                             }
@@ -118,11 +123,9 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
 
     private fun loadLabelTemplate(){
         Observable.create<LabelTemplate> {
-            LabelPrintSetting.getSetting().let { setting->
-                var t = AppDatabase.getInstance().LabelTemplateDao().getLabelTemplateById(setting.labelTemplateId)
-                if (t == null) t = LabelTemplate()
-                it.onNext(t)
-            }
+            var t = LabelPrintUtils.getLabelTemplate()
+            if (t == null) t = LabelTemplate()
+            it.onNext(t)
         }.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe ({ temp->
             updateLabel(temp)
             mLabelTemplate = temp
@@ -140,13 +143,38 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
                 val barcodeId: String? = it.data?.getStringExtra("barcode_id")
                 Logger.d("barcodeId:%s",barcodeId)
                 if (barcodeId != null){
-                    val goods = DataItem.getGoodsDataById(barcodeId)
+                    val goods = getGoodsDataById(barcodeId)
                     goods?.apply {
                         mLabelGoodsAdapter?.addData(this)
                     }
                 }
             }
         }
+    }
+
+    private val  fields = "barcode_id barcodeId,goods_title goodsTitle, barcode,unit_name unit,origin,spec_str spec,yh_price,retail_price"
+    fun getGoodsDataById(barcodeId:String?): DataItem.LabelGoods?{
+        val sql = if (barcodeId.isNullOrEmpty()) "select $fields from barcode_info where goods_status = 1 and barcode_status = 1 limit 1" else
+            "select $fields from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
+        val goods = JSONObject()
+        if (!SQLiteHelper.execSql(goods,sql)){
+            MyDialog.toastMessage(goods.getString("info"))
+            return null
+        }
+        if (goods.isEmpty())return null
+        return goods.toJavaObject(DataItem.LabelGoods::class.java)
+    }
+
+    fun getGoodsDataByBarcode(barcode:String):MutableList<DataItem.LabelGoods>{
+        val sql = "select $fields from barcode_info where barcode = $barcode and (goods_status = 1 and barcode_status = 1)"
+        val sb = StringBuilder()
+        val goods = SQLiteHelper.getListToJson(sql,sb)
+        if (goods != null){
+            return goods.toJavaList(DataItem.LabelGoods::class.java)
+        }else{
+            MyDialog.toastMessage(sb.toString())
+        }
+        return mutableListOf()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -214,7 +242,7 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     }
     private fun searchGoods(){
         val barcode = mSearch!!.text.toString()
-        val list = DataItem.getGoodsDataByBarcode(barcode)
+        val list = getGoodsDataByBarcode(barcode)
         if (list.size > 1){
             val intent = Intent(this, MobileSelectGoodsActivity::class.java)
             intent.putExtra(MobileSelectGoodsActivity.SEARCH_KEY, barcode)
@@ -255,10 +283,8 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
 
     override fun onDestroy() {
         EventBus.getDefault().unregister(this)
-
+        LabelPrintUtils.closePrinter()
         super.onDestroy()
-        //关闭打印机
-        GPPrinter.close()
     }
 
     override fun getContentLayoutId(): Int {

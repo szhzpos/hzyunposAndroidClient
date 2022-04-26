@@ -74,7 +74,7 @@
         android:textSize="@dimen/font_size_16" />
 
 
-    <com.wyc.cloudapp.design.LabelView
+    <com.wyc.label.LabelView
         android:id="@+id/label"
         android:layout_width="@dimen/size_288"
         android:layout_height="wrap_content"

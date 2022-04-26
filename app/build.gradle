@@ -105,6 +105,12 @@ android {
         android.buildFeatures.dataBinding = true
     }
 
+    repositories {
+        flatDir {
+            dirs 'libs'
+        }
+    }
+
     //Jetpack Compose start
     buildFeatures {
         compose true
@@ -191,8 +197,8 @@ dependencies {
     //托利多bPlus条码秤
     implementation files('libs/mtaoscaleapi.jar')
 
-    //佳博GP-M322条码打印机
-    implementation files('libs/GP_SDKLib.jar')
     //常旺收银机顾显
     implementation files('libs/pavodisplay.jar')
+    //标签打印
+    implementation(name:'label',ext:'aar')
 }

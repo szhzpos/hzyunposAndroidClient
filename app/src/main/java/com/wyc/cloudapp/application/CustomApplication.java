@@ -40,6 +40,8 @@ import com.wyc.cloudapp.logger.DiskLogAdapter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
+import com.wyc.label.LabelApp;
+
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -96,6 +98,7 @@ public final class CustomApplication extends Application {
         mNetworkStatus = new AtomicBoolean(true);
         mTransferStatus = new AtomicBoolean(true);//传输状态
         mSyncManagement = new SyncManagement();
+        LabelApp.initApp(this);
     }
     @Override
     public  void  onCreate(){

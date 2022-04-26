@@ -1,7 +1,6 @@
 package com.wyc.cloudapp.data.room;
 
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
 import androidx.annotation.NonNull;
@@ -13,12 +12,10 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TimeCardSaleInfo;
-import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.dao.GiftCardPayDetailDao;
 import com.wyc.cloudapp.data.room.dao.GiftCardSaleDetailDao;
 import com.wyc.cloudapp.data.room.dao.GiftCardSaleOrderDao;
 import com.wyc.cloudapp.data.room.dao.GoodsPracticeDao;
-import com.wyc.cloudapp.data.room.dao.LabelTemplateDao;
 import com.wyc.cloudapp.data.room.dao.PayMethodDao;
 import com.wyc.cloudapp.data.room.dao.PracticeAssociatedDao;
 import com.wyc.cloudapp.data.room.dao.TimeCardPayDetailDao;
@@ -32,12 +29,10 @@ import com.wyc.cloudapp.data.room.entity.PayMethod;
 import com.wyc.cloudapp.data.room.entity.PracticeAssociated;
 import com.wyc.cloudapp.data.room.entity.TimeCardPayDetail;
 import com.wyc.cloudapp.data.room.entity.TimeCardSaleOrder;
-import com.wyc.cloudapp.design.LabelTemplate;
 import com.wyc.cloudapp.logger.Logger;
 
 @Database(entities = {PayMethod.class, TimeCardSaleOrder.class,TimeCardSaleInfo.class, TimeCardPayDetail.class,
-        GiftCardSaleOrder.class,GiftCardSaleDetail.class, GiftCardPayDetail.class, GoodsPractice.class, PracticeAssociated.class,
-        LabelTemplate.class},
+        GiftCardSaleOrder.class,GiftCardSaleDetail.class, GiftCardPayDetail.class, GoodsPractice.class, PracticeAssociated.class},
         version = AppDatabase.DATABASE_VERSION,exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public static final int DATABASE_VERSION = 15;
@@ -53,8 +48,6 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract GoodsPracticeDao GoodsPracticeDao();
     public abstract PracticeAssociatedDao PracticeAssociatedDao();
-
-    public abstract LabelTemplateDao LabelTemplateDao();
 
     private static AppDatabase DB;
     public static AppDatabase getInstance(){

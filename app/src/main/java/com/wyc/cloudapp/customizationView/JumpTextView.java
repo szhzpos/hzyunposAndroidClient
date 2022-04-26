@@ -95,7 +95,7 @@ public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP){
             if (!verifyPermission(getContext())){
-                MyDialog.ToastMessage(this,CustomApplication.self().getString(R.string.not_permission_hint), null);
+                MyDialog.toastMessage(CustomApplication.self().getString(R.string.not_permission_hint));
                 return true;
             }
         }
@@ -106,7 +106,7 @@ public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
     public boolean callOnClick() {
         if (verifyPermission(getContext())){
             return super.callOnClick();
-        }else MyDialog.ToastMessage(CustomApplication.self().getString(R.string.not_permission_hint), null);
+        }else MyDialog.toastMessage(CustomApplication.self().getString(R.string.not_permission_hint));
         return false;
     }
 }

@@ -44,6 +44,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="51"
             app:verSpacing="@dimen/margin_5" />
@@ -59,6 +60,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="52"
             app:verSpacing="@dimen/margin_5" />
@@ -74,6 +76,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="54"
             app:verSpacing="@dimen/margin_5" />
@@ -89,6 +92,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="53"
             app:verSpacing="@dimen/margin_5" />
@@ -104,7 +108,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
-            app:hide="false"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="56"
             app:perId="55"
@@ -121,7 +125,7 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
-            app:hide="false"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="55"
             app:perId="56"
@@ -138,9 +142,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
-            app:hide="false"
+            app:hide="true"
             app:layout_weight_width="0.333"
-            app:perId="56"
+            app:moduleId="14"
+            app:perId="14"
             app:verSpacing="@dimen/margin_5" />
     </com.wyc.cloudapp.customizationView.FlowLayout>
 

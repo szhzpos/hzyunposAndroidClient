@@ -9,6 +9,8 @@ import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.activity.mobile.MobileSetupActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.label.LabelPrintSettingActivity;
+import com.wyc.label.printer.LabelPrintUtils;
 
 public final class MyFragment extends AbstractJumpFragment {
     private void initExit(){
@@ -47,7 +49,7 @@ public final class MyFragment extends AbstractJumpFragment {
         }else if (id == R.id.business_print_tv){
             MobileSetupActivity.startBusinessPrintSetting(title);
         }else if (id == R.id.label_print_setting_tv){
-            MobileSetupActivity.startLabelPrintSetting(title);
+            LabelPrintSettingActivity.start(mContext);
         }
     }
 

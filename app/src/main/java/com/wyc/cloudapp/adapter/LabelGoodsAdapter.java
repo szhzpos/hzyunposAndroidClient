@@ -9,17 +9,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.customizationView.SwipeLayout;
-import com.wyc.cloudapp.design.DataItem;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
+import com.wyc.label.DataItem;
 
 import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
