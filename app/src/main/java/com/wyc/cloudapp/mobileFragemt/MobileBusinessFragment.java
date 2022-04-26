@@ -32,10 +32,10 @@ public final class MobileBusinessFragment extends AbstractJumpFragment {
                 startActivity(intent);
             }catch (ActivityNotFoundException e){
                 e.printStackTrace();
-                MyDialog.ToastMessage("暂不支持" + title, null);
+                MyDialog.toastMessage("暂不支持" + title);
             }
         }else {
-            MyDialog.ToastMessage(getString(R.string.not_permission_hint), null);
+            MyDialog.toastMessage(getString(R.string.not_permission_hint));
         }
     }
 }

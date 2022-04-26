@@ -47,6 +47,7 @@
             app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="51"
+            app:perId="51"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -63,6 +64,7 @@
             app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="52"
+            app:perId="52"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -79,6 +81,7 @@
             app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="54"
+            app:perId="54"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -95,6 +98,7 @@
             app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="53"
+            app:perId="53"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -180,8 +184,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="10"
+            app:perId="10"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -195,8 +201,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="11"
+            app:perId="10"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -210,8 +218,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="47"
+            app:perId="47"
             app:verSpacing="@dimen/margin_5" />
     </com.wyc.cloudapp.customizationView.FlowLayout>
 
@@ -248,8 +258,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="39"
+            app:perId="39"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -263,8 +275,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="41"
+            app:perId="41"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -278,8 +292,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="42"
+            app:perId="42"
             app:verSpacing="@dimen/margin_5" />
     </com.wyc.cloudapp.customizationView.FlowLayout>
 
@@ -313,8 +329,10 @@
             android:text="@string/inventory_task_not_colon"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="48"
+            app:perId="48"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -328,8 +346,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="43"
+            app:perId="43"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -343,8 +363,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="49"
+            app:perId="49"
             app:verSpacing="@dimen/margin_8" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -357,8 +379,10 @@
             android:text="@string/other_inventory_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
+            app:hide="true"
             app:layout_weight_width="0.335"
             app:moduleId="12"
+            app:perId="12"
             app:verSpacing="@dimen/margin_5" />
     </com.wyc.cloudapp.customizationView.FlowLayout>
 
@@ -392,8 +416,10 @@
             android:text="@string/distribution_warehouse_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="46"
+            app:perId="46"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -406,8 +432,10 @@
             android:text="@string/distribution_warehousing_sz"
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="45"
+            app:perId="45"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -421,8 +449,10 @@
             android:textColor="@color/text_color"
             android:textSize="@dimen/font_size_16"
             android:visibility="visible"
+            app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="44"
+            app:perId="44"
             app:verSpacing="@dimen/margin_8" />
     </com.wyc.cloudapp.customizationView.FlowLayout>
 </com.wyc.cloudapp.customizationView.FlowLayout>

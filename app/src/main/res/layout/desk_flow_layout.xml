@@ -144,6 +144,7 @@
         app:hide="true"
         app:layout_weight_width="0.5"
         app:moduleId="30"
+        app:perId="30"
         app:verSpacing="@dimen/default_vertical" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView
@@ -160,6 +161,7 @@
         app:hide="true"
         app:layout_weight_width="0.5"
         app:moduleId="30"
+        app:perId="30"
         app:verSpacing="@dimen/default_vertical" />
 
     <com.wyc.cloudapp.customizationView.TopDrawableTextView

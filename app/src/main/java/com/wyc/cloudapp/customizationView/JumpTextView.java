@@ -47,15 +47,16 @@ public class JumpTextView extends androidx.appcompat.widget.AppCompatTextView {
         typedArray.recycle();
 
         checkModuleStatus();
+
+        if (!isInEditMode())
+            if (getVisibility() == VISIBLE){
+                verifyPermission(getContext());
+            }
     }
 
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (!isInEditMode())
-        if (getVisibility() == VISIBLE){
-            verifyPermission(getContext());
-        }
     }
 
     private boolean verifyPermission(final Context context){
