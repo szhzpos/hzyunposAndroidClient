@@ -180,25 +180,48 @@ public final class CustomApplication extends Application {
         mApplication.mBusinessMode = false;
     }
 
-    public boolean initCashierInfoAndStoreInfo(@NonNull final StringBuilder err){
-        mCashierInfo = new JSONObject();
-        if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo) &&
-                SQLiteHelper.execSql(mCashierInfo,"SELECT ifnull(pt_user_cname,'') pt_user_cname,ifnull(pt_user_id,'') pt_user_id FROM cashier_info where cas_status = 1 and cas_id = " + mCashierInfo.getString("cas_id")))
+    public boolean initCashierInfo(){
+        initConnInfo();
+        if (mCashierInfo == null)mCashierInfo = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("cashierInfo",mCashierInfo))
         {
-            final JSONObject st_info = getConnParam();
-            mUrl = st_info.getString("server_url");
-            mAppId = st_info.getString("appId");
-            mAppSecret = st_info.getString("appSecret");
-            mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
-
-            //启动心跳线程
-            mSyncManagement.testNetwork();
-
-            return true;
+            if (allParameterInitSuccess()){
+                //启动心跳线程
+                mSyncManagement.testNetwork();
+                return true;
+            }
         }
-        err.append(mCashierInfo.getString("info"));
+        MyDialog.toastMessage(getStringByResId(R.string.init_cashierInfo_error,mCashierInfo.getString("info")));
         return false;
     }
+
+    public boolean associateBusinessUser(){
+        if (mCashierInfo == null)mCashierInfo = new JSONObject();
+        if (SQLiteHelper.execSql(mCashierInfo,"SELECT ifnull(pt_user_cname,'') pt_user_cname,ifnull(pt_user_id,'') pt_user_id FROM " +
+                "cashier_info where cas_status = 1 and cas_id = " + mCashierInfo.getString("cas_id"))) {
+            return true;
+        }
+        MyDialog.toastMessage(getStringByResId(R.string.init_business_user_error,mCashierInfo.getString("info")));
+        return false;
+    }
+
+    private void initConnInfo(){
+        final JSONObject st_info = getConnParam();
+        mUrl = st_info.getString("server_url");
+        mAppId = st_info.getString("appId");
+        mAppSecret = st_info.getString("appSecret");
+        mStoreInfo = JSON.parseObject(st_info.getString("storeInfo"));
+    }
+
+    private boolean allParameterInitSuccess(){
+        boolean code = Utils.isNotEmpty(mUrl) && Utils.isNotEmpty(mAppId) && Utils.isNotEmpty(mAppSecret)
+                && Utils.JsonIsNotEmpty(mCashierInfo) && Utils.JsonIsNotEmpty(mStoreInfo);
+        if (!code){
+            MyDialog.toastMessage(R.string.init_parameter_error);
+        }
+        return code;
+    }
+
 
     public static JSONObject getConnParam(){
         final SharedPreferences preferences= mApplication.getSharedPreferences("conn_param", Context.MODE_PRIVATE);
@@ -520,7 +543,8 @@ public final class CustomApplication extends Application {
     }
     private void executeMsg(@NonNull Message msg){
         for (MessageCallback callback : mCallbacks){
-            callback.handleMessage(myhandler,msg);
+            if (callback != null)
+                callback.handleMessage(myhandler,msg);
         }
     }
     public interface MessageCallback{

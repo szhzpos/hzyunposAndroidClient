@@ -123,9 +123,9 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                 final float dx = motionEvent.getX();
                 final int w = search.getWidth();
-                if (dx > (w - search.getCompoundPaddingRight())) {
+                if (dx > (w - search.getCompoundPaddingEnd())) {
                     search(search.getText().toString());
-                }else if(dx < (w - search.getCompoundPaddingLeft())){
+                }else if(dx < search.getCompoundPaddingStart()){
                     FindFragment.beginScan(this, code -> {
                         Logger.d("code:%s",code);
                         mSearchContentEt.setText(code);

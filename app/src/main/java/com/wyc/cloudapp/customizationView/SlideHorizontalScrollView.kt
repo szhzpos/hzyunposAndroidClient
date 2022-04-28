@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.ViewConfiguration
 import android.widget.HorizontalScrollView
 import com.wyc.cloudapp.utils.Utils
+import kotlin.math.abs
 import kotlin.math.asin
 import kotlin.math.sqrt
 
@@ -23,23 +24,21 @@ class SlideHorizontalScrollView:HorizontalScrollView {
         mTouchSlop = ViewConfiguration.get(context).scaledPagingTouchSlop
     }
 
-    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
         when (ev.action) {
             MotionEvent.ACTION_DOWN -> {
-                downX = ev.x
-                downY = ev.y
+                downX = ev.rawX
+                downY = ev.rawY
             }
             MotionEvent.ACTION_MOVE -> {
-                val moveX = ev.x
-                val moveY = ev.y
-                val xDiff = Math.abs(moveX - downX)
-                val yDiff = Math.abs(moveY - downY)
+                val moveX = ev.rawX
+                val moveY = ev.rawY
+                val xDiff = abs(moveX - downX)
+                val yDiff = abs(moveY - downY)
                 if (xDiff > mTouchSlop || yDiff > mTouchSlop) {
                     val squareRoot = sqrt((xDiff * xDiff + yDiff * yDiff).toDouble())
                     val degree = asin(yDiff / squareRoot) * 180 / Math.PI
                     val isMeetSlidingYAngle = degree > 45
-                    val isSlideUp = moveY < downY && isMeetSlidingYAngle
-                    val isSlideDown = moveY > downY && isMeetSlidingYAngle
                     val isSlideLeft = moveX < downX && !isMeetSlidingYAngle
                     val isSlideRight = moveX > downX && !isMeetSlidingYAngle
                     if ((isSlideRight && !canScrollHorizontally(-1)) || (isSlideLeft &&!canScrollHorizontally(1))) {
@@ -47,12 +46,7 @@ class SlideHorizontalScrollView:HorizontalScrollView {
                     }
                 }
             }
-            MotionEvent.ACTION_UP -> {
-                if (!Utils.equalDouble(downX,ev.x)) {
-                    return false
-                }
-            }
         }
-        return super.dispatchTouchEvent(ev)
+        return super.onTouchEvent(ev)
     }
 }

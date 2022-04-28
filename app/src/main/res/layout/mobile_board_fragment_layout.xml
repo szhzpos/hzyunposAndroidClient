@@ -11,33 +11,31 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_35"
+            android:layout_marginStart="@dimen/margin_8"
+            android:gravity="center_vertical"
+            android:text="@string/business_monitors_sz"
+            android:textColor="@color/label_text_color"
+            android:textSize="@dimen/font_size_18" />
+
         <LinearLayout
             android:id="@+id/time_btn_layout"
             android:layout_width="match_parent"
             android:layout_height="@dimen/height_45"
+            android:background="@drawable/top_separator"
             android:focusable="false"
             android:focusableInTouchMode="false"
             android:orientation="horizontal">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:text="@string/business_monitors_sz"
-                android:textColor="@color/label_text_color"
-                android:textSize="18sp" />
-
-            <Space
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
             <Button
                 android:id="@+id/today_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="@dimen/business_monitor_btn_w"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/business_monitor_btn_h"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="@drawable/new_button_style"
                 android:gravity="center"
                 android:text="@string/today_sz"
@@ -47,11 +45,12 @@
             <Button
                 android:id="@+id/yestoday_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="@dimen/business_monitor_btn_w"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/business_monitor_btn_h"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
+                android:layout_weight="1"
                 android:background="@drawable/new_button_style"
                 android:gravity="center"
                 android:text="@string/yesterday_sz"
@@ -61,14 +60,66 @@
             <Button
                 android:id="@+id/seven_days_btn"
                 style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="@dimen/business_monitor_btn_w"
+                android:layout_width="wrap_content"
                 android:layout_height="@dimen/business_monitor_btn_h"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
                 android:background="@drawable/new_button_style"
                 android:gravity="center"
                 android:text="@string/seven_days_sz"
                 android:textColor="@color/blue_pink"
                 android:textSize="@dimen/font_size_14" />
+
+            <Button
+                android:id="@+id/c_btn"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/business_monitor_btn_h"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:background="@drawable/new_button_style"
+                android:gravity="center"
+                android:text="@string/custom_sz"
+                android:textColor="@color/blue_pink"
+                android:textSize="@dimen/font_size_14" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/custome_date_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/margin_8"
+            android:background="@drawable/round_shape_blue"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/start_date"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_35"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/margin_1"
+                android:layout_weight="1"
+                android:autofillHints=" "
+                android:background="@color/encode_view"
+                android:ems="10"
+                android:hint="@string/start_date_sz"
+                android:inputType="datetime"
+                android:padding="@dimen/margin_5" />
+
+            <EditText
+                android:id="@+id/end_date"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_35"
+                android:layout_gravity="center_vertical"
+                android:layout_margin="@dimen/margin_1"
+                android:layout_weight="1"
+                android:autofillHints=" "
+                android:background="@drawable/left_separator"
+                android:ems="10"
+                android:hint="@string/end_date_sz"
+                android:inputType="datetime"
+                android:padding="@dimen/margin_5" />
         </LinearLayout>
 
         <LinearLayout
@@ -221,132 +272,13 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="5dp"
-                        android:text="1"
+                        android:text="@string/zero_sz"
                         android:textColor="@color/colorPrimary"
                         android:textSize="@dimen/font_size_16"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/size_60"
-                android:layout_marginBottom="@dimen/margin_1"
-                android:background="@drawable/bottom_separator"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_5"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/deposit_amt_sz"
-                        android:textSize="@dimen/font_size_16" />
-
-                    <TextView
-                        android:id="@+id/charge_amt_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="5dp"
-                        android:text="@string/zero_p_z_sz"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_5"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/order_num_sz"
-                        android:textSize="@dimen/font_size_16" />
-
-                    <TextView
-                        android:id="@+id/charge_num_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="5dp"
-                        android:text="@string/zero_sz"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/size_60"
-                android:baselineAligned="false"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="@dimen/margin_5"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/times_card_amt_sz"
-                        android:textSize="@dimen/font_size_16" />
-
-                    <TextView
-                        android:id="@+id/ck_amt_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="@dimen/margin_5"
-                        android:text="@string/zero_p_z_sz"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="@dimen/font_size_16"
-                        android:textStyle="bold" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_margin="5dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/order_num_sz"
-                        android:textSize="@dimen/font_size_16" />
-
-                    <TextView
-                        android:id="@+id/ck_num_tv"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_margin="@dimen/margin_5"
-                        android:text="@string/zero_sz"
-                        android:textColor="@color/colorPrimary"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
         </LinearLayout>
 
         <com.wyc.cloudapp.customizationView.PieView
@@ -362,71 +294,137 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/height_35"
+                android:layout_marginStart="@dimen/margin_8"
+                android:gravity="center_vertical"
+                android:text="@string/payment_way_sz"
+                android:textColor="@color/label_text_color"
+                android:textSize="@dimen/font_size_18" />
+
             <LinearLayout
                 android:id="@+id/pay_method_layout"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/height_50"
+                android:layout_height="@dimen/height_58"
+                android:background="@drawable/top_separator"
                 android:focusable="false"
                 android:focusableInTouchMode="false"
                 android:orientation="horizontal"
-                android:padding="5dp">
+                android:padding="@dimen/margin_5">
 
-                <TextView
+                <LinearLayout
+                    android:id="@+id/sale_btn_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:gravity="center_vertical"
-                    android:text="@string/payment_way_sz"
-                    android:textColor="@color/label_text_color"
-                    android:textSize="@dimen/font_size_18" />
-
-                <Space
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Button
-                    android:id="@+id/sale_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/business_monitor_btn_w"
-                    android:layout_height="@dimen/business_monitor_btn_h"
+                    android:layout_weight="1"
                     android:background="@drawable/new_button_style"
-                    android:gravity="center"
-                    android:text="@string/sale_sz"
-                    android:textColor="@color/blue_pink" />
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/refund_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="68dp"
-                    android:layout_height="35dp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/new_button_style"
-                    android:gravity="center"
-                    android:text="退货"
-                    android:textColor="@color/blue_pink"
-                    android:visibility="gone" />
+                    <TextView
+                        android:id="@+id/sale_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/size_25"
+                        android:gravity="center"
+                        android:text="@string/business_amt_sz"
+                        android:textColor="@color/blue_pink"
+                        android:textSize="@dimen/font_size_14" />
 
-                <Button
-                    android:id="@+id/charge_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/business_monitor_btn_w"
-                    android:layout_height="@dimen/business_monitor_btn_h"
+                    <TextView
+                        android:id="@+id/busi_amt_tv_o"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:gravity="center"
+                        android:text="@string/zero_p_z_sz"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_size_12" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/charge_btn_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/margin_5"
+                    android:layout_weight="1"
                     android:background="@drawable/new_button_style"
-                    android:gravity="center"
-                    android:text="@string/charge_sz"
-                    android:textColor="@color/blue_pink" />
+                    android:orientation="vertical">
 
-                <Button
-                    android:id="@+id/ck_btn"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="@dimen/business_monitor_btn_w"
-                    android:layout_height="@dimen/business_monitor_btn_h"
+                    <TextView
+                        android:id="@+id/charge_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/size_25"
+                        android:gravity="center"
+                        android:text="@string/charge_sz"
+                        android:textColor="@color/blue_pink"
+                        android:textSize="@dimen/font_size_14" />
+
+                    <TextView
+                        android:id="@+id/charge_amt_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/zero_p_z_sz"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_size_12" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/ck_btn_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/margin_5"
+                    android:layout_weight="1"
                     android:background="@drawable/new_button_style"
-                    android:text="@string/times_card_sz"
-                    android:textColor="@color/blue_pink" />
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/ck_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/size_25"
+                        android:gravity="center"
+                        android:text="@string/times_card_sz"
+                        android:textColor="@color/blue_pink"
+                        android:textSize="@dimen/font_size_14" />
+
+                    <TextView
+                        android:id="@+id/ck_amt_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/zero_p_z_sz"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_size_12" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/gift_btn_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="@dimen/margin_5"
+                    android:layout_weight="1"
+                    android:background="@drawable/new_button_style"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/gift_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/size_25"
+                        android:gravity="center"
+                        android:text="@string/t_f_gift_sz"
+                        android:textColor="@color/blue_pink"
+                        android:textSize="@dimen/font_size_14" />
+
+                    <TextView
+                        android:id="@+id/gift_amt_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="@string/zero_p_z_sz"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="@dimen/font_size_12" />
+                </LinearLayout>
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView

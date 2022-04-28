@@ -612,7 +612,7 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                                                     _json.put("parameter_desc","模块权限");
                                                     params.add(_json);
 
-                                                    if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1) && mApplication.initCashierInfoAndStoreInfo(err)){
+                                                    if (SQLiteHelper.execSQLByBatchFromJson(params,"local_parameter",null,err,1) && mApplication.initCashierInfo()){
                                                         if (CustomApplication.isPracticeMode()){
                                                             /*练习模式下直接登录不再进行同步数据*/
                                                             CustomApplication.sendMessage(MessageID.SYNC_FINISH_ID);
@@ -690,14 +690,16 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
     }
 
     private void launchLogin(boolean isConnection){
-        loginFinish(isConnection);
+        if (mApplication.associateBusinessUser()){
+            loginFinish(isConnection);
 
-        final Intent intent = new Intent();
-        if (isSmallScreen){
-            intent.setClass(this, MobileNavigationActivity.class);
-        }else intent.setClass(this,NormalMainActivity.class);
-        startActivity(intent);
-        finish();
+            final Intent intent = new Intent();
+            if (isSmallScreen){
+                intent.setClass(this, MobileNavigationActivity.class);
+            }else intent.setClass(this,NormalMainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
     private void loginFinish(boolean isConnection){
         CustomApplication.sendMessage(MessageID.LOGIN_FINISH_ID,isConnection);
@@ -719,8 +721,10 @@ public class LoginActivity extends BaseActivity implements CustomApplication.Mes
                         if (!cas_info.isEmpty()) {
                             cas_info.put("pos_num",posNum);
                             final StringBuilder err = new StringBuilder();
-                            if (SQLiteHelper.saveLocalParameter("cashierInfo",cas_info,"收银员信息",err) && mApplication.initCashierInfoAndStoreInfo(err)){
-                                launchLogin(false);
+                            if (SQLiteHelper.saveLocalParameter("cashierInfo",cas_info,"收银员信息",err)){
+                                if (mApplication.initCashierInfo()){
+                                    launchLogin(false);
+                                }
                             }else CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID,"保存收银员信息错误：" + err);
                         } else {
                             CustomApplication.sendMessage(MessageID.LOGIN_ID_ERROR_ID, "不存在此用户！");

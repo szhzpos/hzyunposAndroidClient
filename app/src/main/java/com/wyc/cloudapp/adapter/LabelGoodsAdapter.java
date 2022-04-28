@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.customizationView.SwipeLayout;
-import com.wyc.label.DataItem;
+import com.wyc.label.LabelGoods;
+
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -31,7 +32,7 @@ import butterknife.ButterKnife;
  * @UpdateRemark: 更新说明：
  * @Version: 1.0
  */
-public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods,LabelGoodsAdapter.MyViewHolder> implements View.OnClickListener {
+public class LabelGoodsAdapter extends AbstractSelectAdapter<LabelGoods,LabelGoodsAdapter.MyViewHolder> implements View.OnClickListener {
 
     public LabelGoodsAdapter(){
         super();
@@ -41,8 +42,8 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods
     @Override
     public void onClick(View v) {
         final Object obj = v.getTag();
-        if (obj instanceof DataItem.LabelGoods){
-            invoke((DataItem.LabelGoods) obj);
+        if (obj instanceof LabelGoods){
+            invoke((LabelGoods) obj);
         }
     }
 
@@ -73,7 +74,7 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods
         final SwipeLayout itemView = (SwipeLayout)View.inflate(parent.getContext(), R.layout.label_print_swipe_container, null);
         final RecyclerView.LayoutParams lp = new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
         itemView.addMenuItem(parent.getContext().getString(R.string.delete_sz), v -> {
-            mData.remove((DataItem.LabelGoods)itemView.getTag());
+            mData.remove((LabelGoods)itemView.getTag());
             itemView.setTag(null);
             itemView.closeRightMenu();
             notifyDataSetChanged();
@@ -85,7 +86,7 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        final DataItem.LabelGoods goods = mData.get(position);
+        final LabelGoods goods = mData.get(position);
         holder.rowId.setText(String.format(Locale.CHINA,"%d、",position + 1));
         holder.goods_title.setText(goods.getGoodsTitle());
         holder.barcode.setText(goods.getBarcode());
@@ -94,7 +95,7 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<DataItem.LabelGoods
         holder.itemView.setTag(goods);
     }
 
-    public void addData(final DataItem.LabelGoods object){
+    public void addData(final LabelGoods object){
         mData.add(object);
         notifyItemChanged(mData.size() - 1);
     }

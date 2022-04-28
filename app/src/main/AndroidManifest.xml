@@ -85,7 +85,7 @@
         <activity android:name=".activity.mobile.cashierDesk.TimeCardBusinessActivity" />
         <activity android:name=".activity.mobile.cashierDesk.SelectTimeCardActivity" />
         <activity android:name=".activity.mobile.business.EditVipInfoActivity" />
-        <activity android:name=".activity.mobile.business.MobileEditGoodsInfoActivity" />
+        <activity android:name=".activity.mobile.business.MobileEditGoodsInfoActivity" android:windowSoftInputMode="adjustPan" />
         <activity android:name=".activity.mobile.business.MobileVipCategoryInfoActivity" />
         <activity android:name=".activity.mobile.business.EditConsumerActivity" />
         <activity

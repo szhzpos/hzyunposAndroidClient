@@ -78,7 +78,7 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     private fun connPrinter(){
         if (!mConnecting){
             mConnecting = true
-            LabelPrintUtils.openPrinter()
+            LabelPrintUtils.openPrinter(this)
         }else MyDialog.toastMessage(R.string.printer_connecting)
     }
 
@@ -153,7 +153,7 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     }
 
     private val  fields = "barcode_id barcodeId,goods_title goodsTitle, barcode,unit_name unit,origin,spec_str spec,yh_price,retail_price"
-    fun getGoodsDataById(barcodeId:String?): DataItem.LabelGoods?{
+    private fun getGoodsDataById(barcodeId:String?): LabelGoods?{
         val sql = if (barcodeId.isNullOrEmpty()) "select $fields from barcode_info where goods_status = 1 and barcode_status = 1 limit 1" else
             "select $fields from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
         val goods = JSONObject()
@@ -162,15 +162,15 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
             return null
         }
         if (goods.isEmpty())return null
-        return goods.toJavaObject(DataItem.LabelGoods::class.java)
+        return goods.toJavaObject(LabelGoods::class.java)
     }
 
-    fun getGoodsDataByBarcode(barcode:String):MutableList<DataItem.LabelGoods>{
+    private fun getGoodsDataByBarcode(barcode:String):MutableList<LabelGoods>{
         val sql = "select $fields from barcode_info where barcode = $barcode and (goods_status = 1 and barcode_status = 1)"
         val sb = StringBuilder()
         val goods = SQLiteHelper.getListToJson(sql,sb)
         if (goods != null){
-            return goods.toJavaList(DataItem.LabelGoods::class.java)
+            return goods.toJavaList(LabelGoods::class.java)
         }else{
             MyDialog.toastMessage(sb.toString())
         }
@@ -262,7 +262,9 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             1 -> {
-                LabelDesignActivity.start(this,mLabelView?.getLabelTemplate())
+                mLabelView?.apply {
+                    LabelDesignActivity.start(this@LabelPrintActivity,getLabelTemplate().templateId)
+                }
             }
         }
         return super.onContextItemSelected(item)

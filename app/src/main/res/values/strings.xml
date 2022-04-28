@@ -260,6 +260,7 @@
     <string name="del_hang_bill">删除挂单</string>
     <string name="del_hang_bill_hint">删除挂单信息错误:%1$s</string>
     <string name="hang_tips">"点“是”过滤商品并取单，点“否”取消"</string>
+    <string name="init_business_user_error">关联业务功能账号错误:%1$s</string>
 
     <!-- 条码秤窗口 -->
     <string name="add_scale_sz">新增秤</string>
@@ -1002,4 +1003,6 @@
     <string name="conn_fail">连接失败</string>
     <string name="printer_disconnect">打印机断开</string>
     <string name="label_preview">标签预览</string>
+    <string name="init_parameter_error">参数初始化错误...</string>
+    <string name="init_cashierInfo_error">初始化收银员信息错误...</string>
 </resources>

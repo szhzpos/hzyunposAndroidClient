@@ -59,17 +59,9 @@ class SlideRecycleView : IndicatorRecyclerView{
             MotionEvent.ACTION_DOWN -> {
                 clearDragFlag()
                 checkChildDrag(findChildByCoordinate(ev.x,ev.y))
-                if (!isChildRightDrag || !isChildLeftDrag ){
-                    return false
-                }
             }
             MotionEvent.ACTION_MOVE -> {
                 if ((hasSlideRight() && !isChildRightDrag && !canScrollHorizontally(-1)) || (hasSlideLeft() && !isChildLeftDrag && !canScrollHorizontally(1))) {
-                    return false
-                }
-            }
-            MotionEvent.ACTION_UP -> {
-                if (!Utils.equalDouble(downX, ev.x) && ((hasSlideRight() && !isChildRightDrag) || (hasSlideLeft() && !isChildLeftDrag))) {
                     return false
                 }
             }

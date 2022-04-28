@@ -119,7 +119,7 @@ final class SyncHandler1 extends Handler {
                 switch (info_json.getString("status")){
                     case "n":
                         CustomApplication.sendMessage(MessageID.NETWORKSTATUS_ID,false);
-                        Logger.e("网络检测服务器错误：" + info_json.getString("info"));
+                        Logger.e("同步业务错误：" + info_json.getString("info"));
                         break;
                     case "y":
                         AbstractSyncBase.dealHeartBeatUpdate(Utils.getNullObjectAsEmptyJsonArray(info_json,"data"));

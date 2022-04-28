@@ -204,7 +204,7 @@
             app:hide="true"
             app:layout_weight_width="0.333"
             app:moduleId="11"
-            app:perId="10"
+            app:perId="11"
             app:verSpacing="@dimen/margin_5" />
 
         <com.wyc.cloudapp.customizationView.TopDrawableTextView

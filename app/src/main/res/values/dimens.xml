@@ -205,7 +205,7 @@
     <dimen name="mobile_vip_charge_item_height">@dimen/size_45</dimen>
     <dimen name="size_218">218dp</dimen>
     <dimen name="m_setup_item_height">@dimen/size_45</dimen>
-    <dimen name="mobile_activity_title_left_right_tv_width">@dimen/size_108</dimen>
+    <dimen name="mobile_activity_title_left_right_tv_width">@dimen/size_95</dimen>
     <dimen name="mobile_transfer_content_title_height">@dimen/size_35</dimen>
     <dimen name="business_monitor_btn_w">@dimen/size_78</dimen>
     <dimen name="business_monitor_btn_h">@dimen/size_35</dimen>
