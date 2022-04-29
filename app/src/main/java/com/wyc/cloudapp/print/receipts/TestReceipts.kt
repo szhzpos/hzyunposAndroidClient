@@ -2,7 +2,7 @@ package com.wyc.cloudapp.print.receipts
 
 import com.wyc.cloudapp.R
 import com.wyc.cloudapp.application.CustomApplication
-import com.wyc.cloudapp.fragment.PrintFormatFragment.CHECKOUt_FORMAT_ID
+import com.wyc.cloudapp.fragment.PrintFormat.CHECKOUt_FORMAT_ID
 import com.wyc.cloudapp.print.PrintItem
 import com.wyc.cloudapp.print.parameter.SalePrintParameter
 import com.wyc.cloudapp.print.printer.AbstractPrinter

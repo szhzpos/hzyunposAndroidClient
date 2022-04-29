@@ -5,7 +5,7 @@ import com.wyc.cloudapp.application.CustomApplication
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.data.room.AppDatabase
 import com.wyc.cloudapp.data.room.entity.GiftCardSaleOrder
-import com.wyc.cloudapp.fragment.PrintFormatFragment
+import com.wyc.cloudapp.fragment.PrintFormat
 import com.wyc.cloudapp.print.PrintItem
 import com.wyc.cloudapp.print.parameter.SalePrintParameter
 import java.util.*
@@ -120,6 +120,6 @@ class GiftCardReceipts(private val order_info:GiftCardSaleOrder,open:Boolean): A
     }
 
     override fun getFormatId(): Int {
-        return PrintFormatFragment.GIFT_CARD_SALE_FORMAT_ID
+        return PrintFormat.GIFT_CARD_SALE_FORMAT_ID
     }
 }

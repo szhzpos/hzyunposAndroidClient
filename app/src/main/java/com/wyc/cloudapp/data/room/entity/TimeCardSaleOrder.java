@@ -26,11 +26,8 @@ import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.receipts.TimeCardReceipts;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
-import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 import com.wyc.cloudapp.utils.http.HttpUtils;
 import com.wyc.cloudapp.utils.http.callback.ObjectCallback;
@@ -45,7 +42,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
-import static com.wyc.cloudapp.fragment.PrintFormatFragment.TIME_CARD_SALE_FORMAT_ID;
 
 /**
  * @ProjectName: AndroidClient

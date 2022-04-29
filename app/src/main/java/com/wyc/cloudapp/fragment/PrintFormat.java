@@ -35,7 +35,6 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TreeListItem;
-import com.wyc.cloudapp.bean.VipGrade;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -59,7 +58,7 @@ import java.util.List;
 import static android.app.Activity.RESULT_OK;
 import static com.wyc.cloudapp.utils.BluetoothUtils.REQUEST_BLUETOOTH__PERMISSIONS;
 
-public class PrintFormatFragment extends AbstractParameterFragment {
+public class PrintFormat extends AbstractParameterFragment {
     public static final int TIME_CARD_SALE_FORMAT_ID = 100;
     public static final int TIME_CARD_USE_FORMAT_ID = 101;
     public static final int GIFT_CARD_SALE_FORMAT_ID = 102;
@@ -70,6 +69,9 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     public static final int BLUETOOTH_TYPE_ID = 202;
     public static final int DRIVER_TYPE_ID = 203;
 
+    public static final int PAPER_SPEC_58_ID = 58;
+    public static final int PAPER_SPEC_76_ID = 76;
+    public static final int PAPER_SPEC_80_ID = 80;
 
     private static final int GENERAL_POS = 104;
     private static final int CW_POS = 105;
@@ -79,7 +81,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
     private ArrayAdapter<String> mPrintIdAdapter;
     private Spinner mPrinterId;
     private CustomProgressDialog mProgressDialog;
-    public PrintFormatFragment() {
+    public PrintFormat() {
     }
 
     @Override
@@ -340,6 +342,15 @@ public class PrintFormatFragment extends AbstractParameterFragment {
 
         if (way){
             int size_id = fzrg.getCheckedRadioButtonId();
+            if (size_id == R.id.f_80){
+                size_id = PAPER_SPEC_80_ID;
+            }else if (size_id == R.id.f_76){
+                size_id = PAPER_SPEC_76_ID;
+            }else {
+                size_id = PAPER_SPEC_58_ID;
+            }
+
+
             final String stores_name = stores_name_et.getText().toString(),footer_c = footer_c_et.getText().toString(),p_count = p_count_et.getText().toString(),
                     footer_space = footer_space_et.getText().toString();
 
@@ -432,7 +443,7 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             object.put("f_z",size_id);
             object.put("s_n",stores_name);
             object.put("f_c",footer_c);
-            object.put("p_c",t_card_use_count.getText().toString());
+            object.put("p_c",g_card_count.getText().toString());
             object.put("f_s",footer_space);
             content = new JSONObject();
             content.put("parameter_id", "g_card_sale");
@@ -443,7 +454,14 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             boolean code = SQLiteHelper.getLocalParameter("c_f_info",object);
             if (code){
                 int id = object.getIntValue("f_z");
-                if (id == 0)id = R.id.f_58;//默认58
+                if (id == PAPER_SPEC_80_ID){
+                    id = R.id.f_80;
+                }else if (id == PAPER_SPEC_76_ID){
+                    id = R.id.f_76;
+                }else {//默认58
+                    id = R.id.f_58;
+                }
+
                 fzrg.check(id);
                 stores_name_et.setText(Utils.getNullStringAsEmpty(object,"s_n"));
                 footer_c_et.setText(Utils.getNullStringAsEmpty(object,"f_c"));
@@ -666,9 +684,9 @@ public class PrintFormatFragment extends AbstractParameterFragment {
             case R.id.bluetooth_p:
                 if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                     if ((ActivityCompat.shouldShowRequestPermissionRationale(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION))){
-                        PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
+                        PrintFormat.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
                     }else {
-                        PrintFormatFragment.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
+                        PrintFormat.this.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_BLUETOOTH__PERMISSIONS );
                     }
                 }else{
                     BluetoothUtils.startBlueToothDiscovery(this);//开始扫描

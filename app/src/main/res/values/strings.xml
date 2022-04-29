@@ -135,7 +135,7 @@
     <string name="clear_hint">是否清空?</string>
     <string name="testPrint">测试打印</string>
     <string name="orderIdNotEmptyHint">打印单号不能为空!</string>
-    <string name="IllegalOrderSize">非法单据规格!</string>
+    <string name="IllegalOrderSize">非法单据纸张规格!</string>
     <string name="exist_goods_hint">存在已选商品,请先处理!</string>
     <string name="not_found_goods">未找到以下商品:%1$s</string>
     <string name="POS">收银机：</string>

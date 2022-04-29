@@ -8,6 +8,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.fragment.PrintFormat;
 
 import java.io.Serializable;
 
@@ -80,22 +81,21 @@ public class SalePrintParameter implements IParameter {
     }
 
     public Integer getFormatSize() {
-        return formatSize == null ? R.id.f_58 : formatSize;
+        return formatSize == null ? PrintFormat.PAPER_SPEC_58_ID : formatSize;
     }
 
     public void setFormatSize(Integer formatSize) {
         this.formatSize = formatSize;
     }
 
-    @NonNull
     @Override
     public String toString() {
-        return "PrintFormatInfo{" +
+        return "SalePrintParameter{" +
                 "aliasStoresName='" + aliasStoresName + '\'' +
-                ", footerSpace='" + footerSpace + '\'' +
+                ", footerSpace=" + footerSpace +
                 ", footerContent='" + footerContent + '\'' +
                 ", formatId=" + formatId +
-                ", printCount='" + printCount + '\'' +
+                ", printCount=" + printCount +
                 ", formatSize=" + formatSize +
                 '}';
     }

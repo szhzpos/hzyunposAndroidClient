@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.fragment.PrintFormatFragment;
+import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
@@ -64,7 +64,7 @@ public class USBPrinter  extends AbstractPrinter {
             int type_id = object.getIntValue("id");
             String tmp = Utils.getNullStringAsEmpty(object,"v");
             String[] vals = tmp.split("\t");
-            if (type_id == PrintFormatFragment.USB_TYPE_ID && vals.length > 1){
+            if (type_id == PrintFormat.USB_TYPE_ID && vals.length > 1){
                 final String vid = vals[0].substring(vals[0].indexOf(":") + 1);
                 final String pid = vals[1].substring(vals[1].indexOf(":") + 1);
                 synchronized (USBPrinter.class){

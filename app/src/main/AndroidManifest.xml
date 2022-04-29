@@ -43,15 +43,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:targetApi="n">
-        <activity
-            android:name=".design.BrowseLabelActivity"
-            android:exported="false" />
+
         <activity
             android:name=".design.LabelPrintActivity"
             android:exported="false" />
-        <activity
-            android:name=".design.LabelDesignActivity"
-            android:exported="false" />
+
         <activity
             android:name=".activity.mobile.report.GoodsStockActivity"
             android:exported="false" />

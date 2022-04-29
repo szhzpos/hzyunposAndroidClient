@@ -15,7 +15,7 @@ import android.net.NetworkInfo;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.normal.LoginActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.fragment.PrintFormatFragment;
+import com.wyc.cloudapp.fragment.PrintFormat;
 
 /**
  * Created by Administrator on 2018-05-04.
@@ -39,7 +39,7 @@ public class GlobalBroadcast extends BroadcastReceiver {
                         UsbDevice device =  intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
                         UsbManager manager = (UsbManager)context.getSystemService(Context.USB_SERVICE);
                         if (null != manager && !manager.hasPermission(device)){
-                            PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(PrintFormatFragment.ACTION_USB_PERMISSION), 0);
+                            PendingIntent permissionIntent = PendingIntent.getBroadcast(context, 0, new Intent(PrintFormat.ACTION_USB_PERMISSION), 0);
                             manager.requestPermission(device, permissionIntent);
                         }
                     }

@@ -1,6 +1,6 @@
 package com.wyc.cloudapp.activity.normal;
 
-import static com.wyc.cloudapp.fragment.PrintFormatFragment.ACTION_USB_PERMISSION;
+import static com.wyc.cloudapp.fragment.PrintFormat.ACTION_USB_PERMISSION;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -30,8 +30,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
@@ -83,18 +81,15 @@ import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
-import com.wyc.cloudapp.fragment.PrintFormatFragment;
+import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
 import com.wyc.cloudapp.print.Printer;
 import com.wyc.cloudapp.print.bean.PrinterStatus;
 import com.wyc.cloudapp.print.cashDrawer.UtilsOpenCashDrawer;
-import com.wyc.cloudapp.print.printer.AbstractPrinter;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
-
-import org.greenrobot.eventbus.Subscribe;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -102,11 +97,7 @@ import java.util.Locale;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.ObservableEmitter;
 import io.reactivex.rxjava3.core.ObservableOnSubscribe;
-import io.reactivex.rxjava3.core.Scheduler;
-import io.reactivex.rxjava3.functions.Consumer;
-import io.reactivex.rxjava3.internal.schedulers.IoScheduler;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public final class NormalMainActivity extends SaleActivity implements CustomApplication.MessageCallback {
@@ -213,7 +204,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             final String printer_info = Utils.getNullStringAsEmpty(object,"v");
             int status_id = object.getIntValue("id");
             final String[] vals = printer_info.split("\t");
-            if (status_id == PrintFormatFragment.USB_TYPE_ID && vals.length > 1){
+            if (status_id == PrintFormat.USB_TYPE_ID && vals.length > 1){
                 final UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
                 if (null != manager){
                     HashMap<String, UsbDevice> deviceList = manager.getDeviceList();

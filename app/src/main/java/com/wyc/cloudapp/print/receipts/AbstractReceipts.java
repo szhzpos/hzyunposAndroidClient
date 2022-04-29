@@ -7,6 +7,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.parameter.SalePrintParameter;
@@ -57,12 +58,12 @@ public abstract class AbstractReceipts implements IReceipts<SalePrintParameter> 
             Logger.d("mPrintFormatInfo.getFormatId:%d,getFormatId:%d",mPrintFormatInfo.getFormatId(),getFormatId());
             if (mPrintFormatInfo.getFormatId() == getFormatId()){
                 int size = mPrintFormatInfo.getFormatSize();
-                Logger.d("getFormatSize:%d,f_58:%d,f_76:%d,f_80:%d",size,R.id.f_58,R.id.f_76,R.id.f_80);
-                if (size == R.id.f_58){
+                Logger.d("getFormatSize:%d,f_58:%d,f_76:%d,f_80:%d",size,PrintFormat.PAPER_SPEC_58_ID,PrintFormat.PAPER_SPEC_76_ID,PrintFormat.PAPER_SPEC_80_ID);
+                if (size == PrintFormat.PAPER_SPEC_58_ID){
                     printItem = c_format_58(mPrintFormatInfo,mOrderCode);
-                }else if (size == R.id.f_76){
+                }else if (size == PrintFormat.PAPER_SPEC_76_ID){
                     printItem = c_format_76(mPrintFormatInfo,mOrderCode);
-                }else if (size == R.id.f_80){
+                }else if (size == PrintFormat.PAPER_SPEC_80_ID){
                     printItem = c_format_80(mPrintFormatInfo,mOrderCode);
                 }else MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.IllegalOrderSize));
             }else {

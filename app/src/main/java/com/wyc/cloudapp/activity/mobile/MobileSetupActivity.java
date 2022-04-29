@@ -15,7 +15,7 @@ import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.fragment.AbstractBaseFragment;
 import com.wyc.cloudapp.mobileFragemt.MobileBusinessPrintFragment;
-import com.wyc.cloudapp.mobileFragemt.MobilePrintFormatFragment;
+import com.wyc.cloudapp.mobileFragemt.MobilePrintFormat;
 
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 
@@ -63,7 +63,7 @@ public class MobileSetupActivity extends AbstractDefinedTitleActivity {
         AbstractBaseFragment current = null;
         switch (name){
             case "RPS"://零售打印设置
-                current = new MobilePrintFormatFragment();
+                current = new MobilePrintFormat();
                 break;
             case "BPS":
                 current = new MobileBusinessPrintFragment();

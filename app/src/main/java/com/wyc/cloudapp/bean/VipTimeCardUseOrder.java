@@ -3,22 +3,10 @@ package com.wyc.cloudapp.bean;
 
 import androidx.annotation.NonNull;
 
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.wyc.cloudapp.R;
-import com.wyc.cloudapp.activity.base.MainActivity;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.data.SQLiteHelper;
-import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.print.Printer;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-
-import static com.wyc.cloudapp.fragment.PrintFormatFragment.TIME_CARD_USE_FORMAT_ID;
 
 /**
  * @ProjectName: AndroidClient

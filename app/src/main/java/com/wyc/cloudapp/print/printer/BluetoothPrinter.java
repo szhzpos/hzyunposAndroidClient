@@ -10,7 +10,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.fragment.PrintFormatFragment;
+import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
@@ -64,7 +64,7 @@ public class BluetoothPrinter extends AbstractPrinter {
             if (vals.length < 2)return;
 
             final String deviceAddr = vals[1];
-            if (PrintFormatFragment.BLUETOOTH_TYPE_ID == status_id && Utils.isNotEmpty(deviceAddr)){
+            if (PrintFormat.BLUETOOTH_TYPE_ID == status_id && Utils.isNotEmpty(deviceAddr)){
                 String errMsg = "";
                 BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
                 if (bluetoothAdapter != null){

@@ -80,7 +80,7 @@ class NotchUtils {
                         }
                     }
                 }
-                return notchHeight
+                return if (notchHeight == 0) 78 else notchHeight
             }
             return 0
         }

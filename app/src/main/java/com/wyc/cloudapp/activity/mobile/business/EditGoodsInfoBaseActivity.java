@@ -336,9 +336,13 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
     }
 
     @OnClick(R.id.clear_img_btn)
-    void clearPic(){
+    void clearPicClick(){
+        clearPic();
+    }
+    private void clearPic(){
         mImageUri = null;
         goods_img.setImageDrawable(getDrawable(R.drawable.nodish));
+        if (mGoodsObj != null)mGoodsObj.remove("goods_img");
     }
 
     @OnClick(R.id.add_img_btn)
@@ -409,11 +413,11 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
         Intent intent = new Intent("com.android.camera.action.CROP");
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         intent.setDataAndType(mImageUri, "image/*");
-        //intent.putExtra("aspectX", 1);
-        //intent.putExtra("aspectY", 2);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
         intent.putExtra("outputX", 1200);
         intent.putExtra("outputY", 1200);
-        intent.putExtra("scale", false);
+        intent.putExtra("scale", true);
         intent.putExtra("return-data", false);
 
         Uri imgCropUri = FileUtils.createCropImageFile();
@@ -1095,7 +1099,7 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
                     err.append(e);
                     return;
                 }
-            }else data.remove("pic_id");
+            }
 
             data.put("operation_mode",1);//判断后台操作员权限
             data.put("pt_user_id",getPtUserId());
@@ -1168,8 +1172,24 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
                         break;
                     case "y":
                         final JSONArray new_goods = JSON.parseArray(Utils.getNullOrEmptyStringAsDefault(info,"data","[]"));
-                        if (!new_goods.isEmpty())
+
+                        if (!new_goods.isEmpty()){
+                            JSONObject goods;
+                            String img_url_info,img_file_name;
+                            for (int i = 0,size = new_goods.size();i < size;i ++){
+                                goods = new_goods.getJSONObject(i);
+                                img_url_info = goods.getString("img_url");
+                                img_file_name = img_url_info.substring(img_url_info.lastIndexOf("/") + 1);
+                                File file = new  File(CustomApplication.getGoodsImgSavePath() + img_file_name);
+                                if (!file.exists()) {
+                                    JSONObject load_img = httpRequest.getFile(file, img_url_info);
+                                    if (load_img.getIntValue("flag") == 0) {
+                                        Logger.e("下载商品图片错误：%s,url:%s",load_img.getString("info"),img_url_info);
+                                    }
+                                }
+                            }
                             code = SQLiteHelper.execSQLByBatchFromJson(new_goods,"barcode_info" , SQLiteHelper.getGoodsCols(),err,1);
+                        }
                         break;
                 }
                 break;
@@ -1183,9 +1203,10 @@ abstract public class EditGoodsInfoBaseActivity extends AbstractEditArchiveActiv
     }
 
     private void reset(){
+        clearPic();
+
         isModify = false;
         mGoodsObj = null;
-        mImageUri = null;
 
         mNameEt.setText(R.string.space_sz);
         resetCurPrice();

@@ -9,7 +9,7 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.fragment.PrintFormatFragment;
+import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintItem;
 import com.wyc.cloudapp.print.Printer;
@@ -49,7 +49,7 @@ public final class CheckReceipts extends AbstractReceipts {
     }
     @Override
     protected int getFormatId() {
-        return PrintFormatFragment.CHECKOUt_FORMAT_ID;
+        return PrintFormat.CHECKOUt_FORMAT_ID;
     }
 
 

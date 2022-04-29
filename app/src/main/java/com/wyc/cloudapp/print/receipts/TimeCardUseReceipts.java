@@ -1,6 +1,6 @@
 package com.wyc.cloudapp.print.receipts;
 
-import static com.wyc.cloudapp.fragment.PrintFormatFragment.TIME_CARD_USE_FORMAT_ID;
+import static com.wyc.cloudapp.fragment.PrintFormat.TIME_CARD_USE_FORMAT_ID;
 
 import androidx.annotation.NonNull;
 
