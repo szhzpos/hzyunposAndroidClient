@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/round_border_sub_gray"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:gravity="center"
+            android:text="@string/title_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/_name"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="start|center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="@dimen/size_0"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:gravity="center"
+            android:text="@string/g_price_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
+            android:id="@+id/price"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="8"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:inputType="numberSigned|numberDecimal"
+            android:padding="@dimen/margin_5"
+            android:text="@string/zero_p_z_sz"
+            android:textSize="@dimen/font_size_18"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:gravity="center"
+            android:text="@string/m_num_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <com.wyc.cloudapp.customizationView.EditTextForHideKeyBoard
+            android:id="@+id/new_num"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/margin_1"
+            android:background="@drawable/round_border_sub_gray"
+            android:ems="8"
+            android:focusable="auto"
+            android:focusableInTouchMode="true"
+            android:inputType="numberSigned|numberDecimal"
+            android:padding="@dimen/margin_5"
+            android:text="1.00"
+            android:textSize="@dimen/font_size_18"
+            app:onFocusTime="0"
+            tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/height_45"
+            android:layout_marginStart="@dimen/margin_5"
+            android:gravity="center"
+            android:text="@string/amt_sz"
+            android:textAlignment="viewEnd"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+
+        <TextView
+            android:id="@+id/w_amt"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/height_45"
+            android:gravity="start|center_vertical"
+            android:paddingStart="@dimen/margin_8"
+            android:paddingEnd="@dimen/size_0"
+            android:text="@string/zero_p_z_sz"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/font_size_18" />
+    </LinearLayout>
+
+    <com.wyc.cloudapp.customizationView.KeyboardView
+        android:id="@+id/keyboard_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

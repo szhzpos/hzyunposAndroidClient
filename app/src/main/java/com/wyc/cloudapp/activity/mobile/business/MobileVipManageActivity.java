@@ -265,7 +265,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
                     break;
             }
             object.put("limit",15);
-            object.put("offset",mCurrentRow);
+            object.put("offset",mCurrentRow * 15);
 
             object = HttpUtils.sendPost(mContext.getUrl() + "/api/member/get_member_list",HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(object)){

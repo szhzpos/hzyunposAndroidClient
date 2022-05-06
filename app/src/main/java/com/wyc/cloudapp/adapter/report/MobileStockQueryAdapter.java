@@ -105,7 +105,7 @@ public class MobileStockQueryAdapter extends AbstractDataAdapterForJson<MobileSt
             try {
                 Logger.d_json(object.toString());
 
-                object.put("offset",mOffset);
+                object.put("offset",mOffset * mLimit);
                 object.put("limit",mLimit);
                 object.put("appid",mContext.getAppId());
 

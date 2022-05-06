@@ -1,14 +1,11 @@
 package com.wyc.cloudapp.customerView;
 
-import com.alibaba.fastjson.JSON;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.customerView.bean.CVSetting;
-import com.wyc.cloudapp.customerView.bean.CW_CV;
+import com.wyc.cloudapp.customerView.bean.Serial_CV;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.logger.Logger;
-import com.wyc.cloudapp.utils.Utils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -68,8 +65,8 @@ public class CVUtils {
         final List<TreeListItem> data = new ArrayList<>();
 
         TreeListItem item = new TreeListItem();
-        item.setItem_id(CW_CV.class.getSimpleName());
-        item.setItem_name("CW顾显");
+        item.setItem_id(Serial_CV.class.getSimpleName());
+        item.setItem_name("通用顾显");
 
         data.add(item);
         return data;

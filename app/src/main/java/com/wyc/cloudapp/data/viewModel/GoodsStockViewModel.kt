@@ -39,7 +39,7 @@ class GoodsStockViewModel: ViewModelBase() {
         val `object` = JSONObject()
         `object`["appid"] = app.appId
         `object`["stores_id"] = app.storeId
-        `object`["offset"] = cond.offset
+        `object`["offset"] = cond.offset * cond.limit
         `object`["limit"] = cond.limit
 
         when(cond.type){

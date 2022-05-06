@@ -12,11 +12,9 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
 import com.wyc.cloudapp.callback.ClickListener;
 import com.wyc.cloudapp.customerView.CVUtils;
-import com.wyc.cloudapp.customerView.ICustomerView;
 import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.serialScales.GoodsWeighDialog;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
 

@@ -141,7 +141,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             public void afterTextChanged(Editable s) {
                 if (CVUtils.getInstance() != null){
                     try {
-                        CVUtils.getInstance().writRealPay(Double.parseDouble(s.toString()));
+                        mActualAmtTv.postDelayed(()->{CVUtils.getInstance().writRealPay(Double.parseDouble(s.toString()));},300);
                     }catch (NumberFormatException e){
                         e.printStackTrace();
                     }

@@ -66,8 +66,10 @@ public class CurPriceDialog extends AbstractDialogSaleActivity {
     private void initGetWeigh(){
         if (AbstractWeightedScaleImp.hasSettingSerialPortScale(null)){
             final Button btn = findViewById(R.id.weight_btn);
-            btn.setVisibility(View.VISIBLE);
-            btn.setOnClickListener(v -> read());
+            if (btn != null){
+                btn.setVisibility(View.VISIBLE);
+                btn.setOnClickListener(v -> read());
+            }
         }
     }
 
@@ -204,6 +206,9 @@ public class CurPriceDialog extends AbstractDialogSaleActivity {
 
     @Override
     protected int getContentLayoutId() {
+        if (mContext.lessThan7Inches()){
+            return R.layout.mobile_cur_price_dialog;
+        }
         return R.layout.cur_price_dialog;
     }
 }

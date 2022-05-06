@@ -337,7 +337,7 @@ public class PeripheralSetting extends AbstractParameterFragment {
                 final CVSetting setting = new CVSetting();
                 setting.setCsl(Utils.getViewTagValue(cv,""));
                 setting.setName(cv.getText().toString());
-                setting.setBoundRate(9600);
+                setting.setBoundRate(2400);
                 setting.setPort(port.getText().toString());
                 object = JSONObject.parseObject(JSON.toJSONString(setting));
             }else{
