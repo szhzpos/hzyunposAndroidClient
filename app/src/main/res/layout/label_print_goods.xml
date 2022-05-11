@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
@@ -19,11 +20,13 @@
 
     <TextView
         android:id="@+id/goods_title"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_18"
         android:text="某某商品"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
+        app:layout_constraintEnd_toStartOf="@id/price"
         app:layout_constraintStart_toEndOf="@+id/rowId"
         app:layout_constraintTop_toTopOf="@id/rowId" />
 
@@ -31,6 +34,7 @@
         android:id="@+id/price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_8"
         android:text="￥888.00"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_14"
@@ -48,10 +52,48 @@
         app:layout_constraintStart_toStartOf="@id/goods_title"
         app:layout_constraintTop_toBottomOf="@id/goods_title" />
 
+    <Button
+        android:id="@+id/minus"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/mobile_p_m_btn_size"
+        android:layout_height="@dimen/mobile_p_m_btn_size"
+        android:background="@drawable/minus"
+        app:layout_constraintBottom_toBottomOf="@id/spec"
+        app:layout_constraintEnd_toStartOf="@+id/print_num_tv"
+        app:layout_constraintTop_toTopOf="@id/barcode" />
+
+    <EditText
+        android:id="@+id/print_num_tv"
+        android:layout_width="@dimen/width_45"
+        android:layout_height="match_parent"
+        android:background="@drawable/edit_text_style"
+        android:gravity="center"
+        android:inputType="number"
+        android:padding="@dimen/margin_8"
+        android:selectAllOnFocus="true"
+        android:text="8"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_24"
+        app:layout_constraintBottom_toBottomOf="@id/minus"
+        app:layout_constraintEnd_toStartOf="@+id/plus"
+        app:layout_constraintTop_toTopOf="@id/minus" />
+
+    <Button
+        android:id="@+id/plus"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="@dimen/mobile_p_m_btn_size"
+        android:layout_height="@dimen/mobile_p_m_btn_size"
+        android:layout_marginEnd="@dimen/margin_8"
+        android:background="@drawable/plus"
+        app:layout_constraintBottom_toBottomOf="@id/minus"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/minus" />
+
     <TextView
         android:id="@+id/spec"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/barcode" />
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@id/barcode"
+        app:layout_constraintTop_toBottomOf="@id/barcode" />
 </androidx.constraintlayout.widget.ConstraintLayout>

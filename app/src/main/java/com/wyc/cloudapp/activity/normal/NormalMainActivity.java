@@ -709,20 +709,18 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 mGoodsCategoryAdapter.trigger_preView();
             }else{
                 if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
-                    CustomApplication.runInMainThread(()->{
-                        if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
-                            if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
-                                final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                                addGoodsInfoDialog.setBarcode(content);
-                                addGoodsInfoDialog.setFinishListener(barcode -> {
-                                    mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                    addGoodsInfoDialog.dismiss();
-                                });
-                                addGoodsInfoDialog.show();
-                            }else mSearch_content.selectAll();
-                        } else
-                            MyDialog.ToastMessage("无此商品!", getWindow());
-                    });
+                    if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
+                        if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
+                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
+                            addGoodsInfoDialog.setBarcode(content);
+                            addGoodsInfoDialog.setFinishListener(barcode -> {
+                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                addGoodsInfoDialog.dismiss();
+                            });
+                            addGoodsInfoDialog.show();
+                        }else mSearch_content.selectAll();
+                    } else
+                        MyDialog.ToastMessage("无此商品!", getWindow());
                 }
             }
         });

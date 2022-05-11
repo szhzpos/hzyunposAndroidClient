@@ -40,6 +40,7 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import java.lang.StringBuilder
+import java.util.concurrent.locks.LockSupport
 
 class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     private var mSelectGoodsLauncher: ActivityResultLauncher<Intent>? = null
@@ -87,17 +88,23 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
             if (BluetoothUtils.hasSupportBluetooth()){
                 (it as TopDrawableTextView).triggerAnimation(true)
                 if (it.hasNormal()){
-                    if (mLabelTemplate != null){
-                        CustomApplication.execute {
-                            val n = 1
-                            var index = n
-                            mLabelGoodsAdapter?.list?.forEach {
-                                while (index-- > 0){
-                                    LabelPrintUtils.print(it)
+                    if (mLabelTemplate != null && mLabelGoodsAdapter != null){
+                        val msg = String.format("打印标签数量:%d",mLabelGoodsAdapter!!.printTotalNum)
+                        MyDialog.displayAskMessage(this,msg,
+                            {
+                                it.dismiss()
+                                CustomApplication.execute {
+                                    var index: Int
+                                    mLabelGoodsAdapter!!.list.forEach {goods->
+                                        index = goods.num
+                                        while (index-- > 0){
+                                            LockSupport.parkUntil(10)
+                                            LabelPrintUtils.print(goods.toLabelGoods())
+                                        }
+                                    }
                                 }
-                                index = n
-                            }
-                        }
+                            },{it.dismiss()})
+
                     }
                 }else connPrinter()
             }
@@ -109,7 +116,7 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
         recyclerView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         mLabelGoodsAdapter = LabelGoodsAdapter()
         mLabelGoodsAdapter!!.setSelectListener {
-            mLabelView?.setPreviewData(it)
+            mLabelView?.setPreviewData(it.toLabelGoods())
         }
         recyclerView.adapter = mLabelGoodsAdapter
     }
@@ -143,39 +150,13 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
                 val barcodeId: String? = it.data?.getStringExtra("barcode_id")
                 Logger.d("barcodeId:%s",barcodeId)
                 if (barcodeId != null){
-                    val goods = getGoodsDataById(barcodeId)
-                    goods?.apply {
-                        mLabelGoodsAdapter?.addData(this)
-                    }
+                    mLabelGoodsAdapter?.addDataById(barcodeId)
                 }
             }
         }
     }
 
-    private val  fields = "barcode_id barcodeId,goods_title goodsTitle, barcode,unit_name unit,origin,spec_str spec,yh_price,retail_price"
-    private fun getGoodsDataById(barcodeId:String?): LabelGoods?{
-        val sql = if (barcodeId.isNullOrEmpty()) "select $fields from barcode_info where goods_status = 1 and barcode_status = 1 limit 1" else
-            "select $fields from barcode_info where barcode_id = $barcodeId and (goods_status = 1 and barcode_status = 1)"
-        val goods = JSONObject()
-        if (!SQLiteHelper.execSql(goods,sql)){
-            MyDialog.toastMessage(goods.getString("info"))
-            return null
-        }
-        if (goods.isEmpty())return null
-        return goods.toJavaObject(LabelGoods::class.java)
-    }
 
-    private fun getGoodsDataByBarcode(barcode:String):MutableList<LabelGoods>{
-        val sql = "select $fields from barcode_info where barcode = $barcode and (goods_status = 1 and barcode_status = 1)"
-        val sb = StringBuilder()
-        val goods = SQLiteHelper.getListToJson(sql,sb)
-        if (goods != null){
-            return goods.toJavaList(LabelGoods::class.java)
-        }else{
-            MyDialog.toastMessage(sb.toString())
-        }
-        return mutableListOf()
-    }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun initSearchContent() {
@@ -242,15 +223,16 @@ class LabelPrintActivity : AbstractDefinedTitleActivity() , CallbackListener {
     }
     private fun searchGoods(){
         val barcode = mSearch!!.text.toString()
-        val list = getGoodsDataByBarcode(barcode)
-        if (list.size > 1){
-            val intent = Intent(this, MobileSelectGoodsActivity::class.java)
-            intent.putExtra(MobileSelectGoodsActivity.SEARCH_KEY, barcode)
-            intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY, getString(R.string.select_goods_label))
-            intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY, true)
-            mSelectGoodsLauncher?.launch(intent)
-        }else if(list.size == 1){
-            mLabelGoodsAdapter?.addData(list[0])
+        mLabelGoodsAdapter?.getGoodsDataByBarcode(barcode)?.apply {
+            if (size > 1){
+                val intent = Intent(this@LabelPrintActivity, MobileSelectGoodsActivity::class.java)
+                intent.putExtra(MobileSelectGoodsActivity.SEARCH_KEY, barcode)
+                intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY, getString(R.string.select_goods_label))
+                intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY, true)
+                mSelectGoodsLauncher?.launch(intent)
+            }else if(size == 1){
+                mLabelGoodsAdapter?.addData(get(0))
+            }
         }
     }
 
