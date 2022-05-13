@@ -273,6 +273,7 @@ public class AddVipInfoDialog extends AbstractDialogMainActivity {
             HttpRequest httpRequest = new HttpRequest();
             try {
                 object.put("appid",mContext.getAppId());
+                object.put("stores_id",mContext.getStoreId());
                 sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
                 ret_json = httpRequest.sendPost(url,sz_param,true);
                 switch (ret_json.getIntValue("flag")){

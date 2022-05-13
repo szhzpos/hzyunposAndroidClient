@@ -220,12 +220,14 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     }
 
     public static JSONArray searchVip(final String mobile) throws JSONException {
-        JSONObject object = CustomApplication.getConnParam(),ret_json;
+        JSONObject ret_json;
         final HttpRequest httpRequest = new HttpRequest();
         JSONArray vips = null;
-        object.put("appid",object.getString("appId"));
-        object.put("mobile",mobile);
-        ret_json = httpRequest.sendPost(object.getString("server_url") + "/api/member/get_member_info",HttpRequest.generate_request_parma(object,object.getString("appSecret")),true);
+        final JSONObject param = new JSONObject();
+        param.put("appid",CustomApplication.self().getAppId());
+        param.put("mobile",mobile);
+        param.put("stores_id",CustomApplication.self().getStoreId());
+        ret_json = httpRequest.sendPost(CustomApplication.self().getUrl() + "/api/member/get_member_info",HttpRequest.generate_request_parma(param,CustomApplication.self().getAppSecret()),true);
         switch (ret_json.getIntValue("flag")){
             case 0:
                 throw new JSONException(ret_json.getString("info"));

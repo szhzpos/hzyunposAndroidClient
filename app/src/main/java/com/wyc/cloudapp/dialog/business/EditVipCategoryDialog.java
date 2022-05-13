@@ -107,6 +107,7 @@ public class EditVipCategoryDialog extends AbstractEditArchiveDialog {
 
         final JSONObject param_obj = new JSONObject();
         param_obj.put("appid",mContext.getAppId());
+        param_obj.put("stores_id",mContext.getStoreId());
         param_obj.put("grade_name",category_name);
         param_obj.put("grade_id",Utils.getViewTagValue(mVipCategory,""));
         param_obj.put("discount",discount);

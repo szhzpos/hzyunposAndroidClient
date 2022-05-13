@@ -150,9 +150,10 @@ public class LabelGoodsAdapter extends AbstractSelectAdapter<PrintLabelGoods,Lab
         holder.barcode.setText(goods.getBarcode());
         holder.price.setText(String.format(Locale.CHINA,"￥%.2f",goods.getRetail_price()));
         holder.spec.setText(String.format(Locale.CHINA,"规格:%s",goods.getSpec()));
-        holder.num.setText(String.valueOf(goods.getNum()));
 
         holder.num.setTag(goods);
+        holder.num.setText(String.valueOf(goods.getNum()));
+        
         holder.minus.setTag(goods);
         holder.plus.setTag(goods);
         holder.itemView.setTag(goods);

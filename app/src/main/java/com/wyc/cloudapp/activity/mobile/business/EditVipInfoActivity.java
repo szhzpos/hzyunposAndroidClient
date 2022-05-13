@@ -87,6 +87,7 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
     private void queryVipLevel(){
         final JSONObject param = new JSONObject();
         param.put("appid",getAppId());
+        param.put("stores_id",getStoreId());
         HttpUtils.sendAsyncPost(getUrl() + InterfaceURL.VIP_GRADE,HttpRequest.generate_request_parma(param,getAppSecret()))
                 .enqueue(new ArrayCallback<VipGrade>(VipGrade.class,true) {
                     @Override

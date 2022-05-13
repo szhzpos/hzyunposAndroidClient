@@ -85,6 +85,7 @@ public abstract class AbstractChargeOrderDetailsDialog extends AbstractOrderDeta
 
         final JSONObject data_ = new JSONObject();
         data_.put("appid",appId);
+        data_.put("stores_id",stores_id);
         data_.put("order_code",order_code);
         if (Utils.getNotKeyAsNumberDefault(object,"is_check",-1) == 2)
             data_.put("case_pay_money",Utils.getNotKeyAsNumberDefault(object,"pay_money",0.0));

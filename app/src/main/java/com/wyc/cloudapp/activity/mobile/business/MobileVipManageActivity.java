@@ -127,6 +127,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         CustomApplication.execute(()->{
             JSONObject object = new JSONObject();
             object.put("appid",getAppId());
+            object.put("stores_id",getStoreId());
             object = HttpUtils.sendPost(getUrl() + InterfaceURL.VIP_GRADE, HttpRequest.generate_request_parma(object,getAppSecret()),true);
             if (HttpUtils.checkRequestSuccess(object)){
                 object = JSONObject.parseObject(object.getString("info"));
@@ -252,6 +253,7 @@ public class MobileVipManageActivity extends AbstractMobileBaseArchiveActivity {
         private void load(LOADMODE orientation){
             JSONObject object = new JSONObject();
             object.put("appid",mContext.getAppId());
+            object.put("stores_id",mContext.getStoreId());
 
             switch (mVagueType){
                 case 0://手机

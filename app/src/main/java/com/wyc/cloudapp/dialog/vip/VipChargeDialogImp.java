@@ -311,6 +311,7 @@ public final class VipChargeDialogImp extends AbstractPayDialog {
                                         data_ = new JSONObject();
                                         data_.put("appid",appId);
                                         data_.put("order_code",order_code);
+                                        data_.put("stores_id",stores_id);
                                         if (is_check == 2)
                                             data_.put("case_pay_money",sz_moeny);
                                         data_.put("pay_method",pay_method_id);

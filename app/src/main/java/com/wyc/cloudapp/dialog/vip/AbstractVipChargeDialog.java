@@ -220,6 +220,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         final HttpRequest httpRequest = new HttpRequest();
         object.put("appid",mContext.getAppId());
         object.put("openid",openid);
+        object.put("stores_id",mContext.getStoreId());
         object.put("origin",1);
         ret_json = httpRequest.sendPost(mContext.getUrl() + "/api/member_recharge/member_recharge", HttpRequest.generate_request_parma(object,mContext.getAppSecret()),true);
         switch (ret_json.getIntValue("flag")){
@@ -774,6 +775,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
                                     data_ = new JSONObject();
                                     data_.put("appid",appId);
+                                    data_.put("stores_id",stores_id);
                                     data_.put("order_code",order_code);
                                     if (is_check == 2)
                                         data_.put("case_pay_money",charge_moeny);
@@ -987,6 +989,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
         //处理退款订单
         data_.put("appid",appId);
+        data_.put("stores_id",context.getStoreId());
         data_.put("order_code",refund_order_code);
 
 

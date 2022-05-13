@@ -124,7 +124,7 @@ public class SwipeLayout extends FrameLayout {
     private TextView generateMenuView(){
         final TextView tv = new TextView(getContext());
         tv.setGravity(Gravity.CENTER);
-        tv.setTextSize(12);
+        tv.setTextSize(14);
         tv.setTextColor(getResources().getColor(R.color.white,null));
         measure(MeasureSpec.UNSPECIFIED,MeasureSpec.UNSPECIFIED);
         tv.setLayoutParams(new LinearLayout.LayoutParams(getMeasuredHeightAndState(), ViewGroup.LayoutParams.MATCH_PARENT));
