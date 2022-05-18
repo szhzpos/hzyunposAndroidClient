@@ -341,7 +341,7 @@ public final class PayMethod implements Serializable,Cloneable {
 
         final JSONObject param = new JSONObject();
         param.put("appid",CustomApplication.self().getAppId());
-
+        param.put("stores_id",CustomApplication.self().getStoreId());
         final String pay_code = result.getPay_code();
         if (Utils.isNotEmpty(pay_code))
             param.put("pay_code",result.getPay_code());

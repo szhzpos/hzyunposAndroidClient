@@ -198,6 +198,7 @@ public class EditVipInfoActivity extends AbstractEditArchiveActivity {
         final JSONObject param = getParameter();
         if (!param.isEmpty()){
             param.put("appid",getAppId());
+            param.put("stores_id",getStoreId());
             final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(this,getString(R.string.hints_save_data_sz));
             HttpUtils.sendAsyncPost(getUrl() + "/api/member/mk",HttpRequest.generate_request_parma(param,getAppSecret())).enqueue(new ObjectCallback<String>(String.class,true) {
                 @Override

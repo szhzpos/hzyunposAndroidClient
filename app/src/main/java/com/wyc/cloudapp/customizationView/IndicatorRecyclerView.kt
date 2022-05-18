@@ -335,16 +335,22 @@ open class IndicatorRecyclerView(context: Context, attrs: AttributeSet?, defStyl
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    override fun onTouchEvent(ev: MotionEvent): Boolean {
-        when(ev.action){
-            MotionEvent.ACTION_DOWN ->{
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        when(ev.action) {
+            MotionEvent.ACTION_DOWN -> {
                 pointerDown()
                 downX = ev.x
                 downY = ev.y
                 finishLoadFlag(false)
                 abortedLoadFlag(false)
             }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        when(ev.action){
             MotionEvent.ACTION_UP ->{
                 pointerUp()
                 startLoad()

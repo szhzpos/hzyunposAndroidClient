@@ -56,7 +56,7 @@ abstract class AbstractPrinter : IPrinter{
                         printObj(receipts)
                     }
                 }
-            }else MyDialog.toastMessage("打印功能已关闭！")
+            }
         }
         @JvmStatic
         fun openCashDrawer(){

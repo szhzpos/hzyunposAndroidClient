@@ -510,6 +510,7 @@ public final class TimeCardSaleOrder implements ICardPay<TimeCardSaleInfo> {
     public void uploadPayInfo(Consumer<String> success,Consumer<String> error){
         final JSONObject pay = new JSONObject();
         pay.put("appid",CustomApplication.self().getAppId());
+        pay.put("stores_id",CustomApplication.self().getStoreId());
         pay.put("order_code",getOnline_order_no());
         if (payInfo == null || payInfo.isEmpty()){
             MyDialog.toastMessage(CustomApplication.self().getString(R.string.hints_pay_detail_not_empty));

@@ -140,6 +140,7 @@ public final class TimeCardUseFragment extends AbstractMobileFragment {
         }
         final JSONObject param = new JSONObject();
         param.put("appid",mContext.getAppId());
+        param.put("stores_id",mContext.getStoreId());
         param.put("members",c);
         final CustomProgressDialog progressDialog = CustomProgressDialog.showProgress(mContext,getString(R.string.hints_query_data_sz));
         HttpUtils.sendAsyncPost(mContext.getUrl() + InterfaceURL.VIP_TIME_CARD, HttpRequest.generate_request_parma(param,mContext.getAppSecret()))

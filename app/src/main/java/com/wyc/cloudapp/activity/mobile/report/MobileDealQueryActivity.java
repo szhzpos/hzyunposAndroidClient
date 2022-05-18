@@ -272,6 +272,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
         CustomApplication.execute(()->{
             final  JSONObject object = mQueryConditionObj;
             object.put("appid",mAppId);
+            object.put("stores_id",mApplication.getStoreId());
             String url = mUrl + "/api/boss/get_retail_order";
             if (hasRefundQuery()){
                 url = mUrl + "/api/boss/get_refund_order";
@@ -383,7 +384,7 @@ public final class MobileDealQueryActivity extends AbstractReportActivity {
 
             final JSONObject object = new JSONObject();
             object.put("appid", mAppId);
-
+            object.put("stores_id",mApplication.getStoreId());
             String url = mUrl + "/api/boss/get_retail_order_goods";
             if (hasRetailQuery()){
                 object.put("order_code",order_code);

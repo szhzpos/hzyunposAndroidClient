@@ -59,9 +59,10 @@ data class PrinterStatus(private var value:Int,private var msg:String?){
             return PrinterStatus(-1, "")
         }
         @JvmStatic
-        fun error(msg: String){
+        private fun error(msg: String){
             CustomApplication.sendMessage(MessageID.PRINTER_ERROR,msg)
         }
+        @JvmStatic
         fun success(){
             CustomApplication.sendMessage(MessageID.PRINTER_SUCCESS)
         }

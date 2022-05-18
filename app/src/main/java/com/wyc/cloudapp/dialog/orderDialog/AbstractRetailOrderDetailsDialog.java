@@ -100,6 +100,7 @@ public abstract class AbstractRetailOrderDetailsDialog extends AbstractOrderDeta
                 unified_pay_query = "/api/pay2_query/query";
             }
             object.put("appid",mContext.getAppId());
+            object.put("stores_id",mContext.getStoreId());
             if (!pay_code.isEmpty())
                 object.put("pay_code",pay_code);
             object.put("order_code_son", pay_record.getString("order_code_son"));

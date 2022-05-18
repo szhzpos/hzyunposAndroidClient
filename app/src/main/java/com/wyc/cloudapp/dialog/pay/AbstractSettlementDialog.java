@@ -1023,6 +1023,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             CustomApplication.execute(()->{
                 final JSONObject object = new JSONObject();
                 object.put("appid",mContext.getAppId());
+                object.put("stores_id",stores_id);
                 object.put("member_id",mVip.getString("member_id"));
                 object.put("goods_list_json",goods_list_json);
                 final String sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());

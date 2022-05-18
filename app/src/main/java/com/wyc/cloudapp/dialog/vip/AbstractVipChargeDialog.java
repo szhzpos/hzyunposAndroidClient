@@ -1059,6 +1059,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
     private static boolean refundWithCheck(final MainActivity context,final JSONObject object){
         final JSONObject data = new JSONObject();
         data.put("appid",context.getAppId());
+        data.put("stores_id",context.getStoreId());
         data.put("order_code",object.getString("origin_order_code"));
         final String sz_param = HttpRequest.generate_request_parma(data,context.getAppSecret());
         HttpRequest httpRequest = new HttpRequest();

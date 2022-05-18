@@ -374,6 +374,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
         final JSONObject object = new JSONObject();
         object.put("appid",mContext.getAppId());
         object.put("order_code",mOrderCode);
+        object.put("stores_id",mContext.getStoreId());
         final String sz_param = HttpRequest.generate_request_parma(object,mContext.getAppSecret());
         HttpRequest httpRequest = new HttpRequest();
         JSONObject retJson = httpRequest.sendPost(mContext.getUrl() + "/api/pay2_refund/refund",sz_param,true);
@@ -562,6 +563,7 @@ public final class RefundDialog extends AbstractDialogMainActivity {
                     data.put("order_pay",refund_pays);
 
                     send_data.put("appid",appid);
+                    send_data.put("stores_id",CustomApplication.self().getStoreId());
                     send_data.put("data",data);
 
                     Logger.d_json(data.toJSONString());

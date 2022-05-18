@@ -204,6 +204,7 @@ final class SyncHandler1 extends Handler {
                                     data.put("discount_record",discount_records);
 
                                     send_data.put("appid",CustomApplication.self().getAppId());
+                                    send_data.put("stores_id",CustomApplication.self().getStoreId());
                                     send_data.put("data",data);
 
                                     Logger.d_json(data.toJSONString());
@@ -318,6 +319,7 @@ final class SyncHandler1 extends Handler {
                     Logger.d_json(data.toJSONString());
 
                     send_data.put("appid",CustomApplication.self().getAppId());
+                    send_data.put("stores_id",CustomApplication.self().getStoreId());
                     send_data.put("data",data);
 
                     JSONObject retJson = HttpUtils.sendPost(CustomApplication.self().getUrl() + "/api/transfer/transfer_upload",HttpRequest.generate_request_parma(send_data,CustomApplication.self().getAppSecret()),true);
