@@ -41,7 +41,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
     @Deprecated
     private JSONObject mVip;
     private VipInfo mVObj;
-    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount;
+    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount,mMinBalance,mValidBalance;
     private Button mSearchBtn;
     private onYesOnclickListener mYesOnclickListener;//确定按钮被点击了的监听器
     private JumpTextView mAddBtn;
@@ -64,6 +64,8 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
         mVip_integral = findViewById(R.id.vip_integral);
         mVipGrade = findViewById(R.id.vip_grade_tv);
         mVipDiscount = findViewById(R.id.vip_discount);
+        mMinBalance = findViewById(R.id.min_balance);
+        mValidBalance = findViewById(R.id.valid_balance);
 
         //初始化搜索条件输入框
         initSearchCondition();
@@ -280,6 +282,9 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
             mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getMoney_sum()));
             mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getPoints_sum()));
 
+            mValidBalance.setText(String.format(Locale.CHINA,"%.2f",object.getMoney_sum() - object.getMinimum_money()));
+            mMinBalance.setText(String.format(Locale.CHINA,"%.2f",object.getMinimum_money()));
+
             showAddBtn(View.GONE);
         }
     }
@@ -303,6 +308,9 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
             mVip_card_id.setText(space);
             mVip_balance.setText(space);
             mVip_integral.setText(space);
+            mValidBalance.setText(space);
+            mMinBalance.setText(space);
+
             showAddBtn(View.VISIBLE);
         }
     }
@@ -356,7 +364,7 @@ public final class VipInfoDialog extends AbstractDialogMainActivity {
                             dialog.showVipInfo(array.getJSONObject(0).toJavaObject(VipInfo.class));
 
                             //触发修改或充值按钮点击事件；做这两个操作之前客户可能没查询会员，必须先查询再操作。
-                            final Button btn = dialog.findViewById(msg.arg1);
+                            final JumpTextView btn = dialog.findViewById(msg.arg1);
                             if (btn != null)btn.callOnClick();
                         }else{//提示选择对话框
 

@@ -2,6 +2,7 @@ package com.wyc.cloudapp.dialog.vip;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -81,7 +82,8 @@ public class NormalVipChargeDialog extends AbstractVipChargeDialog {
     }
 
     @Override
-    protected void initWindowSize(){
-
+    protected double getWidthRatio(){
+        //返回值： //小于0 是系统WRAP_CONTENT、MATCH_PARENT 在0到1直接为屏幕比例 大于1为具体大小
+        return mContext.getResources().getDimension(R.dimen.size_428);
     }
 }

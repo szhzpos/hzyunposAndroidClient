@@ -281,7 +281,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
         final TextView titleTv = new TextView(mContext);
         titleTv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         titleTv.setPadding(5,5,5,5);
-        titleTv.setTextSize(resources.getDimension(R.dimen.font_size_22));
+        titleTv.setTextSize(resources.getDimension(R.dimen.font_size_18));
         titleTv.setTextColor(blue);
         titleTv.setText(title);
         alertDialog.setCustomTitle(titleTv);
@@ -300,7 +300,7 @@ public abstract class AbstractQuerySuperDialog extends AbstractDialogMainActivit
         alertDialog.setView(listView);
 
 
-        float btn_font_size = resources.getDimension(R.dimen.font_size_16);
+        float btn_font_size = resources.getDimension(R.dimen.font_size_14);
         final Button cancel = alertDialog.getButton(BUTTON_NEGATIVE), ok = alertDialog.getButton(BUTTON_POSITIVE);
         cancel.setTextColor(blue);
         cancel.setTextSize(btn_font_size);

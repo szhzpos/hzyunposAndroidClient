@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/dot_round_shape"
@@ -32,11 +33,10 @@
         android:id="@+id/sex_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/size_28"
         android:text="@string/vip_six_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toEndOf="@id/vip_p_num"
+        app:layout_constraintEnd_toEndOf="@id/min_balance_label"
         app:layout_constraintTop_toTopOf="@id/p_num_text" />
 
     <TextView
@@ -56,12 +56,12 @@
         android:text="@string/vip_ph_num_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/valid_balance_label"
         app:layout_constraintTop_toBottomOf="@id/name_text" />
 
     <TextView
         android:id="@+id/vip_p_num"
-        android:layout_width="@dimen/width_118"
+        android:layout_width="@dimen/size_108"
         android:layout_height="wrap_content"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
@@ -75,7 +75,7 @@
         android:text="@string/vip_card_id_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/valid_balance_label"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -95,7 +95,7 @@
         android:text="@string/vip_balance_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="@id/p_num_text"
+        app:layout_constraintEnd_toEndOf="@id/valid_balance_label"
         app:layout_constraintTop_toBottomOf="@id/vip_grade_tv" />
 
     <TextView
@@ -114,7 +114,7 @@
         android:text="@string/vip_integral_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="@id/discount_text"
+        app:layout_constraintEnd_toEndOf="@id/min_balance_label"
         app:layout_constraintTop_toTopOf="@id/balance_text" />
 
     <TextView
@@ -134,7 +134,7 @@
         android:text="@string/grade_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/valid_balance_label"
         app:layout_constraintTop_toBottomOf="@+id/p_num_text" />
 
     <TextView
@@ -153,7 +153,7 @@
         android:text="@string/discount_colon_sz"
         android:textColor="@color/text_color"
         android:textSize="@dimen/font_size_16"
-        app:layout_constraintStart_toStartOf="@id/sex_text"
+        app:layout_constraintEnd_toEndOf="@id/min_balance_label"
         app:layout_constraintTop_toTopOf="@id/vip_grade_text" />
 
     <TextView
@@ -164,4 +164,44 @@
         android:textSize="@dimen/font_size_16"
         app:layout_constraintStart_toEndOf="@id/discount_text"
         app:layout_constraintTop_toTopOf="@id/discount_text" />
+
+    <TextView
+        android:id="@+id/valid_balance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_8"
+        android:text="@string/valid_vip_balance"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/balance_text" />
+
+    <TextView
+        android:id="@+id/valid_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/valid_balance_label"
+        app:layout_constraintTop_toTopOf="@id/valid_balance_label" />
+
+    <TextView
+        android:id="@+id/min_balance_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/min_vip_balance"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/vip_p_num"
+        app:layout_constraintTop_toTopOf="@id/valid_balance_label" />
+
+    <TextView
+        android:id="@+id/min_balance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color"
+        android:textSize="@dimen/font_size_16"
+        app:layout_constraintStart_toEndOf="@id/min_balance_label"
+        app:layout_constraintTop_toTopOf="@id/min_balance_label" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -52,7 +52,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
 
     private VipInfo mVip;
     private EditText mSearchContent,mChargeAmtEt,mRemarkEt,mPresentAmtEt;
-    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount,mChargePlanTv,mSaleManTv;
+    private TextView mVip_name,mVip_sex,mVip_p_num,mVip_card_id,mVip_balance,mVip_integral,mVipGrade,mVipDiscount,mChargePlanTv,mSaleManTv,mMinBalance,mValidBalance;;
     private CustomProgressDialog mProgressDialog;
     private JSONArray mChargePlans,mPayMethods;
     private Button mChargeBtn;
@@ -158,6 +158,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         mVip_integral = findViewById(R.id.vip_integral);
         mVipGrade = findViewById(R.id.vip_grade_tv);
         mVipDiscount = findViewById(R.id.vip_discount);
+        mMinBalance = findViewById(R.id.min_balance);
+        mValidBalance = findViewById(R.id.valid_balance);
     }
 
     public VipInfo getVip(){
@@ -262,6 +264,9 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             mVip_card_id.setText(object.getCard_code());
             mVip_balance.setText(String.format(Locale.CHINA,"%.2f",object.getMoney_sum()));
             mVip_integral.setText(String.format(Locale.CHINA,"%.2f",object.getPoints_sum()));
+
+            mValidBalance.setText(String.format(Locale.CHINA,"%.2f",object.getMoney_sum() - object.getMinimum_money()));
+            mMinBalance.setText(String.format(Locale.CHINA,"%.2f",object.getMinimum_money()));
         }
     }
 
@@ -276,6 +281,8 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
             mVip_card_id.setText(space);
             mVip_balance.setText(space);
             mVip_integral.setText(space);
+            mValidBalance.setText(space);
+            mMinBalance.setText(space);
 
             restChargeInfo();
 

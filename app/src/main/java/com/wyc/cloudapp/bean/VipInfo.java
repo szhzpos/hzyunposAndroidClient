@@ -42,6 +42,7 @@ final public class VipInfo implements Serializable {
     private int birthday_type;
     private String mobile;
     private double upgrade_points;
+    private double minimum_money;
     private int mm_type;
     private String pay_pwd;
     private int grade_id;
@@ -50,6 +51,18 @@ final public class VipInfo implements Serializable {
     private String login_pwd;
     private String sex;
     private double money_sum;
+
+    public void setBirthday_today(int birthday_today) {
+        this.birthday_today = birthday_today;
+    }
+
+    public double getMinimum_money() {
+        return minimum_money;
+    }
+
+    public void setMinimum_money(double minimum_money) {
+        this.minimum_money = minimum_money;
+    }
 
     public String getHead_img_id() {
         return head_img_id;
@@ -276,6 +289,7 @@ final public class VipInfo implements Serializable {
                 ", birthday_type=" + birthday_type +
                 ", mobile='" + mobile + '\'' +
                 ", upgrade_points=" + upgrade_points +
+                ", minimum_money=" + minimum_money +
                 ", mm_type=" + mm_type +
                 ", pay_pwd='" + pay_pwd + '\'' +
                 ", grade_id=" + grade_id +

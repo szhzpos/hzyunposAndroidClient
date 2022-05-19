@@ -152,6 +152,8 @@
     <string name="vip_ph_num_sz">手机：</string>
     <string name="vip_card_id_sz">卡号：</string>
     <string name="vip_balance_sz">余额：</string>
+    <string name="valid_vip_balance">可用余额：</string>
+    <string name="min_vip_balance">保底额：</string>
     <string name="vip_integral_sz">积分：</string>
     <string name="search_sz">搜索</string>
     <string name="modify_sz">修改</string>

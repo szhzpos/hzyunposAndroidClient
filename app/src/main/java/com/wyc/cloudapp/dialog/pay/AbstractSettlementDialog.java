@@ -1428,8 +1428,9 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                                     if (mProgressDialog.isShowing())mProgressDialog.dismiss();
 
                                                     mPayStatus = false;
-                                                    final double vipBalance = Utils.getNotKeyAsNumberDefault(info_json,"money_sum",0.0);
-                                                    final String msg = String.format(Locale.CHINA,"会员当前余额【%.2f】小于付款金额【%.2f】" +
+                                                    final double vipBalance = Utils.getNotKeyAsNumberDefault(info_json,"money_sum",0.0) -
+                                                            Utils.getNotKeyAsNumberDefault(info_json,"minimum_money",0.0);
+                                                    final String msg = String.format(Locale.CHINA,"会员当前可用余额【%.2f】小于付款金额【%.2f】" +
                                                             ",是否使用当前余额做部分付款？",vipBalance,Utils.getNotKeyAsNumberDefault(info_json,"pay_money",0.0));
 
                                                     final String id = pay_method_id,code = v_num;
