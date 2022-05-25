@@ -98,7 +98,7 @@ public abstract class AbstractVipChargeDialog extends AbstractDialogMainActivity
         final TextView mobile_sale_man = findViewById(R.id.mobile_sale_man);
         mobile_sale_man.setOnClickListener(v -> {
             final JSONObject object = showSaleInfo(mContext);
-            if (object.isEmpty()){
+            if (!object.isEmpty()){
                 mobile_sale_man.setTag(object.getString(TreeListBaseAdapter.COL_ID));
                 mobile_sale_man.setText(object.getString(TreeListBaseAdapter.COL_NAME));
             }

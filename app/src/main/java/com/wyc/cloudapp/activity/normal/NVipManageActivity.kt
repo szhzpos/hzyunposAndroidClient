@@ -157,6 +157,8 @@ class NVipManageActivity : MainActivity(){
                 this.vipDiscount.text = it.discount.toString()
                 this.vipBalance.text = it.money_sum.toString()
                 this.vipIntegral.text = it.points_sum.toString()
+                this.validBalance.text = String.format("%.2f",it.money_sum - it.minimum_money)
+                this.minBalance.text = it.minimum_money.toString()
             }
         }
     }

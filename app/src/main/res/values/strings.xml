@@ -970,6 +970,7 @@
     <string name="query_vip_hint">请先查询会员信息!</string>
     <string name="store">存入</string>
     <string name="stuff_not_empty">存货物品不能为空!</string>
+    <string name="pick_not_empty">取货物品不能为空!</string>
     <string name="sum_store_num">总寄存数</string>
     <string name="packed_num">已取数量</string>
     <string name="refresh">刷新</string>

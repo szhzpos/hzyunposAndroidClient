@@ -51,6 +51,7 @@ android {
             }
 
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
 
@@ -197,8 +198,6 @@ dependencies {
     //托利多bPlus条码秤
     implementation files('libs/mtaoscaleapi.jar')
 
-    //常旺收银机顾显
-    implementation files('libs/pavodisplay.jar')
     //标签打印
     implementation(name:'label',ext:'aar')
 }

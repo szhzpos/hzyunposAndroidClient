@@ -176,7 +176,7 @@ class VipPickStuffFragment: AbstractBaseFragment(),CoroutineScope by CoroutineSc
                 }
                 progress.dismiss()
             }
-        }else MyDialog.toastMessage(CustomApplication.self().getString(R.string.stuff_not_empty))
+        }else MyDialog.toastMessage(CustomApplication.self().getString(R.string.pick_not_empty))
     }
 
     @Composable
