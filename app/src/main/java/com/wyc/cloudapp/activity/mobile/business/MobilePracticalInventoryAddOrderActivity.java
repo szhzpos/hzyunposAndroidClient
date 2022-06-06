@@ -26,7 +26,7 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDataAdapter;
 import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter;
 import com.wyc.cloudapp.adapter.business.MobileInventoryOrderDetailsAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.constants.WholesalePriceType;
+import com.wyc.cloudapp.constants.PriceTypeId;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -87,7 +87,7 @@ public class MobilePracticalInventoryAddOrderActivity extends AbstractDefinedTit
                     final String barcode_id = data.getStringExtra("barcode_id");
                     Logger.d("barcode_id:%s",barcode_id);
                     final JSONObject object = new JSONObject();
-                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,WholesalePriceType.BUYING_PRICE)){
+                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,CustomApplication.self().getPriceType())){
                         addGoodsDetails(object,false);
                     }else {
                         MyDialog.ToastMessage(object.getString("info"), getWindow());

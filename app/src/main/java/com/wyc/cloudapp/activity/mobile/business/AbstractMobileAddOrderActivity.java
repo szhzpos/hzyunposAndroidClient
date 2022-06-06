@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.client.android.CaptureActivity;
+import com.wyc.cloudapp.bean.PriceType;
 import com.wyc.cloudapp.customizationView.ItemPaddingLinearLayout;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.AbstractDefinedTitleActivity;
@@ -29,7 +30,7 @@ import com.wyc.cloudapp.adapter.business.AbstractBusinessOrderDetailsDataAdapter
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.Supplier;
-import com.wyc.cloudapp.constants.WholesalePriceType;
+import com.wyc.cloudapp.constants.PriceTypeId;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.viewModel.OrderIdViewModel;
 import com.wyc.cloudapp.data.viewModel.OrderViewModel;
@@ -99,12 +100,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
                     Logger.d("barcode_id:%s",barcode_id);
                     final JSONObject object = new JSONObject();
 
-                    int price_type = WholesalePriceType.BUYING_PRICE;
-                    if (this instanceof MobileWholesaleBaseActivity){
-                        price_type = ((MobileWholesaleBaseActivity)this).getCustomerPriceType();
-                    }
-
-                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,price_type)){
+                    if (BusinessSelectGoodsDialog.selectGoodsWithBarcodeId(object,barcode_id,getPriceTypeInfo())){
                         addGoodsDetails(object,false);
                     }else {
                         MyDialog.ToastMessage(object.getString("info"), getWindow());
@@ -392,9 +388,7 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
                 intent.putExtra(MobileSelectGoodsActivity.TITLE_KEY,getString(R.string.select_goods_label));
                 intent.putExtra(MobileSelectGoodsActivity.IS_SEL_KEY,true);
                 intent.putExtra(MobileSelectGoodsActivity.MODIFIABLE,false);
-                if (activity instanceof MobileWholesaleBaseActivity){
-                    intent.putExtra(MobileSelectGoodsActivity.PRICE_TYPE_KEY,((MobileWholesaleBaseActivity)activity).getCustomerPriceType());
-                }
+                intent.putExtra(MobileSelectGoodsActivity.PRICE_TYPE_KEY,getPriceTypeInfo());
                 startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
             }else if (id == R.id.m_business_scan_btn){
                 final BusinessSelectGoodsDialog dialog = new BusinessSelectGoodsDialog(AbstractMobileAddOrderActivity.this);
@@ -412,6 +406,10 @@ public abstract class AbstractMobileAddOrderActivity extends AbstractDefinedTitl
             }
         }
     };
+
+    public PriceType getPriceTypeInfo(){
+        return CustomApplication.self().getPriceType();
+    }
 
     private void uploadOrderInfo(){
         final JSONObject condition = generateUploadCondition();

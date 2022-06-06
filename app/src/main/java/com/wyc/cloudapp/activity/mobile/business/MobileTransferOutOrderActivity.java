@@ -54,7 +54,7 @@ public class MobileTransferOutOrderActivity extends AbstractMobileBusinessOrderA
 
     @Override
     protected String getPermissionId() {
-        return "45";
+        return "46";
     }
 
     public static class MobileAddTransferOutOrderActivity extends AbstractMobileAddOrderActivity{

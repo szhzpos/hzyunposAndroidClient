@@ -22,8 +22,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.nio.channels.Channel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -359,8 +361,8 @@ public final class HttpRequest {
 
     public  static String generate_request_parma(JSONObject json , String apiKey){
         final Map<String,String> map = new HashMap<>(),sortMap;
-        final StringBuilder builder = new StringBuilder();
-        String signStr = null,k,v;
+        StringBuilder builder = new StringBuilder();
+        String k,v;
         for (final String key : json.keySet()) {
             map.put(key, json.getString(key));
         }
@@ -373,7 +375,20 @@ public final class HttpRequest {
             }
             builder.append(k).append("=").append(v);
         }
-        signStr = builder + apiKey;
-        return builder.append("&sign=").append(Utils.getMD5(signStr.getBytes())).toString();
+
+        final String sign = Utils.getMD5((builder + apiKey).getBytes());
+
+        builder.delete(0,builder.length());
+        try {
+            for (String key : map.keySet()){
+                v = URLEncoder.encode(map.get(key),"UTF-8");
+                if (builder.length() != 0){
+                    builder.append("&");
+                }
+                builder.append(key).append("=").append(v);
+            }
+        }catch (UnsupportedEncodingException ignored){}
+
+        return builder.append("&sign=").append(sign).toString();
     }
 }

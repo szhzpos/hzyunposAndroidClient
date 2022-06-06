@@ -28,7 +28,8 @@ import com.wyc.cloudapp.adapter.AbstractDataAdapterForJson;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.GoodsCategory;
-import com.wyc.cloudapp.constants.WholesalePriceType;
+import com.wyc.cloudapp.bean.PriceType;
+import com.wyc.cloudapp.constants.PriceTypeId;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.GridItemDecoration;
 import com.wyc.cloudapp.decoration.SuperItemDecoration;
@@ -55,7 +56,8 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
     private EditText mSearchContentEt;
     /*true 商品选择模式*/
     private static boolean isSelectMode = false;
-    private static int mPriceType = WholesalePriceType.BUYING_PRICE;
+    private static int mPriceType = PriceTypeId.BUYING_PRICE;
+    private static double mPriceTypeDiscount = 1.0;
     /*需要过滤商品类别*/
     private String mGoodsCategory;
     @Override
@@ -75,10 +77,14 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
         final Intent intent = getIntent();
         if (intent != null){
             isSelectMode = intent.getBooleanExtra(IS_SEL_KEY,false);
-            mPriceType = intent.getIntExtra(PRICE_TYPE_KEY,WholesalePriceType.BUYING_PRICE);
             mGoodsCategory = intent.getStringExtra(TASK_CATEGORY_KEY);
 
-            Logger.d("priceType:%d,taskCategory：%s",mPriceType, mGoodsCategory);
+            final PriceType type = intent.getParcelableExtra(PRICE_TYPE_KEY);
+            if (type != null){
+                mPriceType = type.getPriceType();
+                mPriceTypeDiscount = type.getDiscount();
+            }
+            Logger.d("priceType:%d,mPriceTypeDiscount:%f,taskCategory：%s",mPriceType,mPriceTypeDiscount, mGoodsCategory);
         }
     }
 
@@ -411,21 +417,21 @@ public class MobileSelectGoodsActivity extends AbstractMobileBaseArchiveActivity
                 if (isSelectMode) {
                     String key = "price";
                     switch (mPriceType){//1零售价，2优惠价，3配送价，4批发价，5参考进货价
-                        case WholesalePriceType.RETAIL_PRICE:
+                        case PriceTypeId.RETAIL_PRICE:
                             key = "retail_price";
                             break;
-                        case WholesalePriceType.COST_PRICE:
+                        case PriceTypeId.COST_PRICE:
                             key = "cost_price";
                             break;
-                        case WholesalePriceType.PS_PRICE:
+                        case PriceTypeId.PS_PRICE:
                             key = "ps_price";
                             break;
-                        case WholesalePriceType.TRADE_PRICE:
+                        case PriceTypeId.TRADE_PRICE:
                             key = "trade_price";
                             break;
                         default:
                     }
-                    myViewHolder.price.setText(goods_info.getString(key));
+                    myViewHolder.price.setText(String.format(Locale.CHINA,"%.2f",goods_info.getDoubleValue(key) * mPriceTypeDiscount));
                 }else {
                     myViewHolder.price.setText(goods_info.getString("retail_price"));
                 }

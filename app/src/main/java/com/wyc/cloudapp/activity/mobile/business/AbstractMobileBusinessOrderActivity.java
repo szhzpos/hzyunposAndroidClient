@@ -49,11 +49,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //验证权限
-        if (!verifyPermission()){
-            finish();
-            return;
-        }
 
         mParameterObj = new JSONObject();
 
@@ -69,12 +64,6 @@ public abstract class AbstractMobileBusinessOrderActivity extends AbstractDefine
     protected abstract JSONObject generateQueryCondition();
     public abstract Class<?> jumpAddTarget();
     protected abstract String getPermissionId();
-
-    private boolean verifyPermission(){
-        boolean code = verifyPermissions(getPermissionId(),null,false);
-        if (!code) MyDialog.toastMessage(getString(R.string.not_permission_hint));
-        return code;
-    }
 
     @Override
     protected int getContentLayoutId() {

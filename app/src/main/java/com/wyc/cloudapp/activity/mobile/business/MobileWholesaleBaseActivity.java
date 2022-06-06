@@ -15,9 +15,11 @@ import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.Consumer;
+import com.wyc.cloudapp.bean.PriceType;
 import com.wyc.cloudapp.bean.WholesalePrintContent;
 import com.wyc.cloudapp.bean.BusinessOrderPrintSetting;
 import com.wyc.cloudapp.bean.OrderPrintContentBase;
+import com.wyc.cloudapp.constants.PriceTypeId;
 import com.wyc.cloudapp.data.viewModel.ConsumerViewModel;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.utils.FormatDateTimeUtils;
@@ -41,7 +43,7 @@ import java.util.List;
 public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySourceOrderActivity {
     private TextView mBusinessCustomerTv;
     private JSONArray mCustomerList;
-    private int mPriceType = 1;
+    private int mPriceType = PriceTypeId.BUYING_PRICE;
     private TextView mSettlementWayTv;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,8 +137,12 @@ public abstract class MobileWholesaleBaseActivity extends AbstractMobileQuerySou
         if (!liveData.hasActiveObservers())liveData.observe(this, consumers -> mCustomerList = parse_customer_info_and_set_default(JSONArray.parseArray(JSON.toJSONString(consumers))));
     }
 
-    public int getCustomerPriceType(){
-        return mPriceType;
+    @Override
+    public PriceType getPriceTypeInfo() {
+        final PriceType type = new PriceType();
+        type.setPriceType(mPriceType);
+        type.setDiscount(1.0);
+        return type;
     }
 
     private JSONArray parse_customer_info_and_set_default(final JSONArray customers){

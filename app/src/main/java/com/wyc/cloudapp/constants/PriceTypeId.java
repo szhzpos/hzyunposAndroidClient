@@ -12,7 +12,7 @@ package com.wyc.cloudapp.constants;
  * @UpdateRemark: 更新说明
  * @Version: 1.0
  */
-public final class WholesalePriceType {
+public final class PriceTypeId {
     //1零售价，2优惠价，3配送价，4批发价 5成本价
     public static final int RETAIL_PRICE = 1;
     public static final int COST_PRICE = 2;

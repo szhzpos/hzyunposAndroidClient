@@ -1,20 +1,16 @@
 package com.wyc.cloudapp.dialog.business;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -25,10 +21,12 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
+import com.wyc.cloudapp.activity.mobile.business.AbstractMobileAddOrderActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileSelectGoodsActivity;
 import com.wyc.cloudapp.activity.mobile.business.MobileWholesaleBaseActivity;
 import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.constants.WholesalePriceType;
+import com.wyc.cloudapp.bean.PriceType;
+import com.wyc.cloudapp.constants.PriceTypeId;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -56,7 +54,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     private EditText mBarcodeEt,mNumEt,mPriceEt,mRemarkTv;
     private TextView mItemNoTv,mNameTv,mAmtTv,mUnitTv;
     private boolean hasSourceOrder;
-    private int mPriceType = WholesalePriceType.BUYING_PRICE;
     private View.OnClickListener mDelListener;
     private OnContinueListener mContinueListener;
     private CheckBox mContinueScan;
@@ -77,9 +74,6 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
             mContentObj = Utils.JsondeepCopy(object);
         }
         hasSourceOrder = source;
-        if (context instanceof MobileWholesaleBaseActivity){
-            mPriceType = ((MobileWholesaleBaseActivity)context).getCustomerPriceType();
-        }
     }
 
     public void setGoodsCategory(String category) {
@@ -349,8 +343,13 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                         mContext.startActivityForResult(intent, MobileSelectGoodsActivity.SELECT_GOODS_CODE);
                         setCodeAndExit(0);
                     }else {
+                        PriceType type;
+                        if (mContext instanceof AbstractMobileAddOrderActivity){
+                            type = ((AbstractMobileAddOrderActivity)mContext).getPriceTypeInfo();
+                        }else type = new PriceType();
+
                         mContentObj = new JSONObject();
-                        if (selectGoodsWithBarcodeId(mContentObj,barcode_ids.getString(0),mPriceType)){
+                        if (selectGoodsWithBarcodeId(mContentObj,barcode_ids.getString(0),type)){
                             Logger.d_json(mContentObj.toString());
                             showGoods();
                             code = true;
@@ -407,19 +406,21 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
     }
 
 
-    public static boolean selectGoodsWithBarcodeId(final JSONObject object,final String barcode_id,final int price_type){
+    public static boolean selectGoodsWithBarcodeId(final JSONObject object, final String barcode_id, PriceType type){
         String key;
+        int price_type = type.getPriceType();
+        double discount = type.getDiscount();
         switch (price_type){//1零售价，2优惠价，3配送价，4批发价，5参考进货价
-            case WholesalePriceType.RETAIL_PRICE:
+            case PriceTypeId.RETAIL_PRICE:
                 key = "ps_price,cost_price,trade_price,(buying_price * conversion) buying_price,retail_price price";
                 break;
-            case WholesalePriceType.COST_PRICE:
+            case PriceTypeId.COST_PRICE:
                 key = "ps_price,cost_price price,trade_price,(buying_price * conversion) buying_price,retail_price";
                 break;
-            case WholesalePriceType.PS_PRICE:
+            case PriceTypeId.PS_PRICE:
                 key = "ps_price price,cost_price,trade_price,(buying_price * conversion) buying_price,retail_price";
                 break;
-            case WholesalePriceType.TRADE_PRICE:
+            case PriceTypeId.TRADE_PRICE:
                 key = "ps_price,cost_price,trade_price price,(buying_price * conversion) buying_price,retail_price";
                 break;
             default:
@@ -432,7 +433,11 @@ public class BusinessSelectGoodsDialog extends AbstractDialogMainActivity implem
                 "       specifi,unit_name,unit_id,"+ key +",only_coding,goods_title,barcode,barcode_id,goods_id\n" +
                 "  FROM barcode_info where barcode_id = '"+ barcode_id +"'";
 
-        return  SQLiteHelper.execSql(object,sql);
+        boolean code = SQLiteHelper.execSql(object,sql);
+        if (code){
+            object.put("price",object.getDoubleValue("price") * discount);
+        }
+        return  code;
     }
 
     private void initBtn(){

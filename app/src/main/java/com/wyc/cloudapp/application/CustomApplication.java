@@ -31,7 +31,9 @@ import com.squareup.leakcanary.LeakCanary;
 import com.wyc.cloudapp.BuildConfig;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.bean.ModulePermission;
+import com.wyc.cloudapp.bean.PriceType;
 import com.wyc.cloudapp.constants.MessageID;
+import com.wyc.cloudapp.constants.PriceTypeId;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.room.AppDatabase;
 import com.wyc.cloudapp.dialog.MyDialog;
@@ -277,6 +279,15 @@ public final class CustomApplication extends Application {
             return "";
         }
         return Utils.getNullOrEmptyStringAsDefault(JSON.parseObject(conn_param.getString("storeInfo")),"stores_id","");
+    }
+
+    public PriceType getPriceType(){
+        final PriceType type = new PriceType();
+
+        type.setPriceType(Utils.getNotKeyAsNumberDefault(mStoreInfo,"stores_ps_type", PriceTypeId.RETAIL_PRICE));
+        type.setDiscount(Utils.getNotKeyAsNumberDefault(mStoreInfo,"stores_ps_ratio",1.0) / 100.0);
+
+        return type;
     }
 
     public String getAppId(){
