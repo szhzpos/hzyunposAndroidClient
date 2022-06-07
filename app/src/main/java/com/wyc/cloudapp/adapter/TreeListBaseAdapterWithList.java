@@ -60,8 +60,26 @@ public abstract class TreeListBaseAdapterWithList<T extends TreeListBaseAdapterW
     }
 
     @Override
+    public void selectAll(boolean s) {
+        if (!mSingleSel && mData != null){
+            for (TreeListItem item : mData){
+                item.setSel(s);
+            }
+            notifyItemRangeChanged(0,mData.size());
+        }
+    }
+
+    @Override
     public TreeListBaseAdapterWithList<T> setData(final List<TreeListItem> array,final List<TreeListItem> selected){
         mData = array;
+
+        if (selected != null && !selected.isEmpty()){
+            for (TreeListItem item : mData){
+                if (selected.contains(item)){
+                    item.setSel(true);
+                }
+            }
+        }
         if (Looper.myLooper() != Looper.getMainLooper()){
             CustomApplication.runInMainThread(this::notifyDataSetChanged);
         }else

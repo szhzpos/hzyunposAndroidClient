@@ -27,6 +27,7 @@ public abstract class TreeListBaseAdapter<D,S,T extends AbstractDataAdapter.Supe
     public abstract void setData(final D data,boolean b);
     public abstract D getMultipleSelectedContent();
     public abstract S getSingleSelectedContent();
+    public abstract void selectAll(boolean s);
 
     static abstract class MyViewHolder extends AbstractDataAdapter.SuperViewHolder {
         ImageView icon;

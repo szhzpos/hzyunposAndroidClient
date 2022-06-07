@@ -1,12 +1,12 @@
 package com.wyc.cloudapp.adapter;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -14,13 +14,18 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.SaleActivity;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.decoration.LinearItemDecoration;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.fragment.BaseParameterFragment;
+import com.wyc.cloudapp.fragment.BaseParameter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdapter.MyViewHolder> implements View.OnClickListener{
@@ -31,12 +36,67 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
     private final RecyclerView mSecLevelGoodsCategoryView;
     private boolean mChildShow = false;
     private boolean mFirstLoad = true;
-    private final boolean hasShowGroupGoods = BaseParameterFragment.hasShowGroupGoods(null);
+    private final boolean hasShowGroupGoods = BaseParameter.hasShowGroupGoods(null);
     private String mCategoryId;
+
+    private final static List<String> mUsableCategory = new CategoryArrayList();
+    private static String mUsableCategoryString = "";
+
     public GoodsCategoryAdapter(SaleActivity context, RecyclerView v){
         mContext = context;
         mSecLevelGoodsCategoryView = v;
         loadChildShow();
+        initUsableCategory();
+    }
+
+    public static List<String> getUsableCategory(){
+        return new CategoryArrayList(mUsableCategory);
+    }
+
+    public static class CategoryArrayList extends ArrayList<String>{
+        public CategoryArrayList(List<String> c){
+            super(c);
+        }
+        public CategoryArrayList(){
+            super();
+        }
+        @Override
+        public boolean contains(@Nullable @org.jetbrains.annotations.Nullable Object o) {
+            if (isEmpty())return true;
+            return super.contains(o);
+        }
+    }
+
+    private void initUsableCategory(){
+        CustomApplication.execute(()->{
+            final List<TreeListItem>  items = BaseParameter.loadUsableCategory(null);
+            JSONArray array;
+            String id;
+            for (TreeListItem item : items){
+                id = item.getItem_id();
+
+                mUsableCategory.add(id);
+
+                array = SQLiteHelper.getListToValue("select category_id from shop_category where path like '%"+ id +"%' and parent_id <> 0 and status = 1",null);
+                if (array != null){
+                    for (int i = 0,size = array.size();i < size;i ++){
+                        mUsableCategory.add(array.getString(i));
+                    }
+                }
+            }
+
+            final StringBuilder ids = new StringBuilder();
+            for (String cid : mUsableCategory){
+                if (ids.length() != 0){
+                    ids.append(",");
+                }
+                ids.append(cid);
+            }
+            mUsableCategoryString = ids.toString();
+
+            setData(0);
+            Logger.d("usable category:%s", Arrays.toString(mUsableCategory.toArray()));
+        });
     }
 
     @Override
@@ -68,6 +128,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             category_name =  itemView.findViewById(R.id.category_name);
         }
     }
+
 
     protected void setViewBackgroundColor(final View view, boolean s){
         TextView name;
@@ -124,21 +185,31 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         return mDatas == null ? 0 : mDatas.size();
     }
 
-    public void setDatas(int parent_id){
+    public static String getUsableCategoryString(){
+        return mUsableCategoryString;
+    }
+
+    private void setData(int parent_id){
         final StringBuilder err = new StringBuilder();
         if (0 == parent_id) {
-            String sql = "select category_id,category_code,name from shop_category where parent_id='0' and status = 1 order by category_code";
-            if (hasShowGroupGoods){
-                sql = "select category_id,category_code,name from shop_category where parent_id='0' and status = 1 union select -1 category_id,'' category_code,'组合商品' name order by category_code";
+            String sql = "select category_id,category_code,name from shop_category where parent_id='0' and status = 1";
+            if (!mUsableCategory.isEmpty()){
+                sql = "select category_id,category_code,name from shop_category where category_id in ("+ getUsableCategoryString() +") and parent_id='0' and status = 1";
             }
+            if (hasShowGroupGoods){
+                sql = sql + " union select -1 category_id,'' category_code,'组合商品' name " ;
+            }
+
+            sql = sql + " order by category_code ";
+
             mDatas = SQLiteHelper.getListToJson(sql, 0, 0, false, err);
         }else
             mDatas = SQLiteHelper.getListToJson("select category_id,category_code,name from shop_category where depth = 2 and status = 1 and parent_id='" + parent_id +"' order by category_code",0,0,false,err);
 
         if (mDatas != null){
-            notifyDataSetChanged();
+            notifyItemRangeChanged(0,mDatas.size());
         }else{
-            MyDialog.ToastMessage("加载类别错误：" + err, null);
+            MyDialog.toastMessage(mContext.getString(R.string.load_category_err,err));
         }
     }
 
@@ -153,7 +224,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
                         mSecLevelGoodsCategoryView.setAdapter(mChildGoodsCategoryAdapter);
                     }
                     mChildGoodsCategoryAdapter.clearCurrentItemView();
-                    mChildGoodsCategoryAdapter.setDatas(Integer.parseInt(tv.getText().toString()));
+                    mChildGoodsCategoryAdapter.setData(Integer.parseInt(tv.getText().toString()));
                     if (mChildGoodsCategoryAdapter.getItemCount() == 0){
                         mSecLevelGoodsCategoryView.setVisibility(View.GONE);
                     }else{
@@ -180,7 +251,6 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         }else{
             MyDialog.ToastMessage("加载是否显示商品二级类别参数错误：" + jsonObject.getString("info"), null);
         }
-
     }
 
     public void trigger_preView(){
@@ -195,6 +265,24 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
             mContext.loadGoods(id);
         }
     }
+
+    public static List<TreeListItem> getTopLevelCategory(){
+        final List<TreeListItem> items = new ArrayList<>();
+        final StringBuilder err = new StringBuilder();
+        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id,category_code code, name item_name FROM shop_category where status = 1 and parent_id = 0  order by category_code",err);
+        if (array != null){
+            for (int i = 0,size = array.size();i < size;i ++){
+                final JSONObject object = array.getJSONObject(i);
+                final TreeListItem item = new TreeListItem();
+                item.setItem_id(object.getString("item_id"));
+                item.setCode(object.getString("code"));
+                item.setItem_name(object.getString("item_name"));
+                items.add(item);
+            }
+        }else MyDialog.toastMessage(CustomApplication.getStringByResId(R.string.load_category_err,err));
+        return items;
+    }
+
     public static JSONArray getCategoryAsTreeListData(){
         final JSONArray categorys = new JSONArray();
         final StringBuilder err = new StringBuilder();
@@ -203,7 +291,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         return categorys;
     }
     private static void generateDatas(final JSONObject parent,final JSONArray categorys,final StringBuilder err){
-        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id,category_code code, name item_name FROM shop_category where status = 1 and parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0") + " order by category_code",err);
+        final JSONArray array = SQLiteHelper.getListToJson("SELECT  depth -1 level,category_id item_id,category_code code, name item_name FROM shop_category where "+ (mUsableCategoryString.isEmpty()?"":" category_id in ("+ mUsableCategoryString +") and") +" status = 1 and parent_id = " + Utils.getNullOrEmptyStringAsDefault(parent,"item_id","0") + " order by category_code",err);
         if (array != null){
             JSONObject item_json;
             JSONArray kids;

@@ -11,21 +11,41 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.wyc.cloudapp.R;
+import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
+import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
+import com.wyc.cloudapp.dialog.barcodeScales.AbstractBarcodeScaleImp;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
+import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj;
+import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
-public class BaseParameterFragment extends AbstractParameterFragment {
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class BaseParameter extends AbstractParameterFragment {
     private static final String mTitle = "基本参数";
-    public BaseParameterFragment() {
+    private static final String CATEGORY_SEPARATE = ",";
+
+    private final List<TreeListItem> mSelectedCategoryItem = new ArrayList<>();
+
+
+    public BaseParameter() {
     }
 
     @Override
@@ -42,6 +62,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         get_or_show_goodsGroupSetting(false);
         get_or_show_autoMol(false);
         get_or_show_cumulative(false);
+        get_or_show_usable_category(false);
          return null;
     }
 
@@ -92,6 +113,13 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         content.put(p_c_key, get_or_show_autoMol(true));
         content.put(p_desc_key,"自动抹零设置");
         array.add(content);
+
+        content = new JSONObject();
+        content.put(p_id_key,"usable_category");
+        content.put(p_c_key, get_or_show_usable_category(true));
+        content.put(p_desc_key,"可用商品类别");
+        array.add(content);
+
         if (!SQLiteHelper.execSQLByBatchFromJson(array,"local_parameter",null,err,1)){
             MyDialog.ToastMessage(null,err.toString(), null);
         }else{
@@ -106,6 +134,7 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         set_save_period();//数据保存周期
         _dual_view();//双屏设置
         auto_mol();//自动抹零
+        goodsCategory();//可用商品类别
         findViewById(R.id.save).setOnClickListener(v->saveContent());
     }
 
@@ -134,6 +163,29 @@ public class BaseParameterFragment extends AbstractParameterFragment {
     public void onResume(){
         super.onResume();
         loadContent();
+    }
+
+    private void goodsCategory(){
+        final TextView goods_category_tv = findViewById(R.id.goods_category_tv);
+        assert goods_category_tv != null;
+        goods_category_tv.setOnClickListener(v -> {
+            final TreeListDialogForObj treeListDialog = new TreeListDialogForObj(mContext,mContext.getString(R.string.d_category_sz));
+            treeListDialog.setData(GoodsCategoryAdapter.getTopLevelCategory(),mSelectedCategoryItem,false);
+            v.post(()->{
+                if (treeListDialog.exec() == 1){
+                    final StringBuilder names = new StringBuilder();
+                    mSelectedCategoryItem.clear();
+                    mSelectedCategoryItem.addAll(treeListDialog.getMultipleContent());
+                    for (TreeListItem item : mSelectedCategoryItem){
+                        if (names.length() != 0){
+                            names.append(CATEGORY_SEPARATE);
+                        }
+                        names.append(item.getItem_name());
+                    }
+                    goods_category_tv.setText(names);
+                }
+            });
+        });
     }
 
     private void set_save_period(){
@@ -382,5 +434,37 @@ public class BaseParameterFragment extends AbstractParameterFragment {
         }
 
         return value_obj;
+    }
+
+    private JSONObject get_or_show_usable_category(boolean b){
+        JSONObject value_obj = new JSONObject();
+        if (b){
+            value_obj.put("v",JSON.toJSONString(mSelectedCategoryItem));
+        }else {
+            mSelectedCategoryItem.addAll(loadUsableCategory(value_obj));
+            if (!mSelectedCategoryItem.isEmpty()){
+                final StringBuilder names = new StringBuilder();
+                for (TreeListItem item : mSelectedCategoryItem){
+                    if (names.length() != 0){
+                        names.append(CATEGORY_SEPARATE);
+                    }
+                    names.append(item.getItem_name());
+                }
+                final TextView goods_category_tv = findViewById(R.id.goods_category_tv);
+                if (goods_category_tv != null) goods_category_tv.setText(names);
+            }
+        }
+        return value_obj;
+    }
+
+    public static List<TreeListItem> loadUsableCategory(JSONObject value_obj){
+        if (value_obj == null)value_obj = new JSONObject();
+        final List<TreeListItem> items = new ArrayList<>();
+        if (SQLiteHelper.getLocalParameter("usable_category",value_obj)){
+            items.addAll(JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(value_obj,"v","[]"),new TypeReference<List<TreeListItem>>(){}.getType()));
+        }else{
+            MyDialog.ToastMessage("加载可用商品分类参数错误：" + value_obj.getString("info"), null);
+        }
+        return items;
     }
 }

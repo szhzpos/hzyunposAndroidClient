@@ -29,7 +29,7 @@ import com.wyc.cloudapp.dialog.ChangeNumOrPriceDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPracticeDialog;
 import com.wyc.cloudapp.dialog.orderDialog.RefundDialog;
-import com.wyc.cloudapp.fragment.BaseParameterFragment;
+import com.wyc.cloudapp.fragment.BaseParameter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.FontSizeTagHandler;
 import com.wyc.cloudapp.utils.Utils;
@@ -51,7 +51,7 @@ public abstract class AbstractSaleGoodsAdapter extends AbstractDataAdapterForJso
     private final JSONArray mDiscountRecords;
     private int mOrderType = 1;//订单类型 1线下 2线上
     private boolean mSingleRefundStatus = false,d_discount = false;//d_discount是否折上折
-    private final boolean mCumulative = BaseParameterFragment.hasCumulative(null);
+    private final boolean mCumulative = BaseParameter.hasCumulative(null);
     private JSONObject mFullReduceDescription;
 
     private double mTotalSaleAmt,mTotalSaleNum;

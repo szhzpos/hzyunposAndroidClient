@@ -112,6 +112,7 @@
     <string name="sale_num">购买数量：</string>
     <string name="query_goods_hint">查询商品基本信息错误:%1$s</string>
     <string name="init_cas_hint">初始化收银员信息错误：%1$s</string>
+    <string name="load_category_err">加载类别错误：%1$s</string>
     <string name="searching_bluetooth">正在搜索蓝牙打印机…</string>
     <string name="begin_print">开始打印</string>
     <string name="end_print">结束打印</string>
@@ -142,6 +143,7 @@
     <string name="general_pos">通用</string>
     <string name="CW_pos">CW1202</string>
     <string name="delete">删除</string>
+    <string name="usable_category">可用商品分类</string>
 
     <!-- 新增会员 -->
     <string name="vip_dialog_title_sz">会员信息</string>
@@ -169,6 +171,7 @@
     <string name="c_amt_hint_sz">请输入充值金额</string>
     <string name="vip_info_detail_sz">会员详情</string>
 
+    <!-- 参数设置 -->
     <string name="ten_sz">10</string>
     <string name="twenty_sz">20</string>
     <string name="fifty_sz">50</string>
@@ -263,6 +266,9 @@
     <string name="del_hang_bill_hint">删除挂单信息错误:%1$s</string>
     <string name="hang_tips">"点“是”过滤商品并取单，点“否”取消"</string>
     <string name="init_business_user_error">关联业务功能账号错误:%1$s</string>
+    <string name="usable_category_hint_sz">请选择可用商品类别</string>
+    <string name="all_usable_hint">*为空表示全部可用</string>
+    <string name="not_found_goods_hint">未找到商品请刷新后重试…</string>
 
     <!-- 条码秤窗口 -->
     <string name="add_scale_sz">新增秤</string>

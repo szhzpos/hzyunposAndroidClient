@@ -17,9 +17,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
+import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.BarcodeOnlyCodeInfo;
+import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.data.viewModel.BarcodeOnlyCodeViewModel;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
@@ -30,6 +32,7 @@ import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.utils.Utils;
 import com.wyc.cloudapp.utils.http.HttpRequest;
 
+import java.util.List;
 import java.util.Locale;
 
 import butterknife.BindView;
@@ -408,7 +411,19 @@ public class AddGoodsInfoDialog extends AbstractDialogMainActivity {
                         mUnitList = parse_unit_info(Utils.getNullObjectAsEmptyJsonArray(data,"units"));
                         final JSONArray categorys = new JSONArray();
                         parse_category_info(Utils.getNullObjectAsEmptyJsonArray(data,"category"),null,0,categorys);
-                        mCategoryList = categorys;
+
+                        final List<String> items = GoodsCategoryAdapter.getUsableCategory();
+                        if (items.isEmpty()){
+                            mCategoryList = categorys;
+                        }else {
+                            mCategoryList = new JSONArray();
+                            for (int i = 0,size = categorys.size();i < size;i ++){
+                                final JSONObject obj = categorys.getJSONObject(i);
+                                if (items.contains(Utils.getNullStringAsEmpty(categorys.getJSONObject(i),TreeListBaseAdapter.COL_ID))){
+                                    mCategoryList.add(obj);
+                                }
+                            }
+                        }
                     }
                     break;
             }

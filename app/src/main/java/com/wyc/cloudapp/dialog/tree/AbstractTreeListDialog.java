@@ -2,7 +2,9 @@ package com.wyc.cloudapp.dialog.tree;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -42,10 +44,21 @@ public abstract class AbstractTreeListDialog<D,S> extends AbstractDialogContext 
 
         initList();
         initBtn();
+        initSelectAll();
     }
     @Override
     protected int getContentLayoutId() {
         return R.layout.tree_list_dialog_layout;
+    }
+
+    private void initSelectAll(){
+        if (!mSingleSelection){
+            CheckBox all = findViewById(R.id.selectAll);
+            if (all != null){
+                all.setVisibility(View.VISIBLE);
+                all.setOnCheckedChangeListener((buttonView, isChecked) -> mAdapter.selectAll(isChecked));
+            }
+        }
     }
 
     private void initList(){
@@ -55,7 +68,6 @@ public abstract class AbstractTreeListDialog<D,S> extends AbstractDialogContext 
         item_list.addItemDecoration(new DividerItemDecoration(mContext,DividerItemDecoration.VERTICAL));
         item_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL,false));
         item_list.setAdapter(mAdapter);
-
     }
 
     @Override
@@ -69,6 +81,7 @@ public abstract class AbstractTreeListDialog<D,S> extends AbstractDialogContext 
         mSingleSelection = singleSelection;
         mData = obj;
         mSelectedItems = selectItems;
+        initSelectAll();
         return this;
     }
 

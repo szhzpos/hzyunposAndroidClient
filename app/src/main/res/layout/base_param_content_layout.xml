@@ -279,32 +279,37 @@
                 android:textColor="@color/lightBlue"
                 android:textSize="@dimen/font_size_16" />
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/param_value_height"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:padding="@dimen/margin_5">
 
                 <Switch
                     android:id="@+id/auto_mol_switch"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_5"
-                    android:layout_marginEnd="@dimen/margin_5"
+                    android:layout_height="@dimen/param_value_height"
                     android:showText="true"
                     android:switchPadding="@dimen/margin_5"
                     android:text="@string/auto_ml_sz"
                     android:textColor="@color/text_color"
                     android:textOff="@string/off_sz"
                     android:textOn="@string/on_sz"
-                    android:textSize="@dimen/font_size_14" />
+                    android:textSize="@dimen/font_size_14"
+                    app:layout_constraintBottom_toTopOf="@id/category_label"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <RadioGroup
                     android:id="@+id/_auto_mol_group"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/param_value_height"
                     android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="@id/auto_mol_switch"
+                    app:layout_constraintStart_toEndOf="@id/auto_mol_switch"
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <RadioButton
                         android:id="@+id/mol_j"
@@ -328,12 +333,58 @@
                 <Switch
                     android:id="@+id/cumulative"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/param_value_height"
                     android:layout_marginStart="@dimen/margin_8"
                     android:text="@string/goods_cumulative"
-                    android:textSize="@dimen/font_size_14" />
+                    android:textSize="@dimen/font_size_14"
+                    app:layout_constraintBottom_toBottomOf="@id/auto_mol_switch"
+                    app:layout_constraintStart_toEndOf="@id/_auto_mol_group"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/category_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/param_value_height"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="@string/usable_category"
+                    android:textColor="@color/label_text_color"
+                    android:textSize="@dimen/font_size_14"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/auto_mol_switch" />
+
+                <TextView
+                    android:id="@+id/goods_category_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="@dimen/param_value_height"
+                    android:layout_margin="@dimen/margin_1"
+                    android:background="@drawable/round_border_sub_gray"
+                    android:drawableEnd="@drawable/omit"
+                    android:gravity="center_vertical"
+                    android:hint="@string/usable_category_hint_sz"
+                    android:importantForAutofill="no"
+                    android:inputType="none"
+                    android:padding="@dimen/margin_5"
+                    android:textColor="@color/text_color"
+                    android:textSize="@dimen/font_size_14"
+                    app:layout_constraintBottom_toBottomOf="@id/category_label"
+                    app:layout_constraintEnd_toStartOf="@id/hint_label"
+                    app:layout_constraintStart_toEndOf="@id/category_label"
+                    app:layout_constraintTop_toTopOf="@id/category_label" />
+
+                <TextView
+                    android:id="@+id/hint_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/all_usable_hint"
+                    android:textColor="@color/abnormal_status_color"
+                    android:textSize="@dimen/font_size_10"
+                    app:layout_constraintBottom_toBottomOf="@id/goods_category_tv"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/goods_category_tv" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
     </LinearLayout>

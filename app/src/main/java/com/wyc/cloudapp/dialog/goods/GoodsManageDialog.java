@@ -160,6 +160,9 @@ public final class GoodsManageDialog extends AbstractDialogSaleActivity {
         if (categoryid != 0){
             condition_sb.append("category_id in (").append("select category_id from shop_category where path like '%").append(categoryid).append("%'").append(")");
             condition_sb.append(and_sz);
+        }else {
+            condition_sb.append("category_id in (").append(GoodsCategoryAdapter.getUsableCategoryString()).append(")");
+            condition_sb.append(and_sz);
         }
         //状态
         final CheckBox normal_opt = findViewById(R.id.normal_opt),unshelve_opt = findViewById(R.id.unshelve_opt),deleted_opt = findViewById(R.id.deleted_opt);

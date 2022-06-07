@@ -296,7 +296,6 @@ public class MobileCashierActivity extends SaleActivity implements View.OnClickL
         final RecyclerView goods_type_view = findViewById(R.id.mobile_goods_type_list);
         final GoodsCategoryAdapter mGoodsCategoryAdapter = new GoodsCategoryAdapter(this, null);
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        mGoodsCategoryAdapter.setDatas(0);
         goods_type_view.setAdapter(mGoodsCategoryAdapter);
     }
 

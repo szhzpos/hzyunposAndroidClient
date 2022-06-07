@@ -14,7 +14,7 @@ import com.wyc.cloudapp.activity.base.MainActivity;
 import com.wyc.cloudapp.adapter.FragmentPagerAdapter;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
 import com.wyc.cloudapp.fragment.AbstractParameterFragment;
-import com.wyc.cloudapp.fragment.BaseParameterFragment;
+import com.wyc.cloudapp.fragment.BaseParameter;
 import com.wyc.cloudapp.fragment.PeripheralSetting;
 import com.wyc.cloudapp.fragment.PrintFormat;
 
@@ -31,7 +31,7 @@ public class ParameterSettingDialog extends AbstractDialogMainActivity {
         super.onCreate(savedInstanceState);
         setCancelable(false);
         final List<AbstractParameterFragment> fragments = new ArrayList<>();
-        fragments.add(new BaseParameterFragment());
+        fragments.add(new BaseParameter());
         fragments.add(new PeripheralSetting());
         fragments.add(new PrintFormat());
 

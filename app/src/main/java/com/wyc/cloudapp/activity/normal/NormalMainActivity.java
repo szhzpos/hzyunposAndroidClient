@@ -584,7 +584,6 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         mGoodsCategoryAdapter = new GoodsCategoryAdapter(this,findViewById(R.id.goods_sec_l_type_list));
         goods_type_view.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
         goods_type_view.addItemDecoration(new LinearItemDecoration(getColor(R.color.lightBlue),1));
-        mGoodsCategoryAdapter.setDatas(0);
         goods_type_view.setAdapter(mGoodsCategoryAdapter);
     }
     private void initSaleGoodsAdapter(){
@@ -983,7 +982,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 dismissProgress();
                 break;
             case MessageID.GoodsCategory_CHANGE_ID:
-                if (mGoodsCategoryAdapter != null)mGoodsCategoryAdapter.setDatas(0);
+
                 break;
             case MessageID.TRANSFERSTATUS_ID://传输状态
                 imageView = findViewById(R.id.upload_status);

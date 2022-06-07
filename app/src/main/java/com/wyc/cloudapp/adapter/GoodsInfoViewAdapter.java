@@ -26,14 +26,14 @@ import com.wyc.cloudapp.data.viewModel.GoodsViewModel;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.goods.CurPriceDialog;
 import com.wyc.cloudapp.dialog.goods.GoodsPriceAdjustDialog;
-import com.wyc.cloudapp.fragment.BaseParameterFragment;
+import com.wyc.cloudapp.fragment.BaseParameter;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.Locale;
 
 public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoViewAdapter.MyViewHolder> implements View.OnClickListener, IndicatorRecyclerView.OnLoad {
-    public static final int SPAN_COUNT = BaseParameterFragment.hasPic() ? 5 : 7,MOBILE_SPAN_COUNT = 1;
+    public static final int SPAN_COUNT = BaseParameter.hasPic() ? 5 : 7,MOBILE_SPAN_COUNT = 1;
     /**
     * W_G_MARK 计重、计份并且通过扫条码选择的商品标志
     * */
@@ -189,12 +189,19 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     }
 
     public void loadGoodsByCategoryId(final String id){
-        try {
-            resetLoadMoreParam();
-            mCategoryId = Integer.parseInt(id);
-            setData(mCategoryId);
-        }catch (NumberFormatException e){
-            e.printStackTrace();
+        if ("-1".equals(id) || GoodsCategoryAdapter.getUsableCategory().contains(id)){
+            try {
+                resetLoadMoreParam();
+                mCategoryId = Integer.parseInt(id);
+                setData(mCategoryId);
+            }catch (NumberFormatException e){
+                e.printStackTrace();
+            }
+        }else {
+            if (mDatas != null){
+                mDatas.clear();
+                notifyDataSetChanged();
+            }
         }
     }
     private void resetLoadMoreParam(){
@@ -223,14 +230,16 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
     private String getSql(int id){
         final String sql;
         if (-1 == id){
+            final String usableCategory = GoodsCategoryAdapter.getUsableCategoryString();
             sql = "select gp_id,-1 goods_id,ifnull(gp_title,'') goods_title,'' unit_id,ifnull(unit_name,'') unit_name,\n" +
                     " -1  barcode_id,ifnull(gp_code,'') barcode,type,gp_price price,ifnull(img_url,'') img_url from goods_group \n" +
-                    "where status = 1";
+                    "where status = 1 and barcode_status = 1" + (usableCategory.isEmpty()?"":" and category_id in (" + usableCategory +")");
         }else{
             final String cols = "-1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode, " +
                     "type,retail_price price,ifnull(img_url,'') img_url ";
 
-            sql = "select "+ cols +" from barcode_info where goods_status = 1 and barcode_status = 1 and barcode='"+NOBARCODEGOODS+"' and category_id = '"+ id +"'  UNION select "+ cols +" from barcode_info where (goods_status = 1 and barcode_status = 1 and barcode<>'9999999999999') and category_id in (select category_id from shop_category where path like '%" + id +"%') limit "+ mPageIndex * mPageNum + "," + mPageNum;
+            sql = "select "+ cols +" from barcode_info where goods_status = 1 and barcode_status = 1 and barcode='"+NOBARCODEGOODS+"' and category_id = '"+ id +"'  UNION " +
+                    "select "+ cols +" from barcode_info where (goods_status = 1 and barcode_status = 1 and barcode<>'"+NOBARCODEGOODS+"') and category_id in (select category_id from shop_category where path like '%" + id +"%') limit "+ mPageIndex * mPageNum + "," + mPageNum;
         }
         return sql;
     }
@@ -239,8 +248,9 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         boolean code = false;
         final StringBuilder err = new StringBuilder();
         final ContentValues barcodeRuleObj = new ContentValues();
+        final String usableCategory = GoodsCategoryAdapter.getUsableCategoryString();
         String sql_where,full_sql,sql = "select -1 gp_id,goods_id,ifnull(goods_title,'') goods_title,unit_id,ifnull(unit_name,'') unit_name,barcode_id,ifnull(case type when 2 then only_coding else barcode end,'') barcode,only_coding,type,retail_price price\n" +
-                ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) and %1";
+                ",ifnull(img_url,'') img_url from barcode_info where (goods_status = 1 and barcode_status = 1) "+ (usableCategory.isEmpty()?"":" and category_id in (" + usableCategory +")") + " and %1";
 
         JSONArray array = null;
         if (isBarcodeWeighingGoods(search_content,barcodeRuleObj)){
@@ -338,7 +348,12 @@ public final class GoodsInfoViewAdapter extends RecyclerView.Adapter<GoodsInfoVi
         boolean code =  SQLiteHelper.execSql(object,full_sql);
         if (code){
             if (object.isEmpty()){
-                MyDialog.toastMessage("未找到商品请刷新后重试...");
+                MyDialog.toastMessage(R.string.not_found_goods_hint);
+                return false;
+            }
+            final String category_id = Utils.getNullStringAsEmpty(object,"category_id");
+            if (!category_id.isEmpty() && !GoodsCategoryAdapter.getUsableCategory().contains(category_id)){
+                MyDialog.toastMessage(R.string.not_found_goods_hint);
                 return false;
             }
 

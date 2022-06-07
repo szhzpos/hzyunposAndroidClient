@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
@@ -16,6 +16,16 @@
         android:layout_marginTop="@dimen/margin_2"
         android:layout_marginBottom="@dimen/margin_2"
         android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/selectAll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:minHeight="@dimen/size_48"
+            android:text="全选"
+            android:textColor="@color/text_color"
+            android:visibility="gone" />
 
         <Space
             android:layout_width="wrap_content"

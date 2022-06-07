@@ -37,7 +37,6 @@ import com.wyc.cloudapp.utils.Utils;
 
 public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.MyViewHolder> extends TreeListBaseAdapter<JSONArray,JSONObject,T> {
 
-    private JSONArray mDatas;
     private final Context mContext;
     private boolean mSingleSel = true;
     private final Drawable mUnfoldDb,mFoldDb;
@@ -50,13 +49,14 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
         this.mContext = context;
         mUnfoldDb = context.getDrawable(R.drawable.unfold);
         mFoldDb = context.getDrawable(R.drawable.fold);
-        mDatas = new JSONArray();
+        mData = new JSONArray();
     }
 
     public TreeListBaseAdapterForJson(Context context, boolean single){
         this(context);
         mSingleSel = single;
     }
+
 
     protected final View getView(){
         View itemView = View.inflate(mContext, R.layout.tree_item_layout, null);
@@ -72,7 +72,7 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     @Override
     public final void onBindViewHolder(@NonNull T holder, int position) {
         final int old_pos = position;
-        final JSONObject item = mDatas.getJSONObject(position);
+        final JSONObject item = mData.getJSONObject(position);
         if (item != null){
 
             holder.row_id.setText(String.valueOf(position));
@@ -81,8 +81,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
             boolean is_sel = item.getBooleanValue("isSel");
 
             final ImageView ico = holder.icon;
-            if ( (position += 1) == mDatas.size())position -= 1;
-            if (is_unfold || mDatas.getJSONObject(position).getJSONObject("p_ref") == item || !Utils.getNullObjectAsEmptyJsonArray(item,"kids").isEmpty()){
+            if ( (position += 1) == mData.size())position -= 1;
+            if (is_unfold || mData.getJSONObject(position).getJSONObject("p_ref") == item || !Utils.getNullObjectAsEmptyJsonArray(item,"kids").isEmpty()){
                 if (ico.getVisibility() == View.GONE)ico.setVisibility(View.VISIBLE);
                 ico.setOnClickListener(unfoldIcoListener);
                 if (is_unfold){
@@ -142,7 +142,7 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
 
     @Override
     public int getItemCount() {
-        return mDatas.size();
+        return mData.size();
     }
     @Override
     public void onViewRecycled (@NonNull MyViewHolder holder){
@@ -150,8 +150,18 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     }
 
     @Override
+    public void selectAll(boolean s) {
+        if (!mSingleSel && mData != null){
+            for (int i = 0,size = mData.size();i < size;i ++){
+                mData.getJSONObject(i).put("isSel",s);
+            }
+            notifyItemRangeChanged(0,mData.size());
+        }
+    }
+
+    @Override
     public TreeListBaseAdapterForJson<T> setData(final JSONArray data, final JSONArray items){
-        if (data != null)mDatas = data;
+        if (data != null) mData = data;
 
         setSelectedItem(items);
 
@@ -174,7 +184,7 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
         final TextView row_id_tv = v.findViewById(R.id.row_id);
         if (row_id_tv != null){
             int row_id = Integer.parseInt(row_id_tv.getText().toString());
-            if (row_id >= 0 && row_id < mDatas.size()){
+            if (row_id >= 0 && row_id < mData.size()){
                 final JSONObject object = Utils.getViewTagValue(v);
                 if (mSingleSel){
                     clearSelected();
@@ -187,8 +197,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     };
 
     private void clearSelected(){
-        if (mDatas != null){
-            for (Object o :mDatas){
+        if (mData != null){
+            for (Object o : mData){
                 final JSONObject object = (JSONObject)o;
                 if (object.getBooleanValue("isSel"))object.put("isSel",false);
             }
@@ -198,8 +208,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
         if (null != object){
             object.put("isSel",isChecked);
             JSONObject child;
-            for (int j = index,size = mDatas.size();0 <= j && j < size;j++){
-                child = mDatas.getJSONObject(j);
+            for (int j = index, size = mData.size(); 0 <= j && j < size; j++){
+                child = mData.getJSONObject(j);
                 if (child.getJSONObject("p_ref") == object){
                     if (child.getBooleanValue("unfold")){
                         selectItem(child,j += 1,isChecked);
@@ -216,8 +226,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
         final View parent = (View) view.getParent();
         final TextView row_id_tv = parent.findViewById(R.id.row_id);
         int row_id = Integer.parseInt(row_id_tv.getText().toString());
-        if (row_id >= 0 && row_id < mDatas.size()){
-            final JSONObject object = mDatas.getJSONObject(row_id);
+        if (row_id >= 0 && row_id < mData.size()){
+            final JSONObject object = mData.getJSONObject(row_id);
             boolean unfold = object.getBooleanValue("unfold"),is_sel = object.getBooleanValue("isSel");
             object.put("unfold",!unfold);
             if (!unfold){
@@ -228,7 +238,7 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
                     for (int i = 0,size = kids.size();i < size;i++){
                         item = kids.getJSONObject(i);
                         if (!single && !item.getBooleanValue("isSel"))item.put("isSel",is_sel);
-                        mDatas.add(row_id + i + 1,item);
+                        mData.add(row_id + i + 1,item);
                     }
                 }
             }else {
@@ -241,14 +251,14 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
         if (parent != null){
             final JSONArray kids = new JSONArray();
             JSONObject child;
-            for (int j = index;0 <= j && j < mDatas.size();j++){
-                child = mDatas.getJSONObject(index);
+            for (int j = index; 0 <= j && j < mData.size(); j++){
+                child = mData.getJSONObject(index);
                 if (child.getJSONObject("p_ref") == parent){
                     if (child.getBooleanValue("unfold")){
                         child.put("unfold",false);
                         foldChildren(child,index + 1);
                     }
-                    kids.add(mDatas.remove(index));
+                    kids.add(mData.remove(index));
                     j--;
                 }else {
                     parent.put("kids",kids);
@@ -316,8 +326,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
         final TextView row_id_tv = view.findViewById(R.id.row_id);
         if (row_id_tv != null){
             int row_id = Integer.parseInt(row_id_tv.getText().toString());
-            if (row_id >= 0 && row_id < mDatas.size()){
-                final JSONObject obj = mDatas.getJSONObject(row_id);
+            if (row_id >= 0 && row_id < mData.size()){
+                final JSONObject obj = mData.getJSONObject(row_id);
                 obj.put("isSel",true);
 
                 final JSONObject object = Utils.JsondeepCopy(obj);
@@ -346,8 +356,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     private  void setSelectedItem(final JSONObject object){
         if (object != null){
             JSONObject item;
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                item = mDatas.getJSONObject(i);
+            for (int i = 0, size = mData.size(); i < size; i++){
+                item = mData.getJSONObject(i);
                 if (setSelectedItem(item,object,i)){
                     break;
                 }
@@ -373,7 +383,7 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
 
     private void unfoldParentItem(final JSONObject item ,int index){
         if (item != null && item.getJSONObject("p_ref") != null){//顶层item不需要展开
-            final JSONObject top_item = mDatas.getJSONObject(index);
+            final JSONObject top_item = mData.getJSONObject(index);
             boolean unfold = top_item.getBooleanValue("unfold"),is_sel = top_item.getBooleanValue("isSel");
             if (!unfold){
                 top_item.put("unfold",true);
@@ -384,7 +394,7 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
                     for (int i = 0,size = kids.size();i < size;i++){
                         ch_item = kids.getJSONObject(i);
                         if (!single && !ch_item.getBooleanValue("isSel"))top_item.put("isSel",is_sel);
-                        mDatas.add(index + i + 1,ch_item);
+                        mData.add(index + i + 1,ch_item);
                         if (isChild(ch_item,item)){
                             unfoldParentItem(ch_item,index + i + 1);
                             index += 1;
@@ -416,10 +426,10 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     }
 
     private int getItemIndex(final JSONObject item){
-        if (null != mDatas && item != null){
+        if (null != mData && item != null){
             JSONObject ch_item;
-            for (int i = 0,size = mDatas.size();i < size;i++){
-                ch_item = mDatas.getJSONObject(i);
+            for (int i = 0, size = mData.size(); i < size; i++){
+                ch_item = mData.getJSONObject(i);
                 if (Utils.getNullStringAsEmpty(ch_item,COL_ID).equals(item.getString(COL_ID))){
                     return i;
                 }
@@ -432,8 +442,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     public JSONArray getMultipleSelectedContent(){
         final JSONArray objects = new JSONArray();
         JSONObject object;
-        for (int i = 0,size = mDatas.size();i < size;i++){
-            object = mDatas.getJSONObject(i);
+        for (int i = 0, size = mData.size(); i < size; i++){
+            object = mData.getJSONObject(i);
             if (object.getBooleanValue("isSel")){
                 object = Utils.JsondeepCopy(object);
                 object.remove("kids");
@@ -446,8 +456,8 @@ public abstract class TreeListBaseAdapterForJson<T extends TreeListBaseAdapter.M
     @Override
     public JSONObject getSingleSelectedContent(){
         JSONObject object;
-        for (int i = 0,size = mDatas.size();i < size;i++){
-            object = mDatas.getJSONObject(i);
+        for (int i = 0, size = mData.size(); i < size; i++){
+            object = mData.getJSONObject(i);
             if (object.getBooleanValue("isSel")){
                 object = Utils.JsondeepCopy(object);
                 object.remove("kids");
