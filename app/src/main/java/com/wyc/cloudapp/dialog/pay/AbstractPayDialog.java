@@ -3,17 +3,16 @@ package com.wyc.cloudapp.dialog.pay;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 
 import com.alibaba.fastjson.JSONObject;
-import com.wyc.cloudapp.application.CustomApplication;
-import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.activity.base.MainActivity;
+import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.customizationView.KeyboardView;
 import com.wyc.cloudapp.dialog.CustomProgressDialog;
 import com.wyc.cloudapp.dialog.MyDialog;
 import com.wyc.cloudapp.dialog.baseDialog.AbstractDialogMainActivity;
@@ -94,11 +93,11 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         return true;
     }
 
-    protected String getTitle(){
+    protected final String getTitle(){
         return mTitle.toString();
     }
 
-    protected void setHint(final String hint){
+    protected final void setHint(final String hint){
         mPayAmtEt.setHint(hint);
     }
 
@@ -130,7 +129,7 @@ public abstract class AbstractPayDialog extends AbstractDialogMainActivity imple
         return true;
     }
 
-    protected static String getPayCode(final String pos_num) {
+    public static String getPayCode(final String pos_num) {
         return new SimpleDateFormat("yyyyMMddHHmmssSSS",Locale.CHINA).format(new Date()) + pos_num + Utils.getNonce_str(8);
     }
 

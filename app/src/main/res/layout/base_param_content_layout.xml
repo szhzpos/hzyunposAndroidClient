@@ -287,12 +287,12 @@
                 android:padding="@dimen/margin_5">
 
                 <Switch
-                    android:id="@+id/auto_mol_switch"
+                    android:id="@+id/fast_pay"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/param_value_height"
                     android:showText="true"
                     android:switchPadding="@dimen/margin_5"
-                    android:text="@string/auto_ml_sz"
+                    android:text="@string/enable_fast_pay"
                     android:textColor="@color/text_color"
                     android:textOff="@string/off_sz"
                     android:textOn="@string/on_sz"
@@ -301,44 +301,16 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <RadioGroup
-                    android:id="@+id/_auto_mol_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="@dimen/param_value_height"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    app:layout_constraintBottom_toBottomOf="@id/auto_mol_switch"
-                    app:layout_constraintStart_toEndOf="@id/auto_mol_switch"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <RadioButton
-                        android:id="@+id/mol_j"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/ml_j_sz"
-                        android:textColor="@color/text_color"
-                        android:textSize="@dimen/font_size_14" />
-
-                    <RadioButton
-                        android:id="@+id/mol_y"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_2"
-                        android:text="@string/ml_y_sz"
-                        android:textColor="@color/text_color"
-                        android:textSize="@dimen/font_size_14" />
-
-                </RadioGroup>
-
                 <Switch
                     android:id="@+id/cumulative"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/param_value_height"
                     android:layout_marginStart="@dimen/margin_8"
                     android:text="@string/goods_cumulative"
+                    android:textColor="@color/text_color"
                     android:textSize="@dimen/font_size_14"
-                    app:layout_constraintBottom_toBottomOf="@id/auto_mol_switch"
-                    app:layout_constraintStart_toEndOf="@id/_auto_mol_group"
+                    app:layout_constraintBottom_toBottomOf="@id/fast_pay"
+                    app:layout_constraintStart_toEndOf="@+id/fast_pay"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
@@ -352,7 +324,7 @@
                     android:textSize="@dimen/font_size_14"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/auto_mol_switch" />
+                    app:layout_constraintTop_toBottomOf="@id/fast_pay" />
 
                 <TextView
                     android:id="@+id/goods_category_tv"

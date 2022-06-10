@@ -52,6 +52,9 @@ public class PayMethodDialogImp extends AbstractPayDialog implements MobileCashi
         mPayMethod.put("pamt", mPayAmtEt.getText().toString());
         mPayMethod.put("pzl",0.00);
         mPayMethod.put("v_num",mPayCode.getText().toString());
+
+        Logger.d_json(mPayMethod);
+
          return mPayMethod;
     }
 

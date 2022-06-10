@@ -28,6 +28,7 @@ import java.util.Locale;
 public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdapter.MyViewHolder> {
     private static final String CASH_METHOD_ID = "1";//现金支付方式id
     private static final String VIP_METHOD_ID = "5";//会员支付方式id
+    private static final String MOBILE_METHOD_ID = "560";//移动支付方式id
     private static final String DISCOUNT_COUPON_ID = "531";//优惠券支付方式id
     private static final String CUR_PAY_METHOD_LABEL = "isCur";
     private String DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;//默认支付方式ID为现金
@@ -180,7 +181,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         mData = JSON.parseArray(JSON.toJSONString(AppDatabase.getInstance().PayMethodDao().getPayMethodBySupport(support_code)));
         if (mData != null){
             setDefaultPayMethod();
-            this.notifyDataSetChanged();
+            notifyItemRangeChanged(0,mData.size());
         }else{
             MyDialog.ToastMessage("加载支付方式错误", null);
         }
@@ -191,7 +192,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
         mData = SQLiteHelper.getListToJson("select *  from pay_method where status = '1' and is_check = 2 order by sort",err);
         if (mData != null){
             setDefaultPayMethod();
-            this.notifyDataSetChanged();
+            notifyItemRangeChanged(0,mData.size());
         }else{
             MyDialog.ToastMessage("加载支付方式错误：" + err, null);
         }
@@ -246,7 +247,8 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
             if (mDefaultPayMethod != mCurrentPayMethod){
                 if (mCurrentPayMethod != null)mCurrentPayMethod.put(CUR_PAY_METHOD_LABEL,false);
             }
-            notifyDataSetChanged();
+            if (mData != null)
+                notifyItemRangeChanged(0,mData.size());
         }
     }
 
@@ -259,12 +261,14 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public void defaultVipPay(){
         DEFAULT_PAY_METHOD_ID = VIP_METHOD_ID;
         setDefaultPayMethod();
-        notifyDataSetChanged();
     }
     public void defaultCashPay(){
         DEFAULT_PAY_METHOD_ID = CASH_METHOD_ID;
         setDefaultPayMethod();
-        notifyDataSetChanged();
+    }
+    public void defaultMobilePay(){
+        DEFAULT_PAY_METHOD_ID = MOBILE_METHOD_ID;
+        setDefaultPayMethod();
     }
     public static String getCashMethodId(){
         return CASH_METHOD_ID;
@@ -272,6 +276,7 @@ public class PayMethodViewAdapter extends RecyclerView.Adapter<PayMethodViewAdap
     public static String getVipMethodId(){
         return VIP_METHOD_ID;
     }
+    public static String getMobileMethodId(){return MOBILE_METHOD_ID;}
     public static boolean isApiCheck(int check){
         return check == 1;
     }

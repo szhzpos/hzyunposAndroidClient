@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -150,6 +151,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
         });
     }
 
+    @CallSuper
     @Override
     public void show(){
         super.show();
@@ -1608,6 +1610,11 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             }
         }
     }
+    protected final void defaultMobilePay(){
+        if (mPayMethodViewAdapter != null){
+            mPayMethodViewAdapter.defaultMobilePay();
+        }
+    }
 
     private void showVipInfo(){
         if (mVip != null){
@@ -1617,6 +1624,18 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
             if (null != vip_name_tv && vip_phone_num_tv != null){
                 vip_name_tv.setText(mVip.getString("name"));
                 vip_phone_num_tv.setText(mVip.getString("mobile"));
+            }
+        }
+    }
+    protected final void autoPay(final String payCode){
+        if (mPayMethodViewAdapter != null && mPayDetailViewAdapter != null){
+            final JSONObject payDetail = Utils.JsondeepCopy(mPayMethodViewAdapter.findPayMethodById(PayMethodViewAdapter.getMobileMethodId()));
+            if (payDetail != null){
+                payDetail.put("pay_code",AbstractPayDialog.getPayCode(mContext.getPosNum()));
+                payDetail.put("pamt",mPay_balance);
+                payDetail.put("pzl",0.00);
+                payDetail.put("v_num",payCode);
+                mPayDetailViewAdapter.addPayDetail(payDetail);
             }
         }
     }

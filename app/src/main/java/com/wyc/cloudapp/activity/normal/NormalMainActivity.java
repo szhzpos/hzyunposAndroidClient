@@ -81,6 +81,7 @@ import com.wyc.cloudapp.dialog.pay.NormalSettlementDialog;
 import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
+import com.wyc.cloudapp.fragment.BaseParameter;
 import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
@@ -94,6 +95,7 @@ import com.wyc.cloudapp.utils.http.HttpRequest;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Observable;
@@ -114,6 +116,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private WeightInfoView mWeighView;
     private EditText mSearch_content;
     private CustomProgressDialog mProgressDialog;
+    private boolean hasFastPay = BaseParameter.hasFastPay();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -368,7 +371,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
         if (discount_btn != null)discount_btn.setOnClickListener(v-> discount());//打折
         if (change_price_btn != null)change_price_btn.setOnClickListener(v-> alterGoodsPrice());//改价
         if (check_out_btn != null)check_out_btn.setOnClickListener((View v)->{
-            Utils.disableView(v,500);showPayDialog();});//结账
+            Utils.disableView(v,500);showPayDialog(null);});//结账
         if (vip_btn != null)vip_btn.setOnClickListener(v -> {
             final VipInfoDialog vipInfoDialog = new VipInfoDialog(this);
             if (mVipInfo != null){
@@ -701,29 +704,38 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
 
     @Override
     public boolean hookEnterKey() {
-        CustomApplication.postAtFrontOfQueue(()->{
-            final SaleActivity context = this;
-            final String content = mSearch_content.getText().toString();
+        final SaleActivity context = this;
+        final String content = mSearch_content.getText().toString();
+        if (isMobilePay(content)){
+            CustomApplication.postAtFrontOfQueue(()-> showPayDialog(content));
+            mSearch_content.setText("");
+        }else {
             if (content.length() == 0){
                 mGoodsCategoryAdapter.trigger_preView();
             }else{
                 if (!mGoodsInfoViewAdapter.fuzzy_search_goods(content,true)) {
                     if (mApplication.isConnection() && AddGoodsInfoDialog.verifyGoodsAddPermissions(context)) {
-                        if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
-                            final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
-                            addGoodsInfoDialog.setBarcode(content);
-                            addGoodsInfoDialog.setFinishListener(barcode -> {
-                                mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
-                                addGoodsInfoDialog.dismiss();
-                            });
-                            addGoodsInfoDialog.show();
-                        }else mSearch_content.selectAll();
+                        CustomApplication.postAtFrontOfQueue(()->{
+                            if (1 == MyDialog.showMessageToModalDialog(context,"未找到匹配商品，是否新增?")){
+                                final AddGoodsInfoDialog addGoodsInfoDialog = new AddGoodsInfoDialog(context);
+                                addGoodsInfoDialog.setBarcode(content);
+                                addGoodsInfoDialog.setFinishListener(barcode -> {
+                                    mGoodsInfoViewAdapter.fuzzy_search_goods(content,true);
+                                    addGoodsInfoDialog.dismiss();
+                                });
+                                addGoodsInfoDialog.show();
+
+                            }else mSearch_content.selectAll();
+                        });
                     } else
                         MyDialog.ToastMessage("无此商品!", getWindow());
                 }
             }
-        });
+        }
         return true;
+    }
+    private boolean isMobilePay(final String code){
+        return hasFastPay && Pattern.matches("(?:1[0-5]\\d{16}|(?:2[5-9]|30)\\d{14,18})",code);
     }
 
     private void initTmpOrder(){
@@ -843,15 +855,16 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
             }
         }
     }
-    private void showPayDialog(){
+    private void showPayDialog(final String payCode){
         if (isAdjustPriceMode()){
             MyDialog.ToastMessage(mSaleGoodsRecyclerView,"调价模式不允许收款操作!", null);
         }else {
             if (!mSaleGoodsAdapter.isEmpty()){
                 if (!getSingleRefundStatus()){
-                    final AbstractSettlementDialog dialog = new NormalSettlementDialog(this,getString(R.string.affirm_pay_sz));
+                    final NormalSettlementDialog dialog = new NormalSettlementDialog(this,getString(R.string.affirm_pay_sz));
                     if (dialog.initPayContent()){
                         if (mVipInfo != null)dialog.setVipInfo(mVipInfo,true);
+                        if (Utils.isNotEmpty(payCode))dialog.setMobilePayCode(payCode);
                         if (dialog.exec() == 1){
                             mApplication.sync_retail_order();
                             showLastOrderInfo();

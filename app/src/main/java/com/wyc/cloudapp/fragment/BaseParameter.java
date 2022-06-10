@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -22,20 +21,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.wyc.cloudapp.R;
 import com.wyc.cloudapp.adapter.GoodsCategoryAdapter;
-import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
-import com.wyc.cloudapp.application.CustomApplication;
 import com.wyc.cloudapp.bean.TreeListItem;
 import com.wyc.cloudapp.data.SQLiteHelper;
 import com.wyc.cloudapp.dialog.DigitKeyboardPopup;
 import com.wyc.cloudapp.dialog.MyDialog;
-import com.wyc.cloudapp.dialog.barcodeScales.AbstractBarcodeScaleImp;
-import com.wyc.cloudapp.dialog.tree.TreeListDialogForJson;
 import com.wyc.cloudapp.dialog.tree.TreeListDialogForObj;
-import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.utils.Utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class BaseParameter extends AbstractParameterFragment {
@@ -60,7 +53,7 @@ public class BaseParameter extends AbstractParameterFragment {
         get_or_show_goodsImgSetting(false);
         get_or_show_secLevelCategorySetting(false);
         get_or_show_goodsGroupSetting(false);
-        get_or_show_autoMol(false);
+        get_or_show_fast_pay(false);
         get_or_show_cumulative(false);
         get_or_show_usable_category(false);
          return null;
@@ -109,8 +102,8 @@ public class BaseParameter extends AbstractParameterFragment {
         array.add(content);
 
         content = new JSONObject();
-        content.put(p_id_key,"auto_mol");
-        content.put(p_c_key, get_or_show_autoMol(true));
+        content.put(p_id_key,"fast_pay");
+        content.put(p_c_key, get_or_show_fast_pay(true));
         content.put(p_desc_key,"自动抹零设置");
         array.add(content);
 
@@ -133,7 +126,6 @@ public class BaseParameter extends AbstractParameterFragment {
         //初始化事件
         set_save_period();//数据保存周期
         _dual_view();//双屏设置
-        auto_mol();//自动抹零
         goodsCategory();//可用商品类别
         findViewById(R.id.save).setOnClickListener(v->saveContent());
     }
@@ -229,12 +221,6 @@ public class BaseParameter extends AbstractParameterFragment {
                     dualview_img_show_interval_et.setOnClickListener(null);
                 }
         });
-    }
-    private void auto_mol(){
-        final Switch sh = findViewById(R.id.auto_mol_switch);
-        final RadioGroup rg = findViewById(R.id._auto_mol_group);
-
-        sh.setOnCheckedChangeListener((buttonView, isChecked) -> rg.setVisibility(isChecked?View.VISIBLE:View.GONE));
     }
 
     private JSONObject get_or_show_saveDataPeriod(boolean way){
@@ -395,45 +381,29 @@ public class BaseParameter extends AbstractParameterFragment {
         return false;
     }
 
-    private JSONObject get_or_show_autoMol(boolean b) {
-        JSONObject value_obj = new JSONObject();
-        Switch sh = findViewById(R.id.auto_mol_switch);
-        int status = 0,value = 0,id = -1;
+    private JSONObject get_or_show_fast_pay(boolean b) {
+        final JSONObject value_obj = new JSONObject();
+        Switch sh = findViewById(R.id.fast_pay);
+        int status = 0;
         if (b){
-            if (sh.isChecked()){
-                status = 1;
-                RadioGroup rg = findViewById(R.id._auto_mol_group);
-                switch (rg.getCheckedRadioButtonId()){
-                    case R.id.mol_y:
-                        id = R.id.mol_y;
-                        value = 1;
-                        break;
-                    case R.id.mol_j:
-                        id = R.id.mol_j;
-                        value = 2;
-                        break;
-                }
-            }
-            value_obj.put("id",id);
-            value_obj.put("s",status);
-            value_obj.put("v",value);
+            value_obj.put("s",sh.isChecked() ? 1 : 0);
         }else{
-            if (SQLiteHelper.getLocalParameter("auto_mol",value_obj)){
-                RadioGroup rg = findViewById(R.id._auto_mol_group);
-                status = Utils.getNotKeyAsNumberDefault(value_obj,"s",0);
-                if (status == 1){
-                    id =Utils.getNotKeyAsNumberDefault(value_obj,"id",R.id.mol_j);
-                    if (id == -1)id = R.id.mol_j;
-                    rg.check(id);
-                }
+            if (SQLiteHelper.getLocalParameter("fast_pay",value_obj)){
+                status = Utils.getNotKeyAsNumberDefault(value_obj,"s",1);
                 sh.setChecked(status == 1);
-                rg.setVisibility(status == 1 ? View.VISIBLE :View.GONE);
             }else{
-                MyDialog.ToastMessage("加载自动抹零参数错误：" + value_obj.getString("info"), null);
+                MyDialog.ToastMessage("加载开启快捷支付参数错误：" + value_obj.getString("info"), null);
             }
         }
-
         return value_obj;
+    }
+
+    public static boolean hasFastPay(){
+        final JSONObject value_obj = new JSONObject();
+        if (SQLiteHelper.getLocalParameter("fast_pay",value_obj)){
+            return Utils.getNotKeyAsNumberDefault(value_obj,"s",1) == 1;
+        }
+        return false;
     }
 
     private JSONObject get_or_show_usable_category(boolean b){

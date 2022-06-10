@@ -215,6 +215,7 @@
     <string name="checkout_setting_sz">收银设置</string>
     <string name="goods_cumulative">商品累加</string>
     <string name="auto_ml_sz">自动抹零</string>
+    <string name="enable_fast_pay">开启快捷支付</string>
     <string name="ml_y_sz">四舍五入到元</string>
     <string name="ml_j_sz">四舍五入到角</string>
     <string name="printer_setting_sz">打印机设置</string>
