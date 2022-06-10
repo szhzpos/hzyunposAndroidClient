@@ -46,6 +46,7 @@ public class GoodsCategoryAdapter extends RecyclerView.Adapter<GoodsCategoryAdap
         mContext = context;
         mSecLevelGoodsCategoryView = v;
         loadChildShow();
+        int o = 10;
         initUsableCategory();
     }
 
