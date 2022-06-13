@@ -116,7 +116,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
     private WeightInfoView mWeighView;
     private EditText mSearch_content;
     private CustomProgressDialog mProgressDialog;
-    private boolean hasFastPay = BaseParameter.hasFastPay();
+    private final boolean hasFastPay = BaseParameter.hasFastPay();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -382,7 +382,8 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
-        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout);
+        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout),
+                delivery_layout = findViewById(R.id.delivery_layout);
         if (q_deal_linerLayout != null)q_deal_linerLayout.setOnClickListener(v -> {
             if (hasCheckDealOrderModule()){
                 if (verifyQueryBtnPermissions()){
@@ -401,6 +402,9 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 MyDialog.ToastMessage("系统未安装浏览器!", getWindow());
             }
         });
+        if (delivery_layout != null){
+            delivery_layout.setOnClickListener(v -> DeliveryActivity.start(this));
+        }
     }
     private boolean hasCheckDealOrderModule(){
         return ModulePermission.checkModulePermission(26);

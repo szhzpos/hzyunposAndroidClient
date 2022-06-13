@@ -98,13 +98,13 @@ public abstract class AbstractDefinedTitleActivity extends MainActivity {
         if (hasSlide()){
             initVelocityTrackerIfNotExists();
             if (hasSlide() && ev.getAction() == MotionEvent.ACTION_DOWN) {
-                downX = ev.getRawX();
-                downY = ev.getRawY();
+                downX = ev.getX();
+                downY = ev.getY();
                 mActivePointerId = ev.getPointerId(0);
                 mVelocityTracker.addMovement(ev);
             }else if (ev.getAction() == MotionEvent.ACTION_UP){
-                float xDiff = Math.abs(ev.getRawX() - downX);
-                float yDiff = Math.abs(ev.getRawY() - downY);
+                float xDiff = Math.abs(ev.getX() - downX);
+                float yDiff = Math.abs(ev.getY() - downY);
                 double squareRoot = Math.sqrt((xDiff * xDiff + yDiff * yDiff));
                 double degreeX = Math.asin(yDiff / squareRoot) * 180 / Math.PI;
 

@@ -87,6 +87,31 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/delivery_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/main_top_icon"
+            android:orientation="vertical"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp">
+
+            <ImageView
+                android:layout_width="@dimen/main_top_fun_btn_width"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:contentDescription="@string/shift_exchange_sz"
+                app:srcCompat="@drawable/delivery" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1.5"
+                android:gravity="center_horizontal"
+                android:text="@string/shop_orders"
+                android:textColor="@color/white"
+                android:textSize="@dimen/font_size_14" />
+        </LinearLayout>
+        <LinearLayout
             android:id="@+id/cloud_background_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
@@ -122,7 +147,6 @@
             android:paddingBottom="2dp">
 
             <ImageView
-                android:id="@+id/imageView2"
                 android:layout_width="@dimen/main_top_fun_btn_width"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

@@ -310,7 +310,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                 if (isManualMol){
                     final ChangeNumOrPriceDialog changeNumOrPriceDialog = new ChangeNumOrPriceDialog(mContext, mContext.getString(R.string.mo_l_sz),String.format(Locale.CHINA,"%.2f",mActual_amt - ((int)mActual_amt)));
                     changeNumOrPriceDialog.setYesOnclickListener(myDialog -> {
-                        double mol_amt = mMolAmt = myDialog.getContent();
+                        double mol_amt = myDialog.getContent();
                         if (!Utils.equalDouble(mol_amt,0.0)){
                             if (mActual_amt - mol_amt < 0){
                                 MyDialog.ToastMessage("抹零金额不能大于应收金额!", changeNumOrPriceDialog.getWindow());
@@ -320,6 +320,7 @@ public abstract class AbstractSettlementDialog extends AbstractDialogSaleActivit
                                 deleteMolDiscountRecord();
                                 deleteBuyFullGiveXDiscount();
                                 mContext.manualMol(mol_amt);
+                                mMolAmt = mol_amt;
                                 final StringBuilder err = new StringBuilder();
                                 final JSONArray rules = buyFullGiveXDiscount(err);
                                 if (null != rules){

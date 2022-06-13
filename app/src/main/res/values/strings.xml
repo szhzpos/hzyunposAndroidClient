@@ -1013,6 +1013,15 @@
     <string name="conn_fail">连接失败</string>
     <string name="printer_disconnect">打印机断开</string>
     <string name="label_preview">标签预览</string>
-    <string name="init_parameter_error">参数初始化错误...</string>
-    <string name="init_cashierInfo_error">初始化收银员信息错误...</string>
+    <string name="init_parameter_error">参数初始化错误…</string>
+    <string name="init_cashierInfo_error">初始化收银员信息错误…</string>
+
+    <!-- 商城订单 -->
+    <string name="shop_orders">商城订单</string>
+    <string name="delivery_orders">配送订单</string>
+    <string name="new_order">新订单</string>
+    <string name="all_order">全部订单</string>
+    <string name="dispatching_order">配送中</string>
+    <string name="complete_order">已完成</string>
+    <string name="return_request_order">退货申请</string>
 </resources>
