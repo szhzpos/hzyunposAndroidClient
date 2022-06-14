@@ -489,6 +489,9 @@ public final class CustomApplication extends Application {
     public static void sendMessageAtFrontOfQueue(int what){
         mApplication.myhandler.sendMessageAtFrontOfQueue(mApplication.myhandler.obtainMessage(what));
     }
+    public static void sendMessageAtFrontOfQueue(int what,  Object obj){
+        mApplication.myhandler.sendMessageAtFrontOfQueue(mApplication.myhandler.obtainMessage(what,obj));
+    }
 
     public static void postAtFrontOfQueue(Runnable r){
         mApplication.myhandler.removeCallbacks(r);

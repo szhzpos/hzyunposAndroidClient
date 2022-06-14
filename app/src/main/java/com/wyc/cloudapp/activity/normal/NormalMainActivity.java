@@ -51,6 +51,7 @@ import com.wyc.cloudapp.adapter.GoodsInfoViewAdapter;
 import com.wyc.cloudapp.adapter.NormalSaleGoodsAdapter;
 import com.wyc.cloudapp.adapter.TreeListBaseAdapter;
 import com.wyc.cloudapp.application.CustomApplication;
+import com.wyc.cloudapp.bean.DeliveryOrderNum;
 import com.wyc.cloudapp.bean.ModulePermission;
 import com.wyc.cloudapp.constants.MessageID;
 import com.wyc.cloudapp.customerView.CVUtils;
@@ -82,6 +83,7 @@ import com.wyc.cloudapp.dialog.serialScales.AbstractWeightedScaleImp;
 import com.wyc.cloudapp.dialog.vip.AbstractVipChargeDialog;
 import com.wyc.cloudapp.dialog.vip.VipInfoDialog;
 import com.wyc.cloudapp.fragment.BaseParameter;
+import com.wyc.cloudapp.fragment.DeliveryOrderBase;
 import com.wyc.cloudapp.fragment.PrintFormat;
 import com.wyc.cloudapp.logger.Logger;
 import com.wyc.cloudapp.print.PrintUtilsToBitbmp;
@@ -382,7 +384,7 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                 vipInfoDialog.setYesOnclickListener(dialog -> {showVipInfo(dialog.getVip());dialog.dismiss(); }).show();
         });//会员
 
-        final LinearLayout q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout),
+        final View q_deal_linerLayout = findViewById(R.id.q_deal_linerLayout),other_linearLayout = findViewById(R.id.other_linearLayout),cloud_background_layout = findViewById(R.id.cloud_background_layout),
                 delivery_layout = findViewById(R.id.delivery_layout);
         if (q_deal_linerLayout != null)q_deal_linerLayout.setOnClickListener(v -> {
             if (hasCheckDealOrderModule()){
@@ -1044,6 +1046,17 @@ public final class NormalMainActivity extends SaleActivity implements CustomAppl
                     mPrinterStatusIv.setImageBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.printer));
                 }
                 break;
+            case MessageID.DELIVERY_ORDER_NUM_ID:
+                if (msg.obj instanceof DeliveryOrderNum){
+                    final DeliveryOrderNum num = (DeliveryOrderNum) msg.obj;
+                    DeliveryOrderBase.setOrderNum(num);
+                    updateDeliveryNum(num.getNewOrder());
+                }
+                break;
         }
+    }
+    private void updateDeliveryNum(int num){
+        final TextView delivery = findViewById(R.id.delivery_num);
+        if (delivery != null)delivery.setText(String.valueOf(num));
     }
 }

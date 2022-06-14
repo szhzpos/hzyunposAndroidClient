@@ -51,14 +51,15 @@ class DeliveryActivity : MainActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent { RootLayout() }
-
-
     }
 
     @Preview
     @Composable
     fun RootLayout(){
-        Column(Modifier.background(colorResource(R.color.white)).fillMaxHeight()) {
+        Column(
+            Modifier
+                .background(colorResource(R.color.white))
+                .fillMaxHeight()) {
             Box(
                 Modifier
                     .height(dimensionResource(R.dimen.height_58))
@@ -67,7 +68,8 @@ class DeliveryActivity : MainActivity(){
                         colorResource(R.color.appColor)
                     )) {
                 Row(
-                    Modifier.clickable { finish() }
+                    Modifier
+                        .clickable { finish() }
                         .fillMaxHeight()
                         .wrapContentWidth()
                         .align(Alignment.CenterStart), verticalAlignment =  Alignment.CenterVertically) {
@@ -81,14 +83,14 @@ class DeliveryActivity : MainActivity(){
 
             AndroidViewBinding(FragmentPagerContainerBinding::inflate){
 
-                val fragments: MutableList<AbstractBaseFragment> = mutableListOf()
+                val fragments: MutableList<DeliveryOrderBase> = mutableListOf()
                 fragments.add(NewDeliveryOrder())
                 fragments.add(DispatchingOrder())
                 fragments.add(CompleteDeliveryOrder())
                 fragments.add(DeliveryOrderBase())
                 fragments.add(RefundDeliveryOrder())
 
-                val adapter: FragmentPagerAdapter<AbstractBaseFragment> = FragmentPagerAdapter(fragments,this@DeliveryActivity)
+                val adapter: FragmentPagerAdapter<DeliveryOrderBase> = FragmentPagerAdapter(fragments,this@DeliveryActivity)
                 val tabLayout = root.findViewById<RoundCornerTabLayout>(R.id._fragment_tab)
                 val view_pager = root.findViewById<ViewPager2>(R.id.view_pager)
 
@@ -97,6 +99,12 @@ class DeliveryActivity : MainActivity(){
                     tabLayout, view_pager
                 ) { tab: TabLayout.Tab, position: Int ->
                     tab.text = adapter.getItem(position).title
+                    val num = adapter.getItem(position).getNumber()
+                    if (num > 0){
+                        tab.orCreateBadge.backgroundColor = getColor(R.color.appColor)
+                        tab.orCreateBadge.number = adapter.getItem(position).getNumber()
+                        tab.orCreateBadge.badgeTextColor = getColor(R.color.orange_1)
+                    }
                 }.attach()
             }
         }

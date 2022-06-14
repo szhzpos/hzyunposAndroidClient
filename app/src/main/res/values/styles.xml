@@ -11,6 +11,18 @@
         <item name="android:windowBackground">@color/black_trans</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
+
+    <style name="AppThemeBarge" parent="Theme.MaterialComponents.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/black_trans</item>
+        <item name="android:windowIsTranslucent">true</item>
+    </style>
+
     <!-- Base application theme. -->
     <style name="AppTheme_no_translucent" parent="AppTheme">
         <item name="android:windowIsTranslucent">false</item>

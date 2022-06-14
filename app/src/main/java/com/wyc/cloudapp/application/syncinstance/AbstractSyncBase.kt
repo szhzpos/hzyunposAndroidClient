@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
 import com.wyc.cloudapp.application.CustomApplication
+import com.wyc.cloudapp.bean.DeliveryOrderNum
+import com.wyc.cloudapp.constants.MessageID
 import com.wyc.cloudapp.data.SQLiteHelper
 import com.wyc.cloudapp.data.room.entity.PracticeAssociated
 import com.wyc.cloudapp.logger.Logger
@@ -154,6 +156,9 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                         SyncPracticeAssociated.HEART_BEAT_KEY -> {
                             ISync.sync(SyncPracticeAssociated())
                         }
+                        SyncDeliveryOrder.HEART_BEAT_KEY ->{
+                            ISync.sync(SyncDeliveryOrder())
+                        }
                     }
                 }
             }
@@ -214,18 +219,26 @@ abstract class AbstractSyncBase(private val table_name: String, private val tabl
                     }
                     "y" -> {
                         val data: JSONArray
-                        if (this is SyncStepFullReduce) {
-                            val json = Utils.getNullStringAsEmpty(info_json, "data")
-                            if (json.startsWith("{")) {
-                                val obj = info_json.getJSONObject("data")
-                                data = Utils.getNullObjectAsEmptyJsonArray(obj, "fullreduce")
-                            } else {
-                                data = Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
+                        when (this) {
+                            is SyncStepFullReduce -> {
+                                val json = Utils.getNullStringAsEmpty(info_json, "data")
+                                data = if (json.startsWith("{")) {
+                                    val obj = info_json.getJSONObject("data")
+                                    Utils.getNullObjectAsEmptyJsonArray(obj, "fullreduce")
+                                } else {
+                                    Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
+                                }
+                                deal(data)
+                                markHeart()
                             }
-                            deal(data)
-                            markHeart()
-                        } else
-                            data = Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
+                            is SyncDeliveryOrder -> {
+                                val obj = info_json.getJSONObject("data")
+                                val num = JSON.parseObject(Utils.getNullOrEmptyStringAsDefault(obj,"order_num","{}"),DeliveryOrderNum::class.java)
+                                CustomApplication.sendMessageAtFrontOfQueue(MessageID.DELIVERY_ORDER_NUM_ID,num)
+                                return
+                            }
+                            else -> data = Utils.getNullObjectAsEmptyJsonArray(info_json, "data")
+                        }
 
                         if (mMaxPage == -1){
                             mMaxPage = info_json.getIntValue("max_page")

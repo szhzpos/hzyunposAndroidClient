@@ -18,12 +18,12 @@ import com.wyc.cloudapp.application.CustomApplication
  * @Version:        1.0
  */
 
-class RefundDeliveryOrder : AbstractBaseFragment() {
-    override fun viewCreated() {
-
-    }
+class RefundDeliveryOrder : DeliveryOrderBase() {
 
     override fun getTitle(): String {
         return CustomApplication.self().getString(R.string.return_request_order)
+    }
+    override fun getNumber(): Int {
+        return getOrderNum().refundOrder
     }
 }

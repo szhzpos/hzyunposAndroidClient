@@ -51,4 +51,5 @@ public final  class MessageID {
     public static final int PRINTER_ERROR = 51;
     public static final int PRINTER_SUCCESS = 52;
     public static final int LOGIN_FINISH_ID = 53;
+    public static final int DELIVERY_ORDER_NUM_ID = 55;
 }

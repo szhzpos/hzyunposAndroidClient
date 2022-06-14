@@ -18,9 +18,13 @@ import com.wyc.cloudapp.application.CustomApplication
  * @Version:        1.0
  */
 
-class DispatchingOrder : DeliveryOrderBase() {
+open class DispatchingOrder : DeliveryOrderBase() {
 
     override fun getTitle(): String {
         return CustomApplication.self().getString(R.string.dispatching_order)
+    }
+
+    override fun getNumber(): Int {
+        return getOrderNum().dispatchingOrder
     }
 }

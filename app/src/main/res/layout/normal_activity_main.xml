@@ -86,31 +86,52 @@
                 android:textSize="@dimen/font_size_14" />
         </LinearLayout>
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/delivery_layout"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:background="@drawable/main_top_icon"
             android:orientation="vertical"
-            android:paddingTop="2dp"
             android:paddingBottom="2dp">
 
+            <TextView
+                android:id="@+id/delivery_num"
+                android:layout_width="@dimen/size_20"
+                android:layout_height="@dimen/size_20"
+                android:layout_marginEnd="@dimen/margin_8"
+                android:background="@drawable/circle_shape_button"
+                android:gravity="center"
+                android:textColor="@color/orange_1"
+                android:textSize="@dimen/font_size_12"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/lablel" />
+
             <ImageView
+                android:id="@+id/lablel"
                 android:layout_width="@dimen/main_top_fun_btn_width"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:contentDescription="@string/shift_exchange_sz"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread_inside"
+                app:layout_constraintVertical_weight="1"
                 app:srcCompat="@drawable/delivery" />
 
             <TextView
+                android:id="@+id/name"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1.5"
+                android:layout_height="0dp"
                 android:gravity="center_horizontal"
                 android:text="@string/shop_orders"
                 android:textColor="@color/white"
-                android:textSize="@dimen/font_size_14" />
-        </LinearLayout>
+                android:textSize="@dimen/font_size_14"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/lablel"
+                app:layout_constraintVertical_weight="0.6" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
         <LinearLayout
             android:id="@+id/cloud_background_layout"
             android:layout_width="wrap_content"

@@ -23,4 +23,7 @@ class CompleteDeliveryOrder : DeliveryOrderBase() {
     override fun getTitle(): String {
         return CustomApplication.self().getString(R.string.complete_order)
     }
+    override fun getNumber(): Int {
+        return -1
+    }
 }

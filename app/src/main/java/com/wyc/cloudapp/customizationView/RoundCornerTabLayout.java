@@ -3,11 +3,14 @@ package com.wyc.cloudapp.customizationView;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 
@@ -46,6 +49,11 @@ public final class RoundCornerTabLayout extends TabLayout {
         }
         /*绘制Drawable边框时会模糊，所以要关闭硬件加速*/
         this.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    }
+
+    @Override
+    protected void onDraw(@NonNull Canvas canvas) {
+        super.onDraw(canvas);
     }
 
     @SuppressLint("DrawAllocation")

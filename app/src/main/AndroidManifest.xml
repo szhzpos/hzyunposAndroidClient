@@ -44,7 +44,7 @@
         android:theme="@style/AppTheme"
         tools:targetApi="n">
 
-        <activity android:name=".activity.normal.DeliveryActivity" android:exported="false"/>
+        <activity android:name=".activity.normal.DeliveryActivity" android:exported="false" android:theme="@style/AppThemeBarge"/>
         <activity
             android:name=".design.LabelPrintActivity"
             android:exported="false" />

@@ -19,11 +19,11 @@ import com.wyc.cloudapp.application.CustomApplication
  */
 
 class NewDeliveryOrder : DeliveryOrderBase() {
-    override fun viewCreated() {
-
-    }
 
     override fun getTitle(): String {
         return CustomApplication.self().getString(R.string.new_order)
+    }
+    override fun getNumber(): Int {
+        return getOrderNum().newOrder
     }
 }

@@ -1024,4 +1024,10 @@
     <string name="dispatching_order">配送中</string>
     <string name="complete_order">已完成</string>
     <string name="return_request_order">退货申请</string>
+    <string name="deliveryman">配送员：</string>
+    <string name="key_hints">请输入关键字</string>
+    <string name="contact">联系电话</string>
+    <string name="deliveryman_id">编号</string>
+    <string name="deliveryman_name">姓名</string>
+    <string name="deliveryman_call">电话</string>
 </resources>
